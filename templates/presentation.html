@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="{{ url_for('static', filename=icon) }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/reveal.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/theme/serif.css") }}">
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="lib/css/zenburn.css") }}">
+    <!-- Printing and PDF exports -->
+    <script>
+        (function () {
+            let link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match(/print-pdf/gi) ?
+                '{{ url_for('static', filename="css/print/pdf.css") }}' :
+                '{{ url_for('static', filename="css/print/paper.css") }}';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        })();
+    </script>
+</head>
+<body>
+<style>
+    .reveal h1 {
+        font-size: 40pt;
+    }
+
+    .reveal h2 {
+        font-size: 35pt;
+    }
+
+    .reveal h3 {
+        font-size: 30pt;
+    }
+
+    .reveal h4 {
+        font-size: 25pt;
+    }
+
+    .reveal p, .reveal li, .reveal table {
+        font-size: 20pt;
+    }
+
+    .reveal strong {
+        color: red;
+    }
+
+    .reveal section img {
+        border: none;
+        box-shadow: none !important;
+    }
+
+    /*page number*/
+    .reveal .slide-number {
+        font-size: 24pt;
+        position: absolute;
+        right: 2em;
+        top: 1em;
+        color: black;
+        background-color: transparent;
+    }
+</style>
+
+<div class="reveal">
+<div class="slides">
+{% for n in nav %}
+<section>
+{% if n['title'] or n['doc'] %}
+<section data-markdown><textarea data-template>
+{% if n['title'] %}
+## {{ n['title'] }}
+{% endif %}
+{% if n['title'] and n['doc'] %}<hr/>{% endif %}
+{{ n['doc'] }}
+</textarea></section>
+{% endif %}
+{% for sn in n['sub'] %}
+<section data-markdown><textarea data-template>
+{% if sn['title'] %}
+## {{ sn['title'] }}
+{% endif %}
+{% if sn['title'] and sn['doc'] %}<hr/>{% endif %}
+{{ sn['doc'] }}
+</textarea></section>
+{% endfor %}
+</section>
+{% endfor %}
+</div>
+</div>
+<script src="{{ url_for('static', filename="lib/js/head.min.js") }}"></script>
+<script src="{{ url_for('static', filename="js/reveal.js") }}"></script>
+<script>
+Reveal.initialize({
+    history: {{ history }},
+    transition: '{{ transition }}',
+    controls: true,
+    slideNumber: 'c/t',
+    dependencies: [
+        {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
+        {src: '{{ url_for('static', filename="plugin/markdown/markdown.js") }}'},
+        {src: '{{ url_for('static', filename="plugin/notes/notes.js") }}', async: true},
+        {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
+        {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
+            async: true,
+            callback: () => hljs.initHighlightingOnLoad()}
+    ]
+});
+</script>
+</body>
+</html>
