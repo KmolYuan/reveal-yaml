@@ -10,8 +10,8 @@ import ssl
 from yaml import safe_load
 from flask import Flask, render_template
 
-_VSlide = Dict[str, str]
-_HSlide = Dict[str, Union[str, List[_VSlide]]]
+_VSlide = Dict[str, Union[str, Dict[str, str]]]
+_HSlide = Dict[str, Union[str, Dict[str, str], List[_VSlide]]]
 _Data = Dict[str, Union[str, bool, List[_HSlide]]]
 T = TypeVar('T')
 
@@ -29,6 +29,17 @@ def check_type(t: Type[T], value: Union[str, bool, list, dict]) -> T:
     return value
 
 
+def slide_block(slide: _VSlide):
+    """Ensure slide attributes."""
+    slide['title'] = check_type(str, slide.get('title', ""))
+    slide['doc'] = check_type(str, slide.get('doc', ""))
+    slide['img'] = check_type(dict, slide.get('img', {}))
+    img: Dict[str, str] = slide['img']
+    img['src'] = check_type(str, img.get('src', ""))
+    img['width'] = check_type(str, img.get('width', ""))
+    img['height'] = check_type(str, img.get('height', ""))
+
+
 @app.route('/')
 def presentation() -> str:
     settings = load_yaml()
@@ -38,12 +49,10 @@ def presentation() -> str:
     transition = check_type(str, settings.get('transition', 'linear'))
     nav: List[_HSlide] = check_type(list, settings.get('nav', []))
     for n in nav:
-        n['title'] = check_type(str, n.get('title', ""))
-        n['doc'] = check_type(str, n.get('doc', ""))
+        slide_block(n)
         sub_nav: List[_VSlide] = check_type(list, n.get('sub', []))
         for sn in sub_nav:
-            sn['title'] = check_type(str, sn.get('title', ""))
-            sn['doc'] = check_type(str, sn.get('doc', ""))
+            slide_block(sn)
     return render_template(
         "presentation.html",
         title=title,

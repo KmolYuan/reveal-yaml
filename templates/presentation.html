@@ -68,23 +68,39 @@
 <div class="slides">
 {% for n in nav %}
 <section>
-{% if n['title'] or n['doc'] %}
+{% if n['title'] or n['doc'] or n['img'] %}
 <section data-markdown><textarea data-template>
 {% if n['title'] %}
 ## {{ n['title'] }}
 {% endif %}
-{% if n['title'] and n['doc'] %}<hr/>{% endif %}
+
+{% if n['title'] and (n['doc'] or n['img']['src']) %}---{% endif %}
+
 {{ n['doc'] }}
+{% if n['img']['src'] %}
+<div><img src="{{ url_for('static', filename=n['img']['src']) }}" alt=""
+    {% if n['img']['width'] %} width="{{ n['img']['width'] }}" {% endif %}
+    {% if n['img']['height'] %} height="{{ n['img']['height'] }}" {% endif %} /></div>
+{% endif %}
 </textarea></section>
 {% endif %}
 {% for sn in n['sub'] %}
+{% if sn['title'] or sn['doc'] or sn['img'] %}
 <section data-markdown><textarea data-template>
 {% if sn['title'] %}
 ## {{ sn['title'] }}
 {% endif %}
-{% if sn['title'] and sn['doc'] %}<hr/>{% endif %}
+
+{% if sn['title'] and (sn['doc'] or sn['img']['src']) %}---{% endif %}
+
 {{ sn['doc'] }}
+{% if sn['img']['src'] %}
+<div><img src="{{ url_for('static', filename=sn['img']['src']) }}" alt=""
+        {% if sn['img']['width'] %} width="{{ sn['img']['width'] }}" {% endif %}
+        {% if sn['img']['height'] %} height="{{ sn['img']['height'] }}" {% endif %} /></div>
+{% endif %}
 </textarea></section>
+{% endif %}
 {% endfor %}
 </section>
 {% endfor %}
