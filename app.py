@@ -35,7 +35,7 @@ def slide_block(slide: _VSlide):
     slide['doc'] = check_type(str, slide.get('doc', ""))
     slide['math'] = check_type(str, slide.get('math', ""))
     slide['img'] = check_type(list, slide.get('img', []))
-    for img in slide['img']:
+    for img in slide['img']:  # type: Dict[str, str]
         img['src'] = check_type(str, img.get('src', ""))
         img['width'] = check_type(str, img.get('width', ""))
         img['height'] = check_type(str, img.get('height', ""))
@@ -43,23 +43,19 @@ def slide_block(slide: _VSlide):
 
 @app.route('/')
 def presentation() -> str:
-    settings = load_yaml()
-    title = check_type(str, settings.get('title', "Untitled"))
-    icon = check_type(str, settings.get('icon', "img/icon.png"))
-    history = check_type(bool, settings.get('history', True))
-    transition = check_type(str, settings.get('transition', 'linear'))
-    nav: List[_HSlide] = check_type(list, settings.get('nav', []))
+    config = load_yaml()
+    nav: List[_HSlide] = check_type(list, config.get('nav', []))
     for n in nav:
         slide_block(n)
-        sub_nav: List[_VSlide] = check_type(list, n.get('sub', []))
-        for sn in sub_nav:
+        n['sub'] = check_type(list, n.get('sub', []))
+        for sn in n['sub']:  # type: _VSlide
             slide_block(sn)
     return render_template(
         "presentation.html",
-        title=title,
-        icon=icon,
-        history=str(history).lower(),
-        transition=transition,
+        title=check_type(str, config.get('title', "Untitled")),
+        icon=check_type(str, config.get('icon', "img/icon.png")),
+        history=str(check_type(bool, config.get('history', True))).lower(),
+        transition=check_type(str, config.get('transition', 'linear')),
         nav=nav,
     )
 
