@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 
 def load_yaml() -> _Data:
-    with open("settings.yml", 'r', encoding='utf-8') as f:
+    with open("reveal.yml", 'r', encoding='utf-8') as f:
         return safe_load(f)
 
 
