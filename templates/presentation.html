@@ -24,35 +24,16 @@
 </head>
 <body>
 <style>
-    .reveal h1 {
-        font-size: 40pt;
-    }
-
-    .reveal h2 {
-        font-size: 35pt;
-    }
-
-    .reveal h3 {
-        font-size: 30pt;
-    }
-
-    .reveal h4 {
-        font-size: 25pt;
-    }
-
-    .reveal p, .reveal li, .reveal table {
-        font-size: 20pt;
-    }
-
-    .reveal strong {
-        color: red;
-    }
-
+    .reveal h1 { font-size: 40pt; }
+    .reveal h2 { font-size: 35pt; }
+    .reveal h3 { font-size: 30pt; }
+    .reveal h4 { font-size: 25pt; }
+    .reveal p, .reveal li, .reveal table { font-size: 20pt; }
+    .reveal strong { color: red; }
     .reveal section img {
         border: none;
         box-shadow: none !important;
     }
-
     /*page number*/
     .reveal .slide-number {
         font-size: 24pt;
@@ -68,6 +49,7 @@
 <div class="slides">
 {% for n in nav %}
 <section>
+{% macro slide(n) %}
 {% if n['title'] or n['doc'] or n['img'] %}
 <section data-markdown><textarea data-template>
 {% if n['title'] %}
@@ -80,28 +62,13 @@
 {% if n['img']['src'] %}
 <div><img src="{{ url_for('static', filename=n['img']['src']) }}" alt=""
     {% if n['img']['width'] %} width="{{ n['img']['width'] }}" {% endif %}
-    {% if n['img']['height'] %} height="{{ n['img']['height'] }}" {% endif %} /></div>
+    {% if n['img']['height'] %} height="{{ n['img']['height'] }}" {% endif %}/></div>
 {% endif %}
 </textarea></section>
 {% endif %}
-{% for sn in n['sub'] %}
-{% if sn['title'] or sn['doc'] or sn['img'] %}
-<section data-markdown><textarea data-template>
-{% if sn['title'] %}
-## {{ sn['title'] }}
-{% endif %}
-
-{% if sn['title'] and (sn['doc'] or sn['img']['src']) %}---{% endif %}
-
-{{ sn['doc'] }}
-{% if sn['img']['src'] %}
-<div><img src="{{ url_for('static', filename=sn['img']['src']) }}" alt=""
-        {% if sn['img']['width'] %} width="{{ sn['img']['width'] }}" {% endif %}
-        {% if sn['img']['height'] %} height="{{ sn['img']['height'] }}" {% endif %} /></div>
-{% endif %}
-</textarea></section>
-{% endif %}
-{% endfor %}
+{% endmacro %}
+{{ slide(n) }}
+{% for sn in n['sub'] %}{{ slide(sn) }}{% endfor %}
 </section>
 {% endfor %}
 </div>
