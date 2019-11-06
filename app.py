@@ -10,8 +10,8 @@ import ssl
 from yaml import safe_load
 from flask import Flask, render_template
 
-_VSlide = Dict[str, Union[str, Dict[str, str]]]
-_HSlide = Dict[str, Union[str, Dict[str, str], List[_VSlide]]]
+_VSlide = Dict[str, Union[str, List[Dict[str, str]]]]
+_HSlide = Dict[str, Union[str, List[Dict[str, str]], List[_VSlide]]]
 _Data = Dict[str, Union[str, bool, List[_HSlide]]]
 T = TypeVar('T')
 
@@ -34,11 +34,11 @@ def slide_block(slide: _VSlide):
     slide['title'] = check_type(str, slide.get('title', ""))
     slide['doc'] = check_type(str, slide.get('doc', ""))
     slide['math'] = check_type(str, slide.get('math', ""))
-    slide['img'] = check_type(dict, slide.get('img', {}))
-    img: Dict[str, str] = slide['img']
-    img['src'] = check_type(str, img.get('src', ""))
-    img['width'] = check_type(str, img.get('width', ""))
-    img['height'] = check_type(str, img.get('height', ""))
+    slide['img'] = check_type(list, slide.get('img', []))
+    for img in slide['img']:
+        img['src'] = check_type(str, img.get('src', ""))
+        img['width'] = check_type(str, img.get('width', ""))
+        img['height'] = check_type(str, img.get('height', ""))
 
 
 @app.route('/')

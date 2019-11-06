@@ -62,10 +62,12 @@
 {% if n['math'] %}
 <script type="math/tex; mode=display">{{ n['math'] }}</script>
 {% endif %}
-{% if n['img']['src'] %}
-<div><img src="{{ url_for('static', filename=n['img']['src']) }}" alt=""
-    {% if n['img']['width'] %} width="{{ n['img']['width'] }}" {% endif %}
-    {% if n['img']['height'] %} height="{{ n['img']['height'] }}" {% endif %}/></div>
+{% if n['img'] %}
+<p>{% for img in n['img'] %}
+<img src="{{ url_for('static', filename=img['src']) }}" alt=""
+    {% if img['width'] %} width="{{ img['width'] }}" {% endif %}
+    {% if img['height'] %} height="{{ img['height'] }}" {% endif %}/>
+{% endfor %}</p>
 {% endif %}
 </textarea></section>
 {% endif %}
