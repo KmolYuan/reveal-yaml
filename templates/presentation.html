@@ -59,6 +59,9 @@
 {% if n['title'] and (n['doc'] or n['img']['src']) %}---{% endif %}
 
 {{ n['doc'] }}
+{% if n['math'] %}
+<script type="math/tex; mode=display">{{ n['math'] }}</script>
+{% endif %}
 {% if n['img']['src'] %}
 <div><img src="{{ url_for('static', filename=n['img']['src']) }}" alt=""
     {% if n['img']['width'] %} width="{{ n['img']['width'] }}" {% endif %}

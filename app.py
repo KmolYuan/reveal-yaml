@@ -33,6 +33,7 @@ def slide_block(slide: _VSlide):
     """Ensure slide attributes."""
     slide['title'] = check_type(str, slide.get('title', ""))
     slide['doc'] = check_type(str, slide.get('doc', ""))
+    slide['math'] = check_type(str, slide.get('math', ""))
     slide['img'] = check_type(dict, slide.get('img', {}))
     img: Dict[str, str] = slide['img']
     img['src'] = check_type(str, img.get('src', ""))
