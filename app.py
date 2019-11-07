@@ -6,8 +6,9 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import TypeVar, List, Dict, Union, Type
+from urllib.parse import urlparse
 from yaml import safe_load
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 
 _VSlide = Dict[str, Union[str, List[Dict[str, str]]]]
 _HSlide = Dict[str, Union[str, List[Dict[str, str]], List[_VSlide]]]
@@ -28,15 +29,25 @@ def cast(t: Type[T], value: Union[str, bool, list, dict]) -> T:
     return value
 
 
+def uri(path: str) -> str:
+    if not path:
+        return ""
+    u = urlparse(path)
+    if all([u.scheme, u.netloc, u.path]):
+        return path
+    else:
+        return url_for('static', filename=path)
+
+
 def slide_block(slide: _VSlide):
     """Ensure slide attributes."""
     slide['title'] = cast(str, slide.get('title', ""))
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
-    slide['embed'] = cast(str, slide.get('embed', ""))
+    slide['embed'] = uri(cast(str, slide.get('embed', "")))
     slide['img'] = cast(list, slide.get('img', []))
     for img in slide['img']:  # type: Dict[str, str]
-        img['src'] = cast(str, img.get('src', ""))
+        img['src'] = uri(cast(str, img.get('src', "")))
         img['width'] = cast(str, img.get('width', ""))
         img['height'] = cast(str, img.get('height', ""))
 
@@ -53,7 +64,7 @@ def presentation() -> str:
     return render_template(
         "presentation.html",
         title=cast(str, config.get('title', "Untitled")),
-        icon=cast(str, config.get('icon', "img/icon.png")),
+        icon=uri(cast(str, config.get('icon', "img/icon.png"))),
         default_style=cast(bool, config.get('default-style', True)),
         extra_style=cast(str, config.get('extra-style', "")),
         history=str(cast(bool, config.get('history', True))).lower(),

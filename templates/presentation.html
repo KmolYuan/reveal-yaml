@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" href="{{ url_for('static', filename=icon) }}">
+    <link rel="icon" href="{{ icon }}">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename="css/reveal.css") }}">
     <link rel="stylesheet" href="{{ url_for('static', filename="css/theme/serif.css") }}">
@@ -64,15 +64,13 @@
 {% endif %}
 {% if n['img'] %}
 <p>{% for img in n['img'] %}
-<img src="{{ url_for('static', filename=img['src']) }}" alt=""
+<img src="{{ img['src'] }}" alt=""
     {% if img['width'] %} width="{{ img['width'] }}" {% endif %}
     {% if img['height'] %} height="{{ img['height'] }}" {% endif %}/>
 {% endfor %}</p>
 {% endif %}
 {% if n['embed'] %}
-<div class="stretch">
-<iframe src="{{ url_for('static', filename=n['embed']) }}" width="100%" height="100%"></iframe>
-</div>
+<iframe class="stretch" src="{{ n['embed'] }}" width="100%" height="100%"></iframe>
 {% endif %}
 </textarea></section>
 {% endif %}
