@@ -9,6 +9,7 @@ from typing import TypeVar, List, Dict, Union, Type
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
+from flask_frozen import relative_url_for
 
 _VSlide = Dict[str, Union[str, List[Dict[str, str]]]]
 _HSlide = Dict[str, Union[str, List[Dict[str, str]], List[_VSlide]]]
@@ -35,6 +36,8 @@ def uri(path: str) -> str:
     u = urlparse(path)
     if all([u.scheme, u.netloc, u.path]):
         return path
+    if app.config.get('FREEZER_RELATIVE_URLS', False):
+        return relative_url_for('static', filename=path)
     else:
         return url_for('static', filename=path)
 
