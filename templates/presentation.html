@@ -56,7 +56,7 @@
 ## {{ n['title'] }}
 {% endif %}
 
-{% if n['title'] and (n['doc'] or n['img']) %}---{% endif %}
+{% if n['title'] and (n['doc'] or n['img'] or n['embed']) %}---{% endif %}
 
 {{ n['doc'] }}
 {% if n['math'] %}
@@ -68,6 +68,11 @@
     {% if img['width'] %} width="{{ img['width'] }}" {% endif %}
     {% if img['height'] %} height="{{ img['height'] }}" {% endif %}/>
 {% endfor %}</p>
+{% endif %}
+{% if n['embed'] %}
+<div class="stretch">
+<iframe src="{{ url_for('static', filename=n['embed']) }}" width="100%" height="100%"></iframe>
+</div>
 {% endif %}
 </textarea></section>
 {% endif %}
