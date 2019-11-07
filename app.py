@@ -20,17 +20,20 @@ app = Flask(__name__)
 
 
 def load_yaml() -> _Data:
+    """Load "reveal.yml" project."""
     with open("reveal.yml", 'r', encoding='utf-8') as f:
         return safe_load(f)
 
 
 def cast(t: Type[T], value: Union[str, bool, list, dict]) -> T:
+    """Check the type of value."""
     if not isinstance(value, t):
         raise TypeError(f"expect type: {t}, get: {type(value)}")
     return value
 
 
 def uri(path: str) -> str:
+    """Handle relative path and URIs."""
     if not path:
         return ""
     u = urlparse(path)
@@ -57,6 +60,7 @@ def slide_block(slide: _VSlide):
 
 @app.route('/')
 def presentation() -> str:
+    """Generate the presentation."""
     config = load_yaml()
     nav: List[_HSlide] = cast(list, config.get('nav', []))
     for n in nav:
@@ -77,6 +81,7 @@ def presentation() -> str:
 
 
 def main() -> None:
+    """Main function startup with SSH."""
     from ssl import SSLContext, PROTOCOL_TLSv1_2
     context = SSLContext(PROTOCOL_TLSv1_2)
     context.load_cert_chain('localhost.crt', 'localhost.key')
