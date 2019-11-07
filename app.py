@@ -6,7 +6,6 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import TypeVar, List, Dict, Union, Type
-import ssl
 from yaml import safe_load
 from flask import Flask, render_template
 
@@ -23,7 +22,7 @@ def load_yaml() -> _Data:
         return safe_load(f)
 
 
-def check_type(t: Type[T], value: Union[str, bool, list, dict]) -> T:
+def cast(t: Type[T], value: Union[str, bool, list, dict]) -> T:
     if not isinstance(value, t):
         raise TypeError(f"expect type: {t}, get: {type(value)}")
     return value
@@ -31,38 +30,41 @@ def check_type(t: Type[T], value: Union[str, bool, list, dict]) -> T:
 
 def slide_block(slide: _VSlide):
     """Ensure slide attributes."""
-    slide['title'] = check_type(str, slide.get('title', ""))
-    slide['doc'] = check_type(str, slide.get('doc', ""))
-    slide['math'] = check_type(str, slide.get('math', ""))
-    slide['embed'] = check_type(str, slide.get('embed', ""))
-    slide['img'] = check_type(list, slide.get('img', []))
+    slide['title'] = cast(str, slide.get('title', ""))
+    slide['doc'] = cast(str, slide.get('doc', ""))
+    slide['math'] = cast(str, slide.get('math', ""))
+    slide['embed'] = cast(str, slide.get('embed', ""))
+    slide['img'] = cast(list, slide.get('img', []))
     for img in slide['img']:  # type: Dict[str, str]
-        img['src'] = check_type(str, img.get('src', ""))
-        img['width'] = check_type(str, img.get('width', ""))
-        img['height'] = check_type(str, img.get('height', ""))
+        img['src'] = cast(str, img.get('src', ""))
+        img['width'] = cast(str, img.get('width', ""))
+        img['height'] = cast(str, img.get('height', ""))
 
 
 @app.route('/')
 def presentation() -> str:
     config = load_yaml()
-    nav: List[_HSlide] = check_type(list, config.get('nav', []))
+    nav: List[_HSlide] = cast(list, config.get('nav', []))
     for n in nav:
         slide_block(n)
-        n['sub'] = check_type(list, n.get('sub', []))
+        n['sub'] = cast(list, n.get('sub', []))
         for sn in n['sub']:  # type: _VSlide
             slide_block(sn)
     return render_template(
         "presentation.html",
-        title=check_type(str, config.get('title', "Untitled")),
-        icon=check_type(str, config.get('icon', "img/icon.png")),
-        history=str(check_type(bool, config.get('history', True))).lower(),
-        transition=check_type(str, config.get('transition', 'linear')),
+        title=cast(str, config.get('title', "Untitled")),
+        icon=cast(str, config.get('icon', "img/icon.png")),
+        default_style=cast(bool, config.get('default-style', True)),
+        extra_style=cast(str, config.get('extra-style', "")),
+        history=str(cast(bool, config.get('history', True))).lower(),
+        transition=cast(str, config.get('transition', 'linear')),
         nav=nav,
     )
 
 
 def main() -> None:
-    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    from ssl import SSLContext, PROTOCOL_TLSv1_2
+    context = SSLContext(PROTOCOL_TLSv1_2)
     context.load_cert_chain('localhost.crt', 'localhost.key')
     app.run(host='127.0.0.1', port=9443, debug=True, ssl_context=context)
 

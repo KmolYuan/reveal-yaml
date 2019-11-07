@@ -23,7 +23,7 @@
     </script>
 </head>
 <body>
-<style>
+<style>{% if default_style %}
     .reveal h1 { font-size: 40pt; }
     .reveal h2 { font-size: 35pt; }
     .reveal h3 { font-size: 30pt; }
@@ -43,7 +43,7 @@
         color: black;
         background-color: transparent;
     }
-</style>
+{% endif %}{{ extra_style }}</style>
 
 <div class="reveal">
 <div class="slides">
