@@ -1,18 +1,5 @@
 title: Title
 nav:
-  - title: Title
+  - title: Start from Here
     doc: |
       Author: Me
-    sub:
-      - title: What a Good Slide!
-      - title: Next Good Slide!
-        doc: |
-          $$
-          x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
-          $$
-
-  - title: Next Chapter
-    doc: |
-      + list
-      + list
-      + list
