@@ -1,5 +1,194 @@
-title: Title
+title: Reveal.yml Documentation
+description: A YAML, Markdown, reveal.js based Flask application.
+author: Yuan Chang
 nav:
-  - title: Start from Here
+  - title: Reveal.yml Documentation
     doc: |
-      Author: Me
+      Author: Yuan Chang
+
+      Github link: <https://github.com/KmolYuan/blank-reveal-yml>
+
+      Scroll right → to see the tutorial.
+
+      Scroll down ↓ to see how to launch and deployment.
+    sub:
+      - title: Requirements
+        doc: |
+          + Python 3.6+
+
+          Install modules:
+
+          ```bash
+          pip install -r requirements.txt
+          ```
+
+      - title: Startup
+        doc: |
+          ```bash
+          python app.py
+          # Without SSH
+          python -m flask app.py
+          ```
+
+      - title: Generate SSL key
+        doc: |
+          ```bash
+          openssl genrsa 2048 > localhost.key
+          chmod 400 localhost.key
+          openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
+          ```
+
+      - title: Build Static Page
+        doc: |
+          ```bash
+          python build_frozen.py
+          ```
+
+  - title: Project Options
+    doc: |
+      This App will read the YAML file `reveal.yml` in the root directory.
+
+      ```yaml
+      title: # Web page title: str (Untitled)
+      theme: # Reveal.js theme: str (serif)
+      icon: # icon path: str (img/icon.png)
+      default-style: # Enable default style: bool (true)
+      extra-style: # Extra style in CSS: str ("")
+      history: # Enable page history: bool (true)
+      transition: # Transition mode: str (linear)
+      slide-num: # Reveal.js slide number style: str / bool (c/t)
+      ```
+
+  - title: Markdown
+    doc: |
+      **All** pargrphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
+      But **not** allow HTML syntax.
+
+  - title: Reveal.js Slides
+    doc: |
+      Github link: <https://github.com/hakimel/reveal.js>
+
+      The slides are 2D arrary-like.
+
+      Scroll down ↓ to learn the rules.
+
+      ```yaml
+      nav:
+        - title: ...
+          doc: ...
+          img:
+            src: ...
+      ```
+    sub:
+      - title: Slides in YAML
+        doc: |
+          The **horizontal** slides are as list in the `nav` node.
+          And a slide can works with at least **one** attribute structure:
+
+          ```yaml
+          nav:
+            - {}  # Not work
+            - title: ...  # Work!
+            - doc: ...  # Work!
+            - img: ...  # Work!
+          ```
+
+          The **vertical** slides work under the `sub` node of first slide.
+          Their attributes are same as horizontal slides.
+          Or just use `sub` at first slide without other attributes.
+
+          ```yaml
+          nav:
+            - title: First
+              doc: ...
+              sub:
+                - title: Vertical Slide
+                  doc: ...
+          ```
+
+      - title: Slide Attributes
+        doc: |
+          All attributes are default to empty string.
+
+          The path string are allow remote URI.
+
+          ```yaml
+          title: # Title, transform into H2 tag: str
+          doc: # Pargraph, allow multiline: str
+          math: # Latex math without "$$" brackets, allow multiline: str
+          embed: # Embeded source path, like PDF: str
+          img:
+            - ... # A list of image source, please see the documentation.
+          ```
+
+      - title: Image Attributes
+        doc: |
+          Must have at least `src` attribute to become a valid image.
+
+          ```yaml
+          src: # Image path: str ("")
+          width: # Width attribute of <img> tag: str ("")
+          height: # Height attribute of <img> tag: str ("")
+          ```
+
+  - title: Examples
+    doc: |
+      The source of this doc: <https://github.com/KmolYuan/blank-reveal-yml/blob/gh-pages/reveal.yml>
+
+      Scroll down ↓ to see the examples.
+    sub:
+      - title: Markdown
+        doc: |
+          ```yaml
+          doc: |
+            Some thing **important**.
+
+            | item 1 | item 2 |
+            |:------:|:------:|
+            | A | B |
+          ```
+
+          Some thing **important**.
+
+          | item 1 | item 2 |
+          |:------:|:------:|
+          | A | B |
+
+      - title: Images
+        doc: |
+          ```yaml
+          img:
+            - src: img/icon.png
+            - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          ```
+        img:
+          - src: img/icon.png
+          - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+
+      - title: Maths
+        doc: |
+          ```yaml
+          math: |
+            \begin{aligned}
+            \min_{x}&f(x)
+            \\
+            \text{s.t. } &b(x) \le 0
+            \\
+            &c(x) = 0
+            \end{aligned}
+          ```
+        math: |
+          \begin{aligned}
+          \min_{x}&f(x)
+          \\
+          \text{s.t. } &b(x) \le 0
+          \\
+          &c(x) = 0
+          \end{aligned}
+
+      - title: Embeded PDF
+        doc: |
+          ```yaml
+          embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+          ```
+        embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf

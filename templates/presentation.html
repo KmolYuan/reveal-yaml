@@ -2,25 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <meta name="author" content="{{ author }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="{{ icon }}">
-    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/reset.css") }}">
     <link rel="stylesheet" href="{{ url_for('static', filename="css/reveal.css") }}">
     <link rel="stylesheet" href="{{ url_for('static', filename="css/theme/" + theme + ".css") }}">
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="{{ url_for('static', filename="lib/css/zenburn.css") }}">
     <!-- Printing and PDF exports -->
     <script>
-        (function () {
-            let link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = window.location.search.match(/print-pdf/gi) ?
-                '{{ url_for('static', filename="css/print/pdf.css") }}' :
-                '{{ url_for('static', filename="css/print/paper.css") }}';
-            document.getElementsByTagName('head')[0].appendChild(link);
-        })();
+        let link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ?
+            '{{ url_for('static', filename="css/print/pdf.css") }}' :
+            '{{ url_for('static', filename="css/print/paper.css") }}';
+        document.getElementsByTagName('head')[0].appendChild(link);
     </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
 </head>
 <body>
 <style>{% if default_style %}
@@ -64,13 +70,13 @@
 {% endif %}
 {% if n['img'] %}
 <p>{% for img in n['img'] %}
-<img src="{{ img['src'] }}" alt=""
-    {% if img['width'] %} width="{{ img['width'] }}" {% endif %}
-    {% if img['height'] %} height="{{ img['height'] }}" {% endif %}/>
+<img src="{{ img['src'] }}" alt="" {% if img['width'] %} width="{{ img['width'] }}" {% endif %} {% if img['height'] %} height="{{ img['height'] }}" {% endif %}/>
 {% endfor %}</p>
 {% endif %}
 {% if n['embed'] %}
-<embed class="stretch" src="{{ n['embed'] }}"/>
+<div style="position: relative">
+<embed class="stretch" width="1000px" height="500px" src="{{ n['embed'] }}"/>
+</div>
 {% endif %}
 </textarea></section>
 {% endif %}
@@ -81,24 +87,24 @@
 {% endfor %}
 </div>
 </div>
-<script src="{{ url_for('static', filename="lib/js/head.min.js") }}"></script>
 <script src="{{ url_for('static', filename="js/reveal.js") }}"></script>
 <script>
-Reveal.initialize({
-    history: {{ history }},
-    transition: '{{ transition }}',
-    slideNumber: '{{ slide_num }}',
-    dependencies: [
-        {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
-        {src: '{{ url_for('static', filename="plugin/markdown/markdown.js") }}'},
-        {src: '{{ url_for('static', filename="plugin/notes/notes.js") }}', async: true},
-        {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
-        {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
-            async: true,
-            callback: () => hljs.initHighlightingOnLoad()},
-        {src: '{{ url_for('static', filename="plugin/zoom-js/zoom.js") }}', async: true},
-    ]
-});
+    Reveal.initialize({
+        history: {{ history }},
+        transition: '{{ transition }}',
+        slideNumber: '{{ slide_num }}',
+        hash: true,
+        dependencies: [
+            {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
+            {src: '{{ url_for('static', filename="plugin/markdown/markdown.js") }}'},
+            {src: '{{ url_for('static', filename="plugin/notes/notes.js") }}', async: true},
+            {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
+            {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
+                async: true,
+                callback: () => hljs.initHighlightingOnLoad()},
+            {src: '{{ url_for('static', filename="plugin/zoom-js/zoom.js") }}', async: true},
+        ]
+    });
 </script>
 </body>
 </html>

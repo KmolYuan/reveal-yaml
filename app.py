@@ -81,6 +81,8 @@ def presentation() -> str:
     return render_template(
         "presentation.html",
         title=cast(str, config.get('title', "Untitled")),
+        description=cast(str, config.get('description', "")),
+        author=cast(str, config.get('author', "")),
         theme=cast(str, config.get('theme', 'serif')),
         icon=uri(cast(str, config.get('icon', "img/icon.png"))),
         default_style=cast(bool, config.get('default-style', True)),
