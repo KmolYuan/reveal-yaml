@@ -5,7 +5,7 @@ __copyright__ = "Copyright (C) 2019"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import TypeVar, List, Dict, Union, Type
+from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
@@ -14,7 +14,9 @@ from flask_frozen import relative_url_for
 _VSlide = Dict[str, Union[str, List[Dict[str, str]]]]
 _HSlide = Dict[str, Union[str, List[Dict[str, str]], List[_VSlide]]]
 _Data = Dict[str, Union[str, bool, List[_HSlide]]]
-T = TypeVar('T')
+_YamlValue = Union[int, float, str, bool, list, dict]
+T = TypeVar('T', bound=_YamlValue)
+U = TypeVar('U', bound=_YamlValue)
 
 app = Flask(__name__)
 
@@ -25,7 +27,15 @@ def load_yaml() -> _Data:
         return safe_load(f)
 
 
-def cast(t: Type[T], value: Union[str, bool, list, dict]) -> T:
+@overload
+def cast(t: Type[T], value: _YamlValue) -> T: ...
+
+
+@overload
+def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]: ...
+
+
+def cast(t, value):
     """Check the type of value."""
     if not isinstance(value, t):
         raise TypeError(f"expect type: {t}, get: {type(value)}")
@@ -71,12 +81,14 @@ def presentation() -> str:
     return render_template(
         "presentation.html",
         title=cast(str, config.get('title', "Untitled")),
+        theme=cast(str, config.get('theme', 'serif')),
         icon=uri(cast(str, config.get('icon', "img/icon.png"))),
         default_style=cast(bool, config.get('default-style', True)),
         extra_style=cast(str, config.get('extra-style', "")),
         history=str(cast(bool, config.get('history', True))).lower(),
         transition=cast(str, config.get('transition', 'linear')),
-        nav=nav,
+        slide_num=cast((str, bool), config.get('slide-num', 'c/t')),
+        nav=nav
     )
 
 

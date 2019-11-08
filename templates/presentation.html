@@ -6,7 +6,7 @@
     <link rel="icon" href="{{ icon }}">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename="css/reveal.css") }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename="css/theme/serif.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/theme/" + theme + ".css") }}">
     <!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="{{ url_for('static', filename="lib/css/zenburn.css") }}">
     <!-- Printing and PDF exports -->
@@ -87,8 +87,7 @@
 Reveal.initialize({
     history: {{ history }},
     transition: '{{ transition }}',
-    controls: true,
-    slideNumber: 'c/t',
+    slideNumber: '{{ slide_num }}',
     dependencies: [
         {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
         {src: '{{ url_for('static', filename="plugin/markdown/markdown.js") }}'},
@@ -96,7 +95,8 @@ Reveal.initialize({
         {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
         {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
             async: true,
-            callback: () => hljs.initHighlightingOnLoad()}
+            callback: () => hljs.initHighlightingOnLoad()},
+        {src: '{{ url_for('static', filename="plugin/zoom-js/zoom.js") }}', async: true},
     ]
 });
 </script>
