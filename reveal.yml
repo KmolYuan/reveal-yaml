@@ -50,6 +50,8 @@ nav:
 
       ```yaml
       title: # Web page title: str (Untitled)
+      description: # Page description: str ("")
+      author: # Page author: str ("")
       theme: # Reveal.js theme: str (serif)
       icon: # icon path: str (img/icon.png)
       default-style: # Enable default style: bool (true)
