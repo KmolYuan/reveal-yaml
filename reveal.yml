@@ -161,10 +161,12 @@ nav:
           ```yaml
           img:
             - src: img/icon.png
+              width: 20%
             - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
           ```
         img:
           - src: img/icon.png
+            width: 20%
           - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
 
       - title: Maths
