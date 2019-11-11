@@ -87,6 +87,8 @@ def presentation() -> str:
         icon=uri(cast(str, config.get('icon', "img/icon.png"))),
         default_style=cast(bool, config.get('default-style', True)),
         extra_style=cast(str, config.get('extra-style', "")),
+        watermark=uri(cast(str, config.get('watermark', ""))),
+        watermark_size=cast(str, config.get('watermark-size', "")),
         history=str(cast(bool, config.get('history', True))).lower(),
         transition=cast(str, config.get('transition', 'linear')),
         slide_num=cast((str, bool), config.get('slide-num', 'c/t')),

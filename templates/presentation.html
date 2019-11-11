@@ -29,7 +29,8 @@
     <![endif]-->
 </head>
 <body>
-<style>{% if default_style %}
+<style>
+{%- if default_style %}
     .reveal h1 { font-size: 40pt; }
     .reveal h2 { font-size: 35pt; }
     .reveal h3 { font-size: 30pt; }
@@ -49,12 +50,20 @@
         color: black;
         background-color: transparent;
     }
-{% endif %}{{ extra_style }}</style>
+{%- endif %}
+    {{ extra_style }}
+</style>
 
 <div class="reveal">
 <div class="slides">
 {% for n in nav %}
-<section>
+<section data-background-transition="{{ transition }}"
+    {%- if watermark -%}
+    data-background="{{ watermark }}"
+    {%- endif -%}
+    {%- if watermark_size -%}
+    data-background-size="{{ watermark_size }}"
+    {%- endif -%}>
 {% macro slide(n) -%}
 {% if n['title'] or n['doc'] or n['img'] -%}
 <section data-markdown><textarea data-template>

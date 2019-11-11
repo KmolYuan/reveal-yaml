@@ -1,6 +1,8 @@
 title: Reveal.yml Documentation
 description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
+watermark: img/icon.png
+watermark-size: 25%
 nav:
   - title: Reveal.yml Documentation
     doc: |
