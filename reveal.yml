@@ -80,7 +80,7 @@ nav:
 
   - title: Markdown
     doc: |
-      **All** pargrphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
+      **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
       But **not** allow HTML syntax.
 
   - title: Reveal.js Slides
