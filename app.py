@@ -11,8 +11,9 @@ from yaml import safe_load
 from flask import Flask, render_template, url_for
 from flask_frozen import relative_url_for
 
-_VSlide = Dict[str, Union[str, List[Dict[str, str]]]]
-_HSlide = Dict[str, Union[str, List[Dict[str, str]], List[_VSlide]]]
+_Opt = Dict[str, str]
+_VSlide = Dict[str, Union[str, Union[List[_Opt], _Opt]]]
+_HSlide = Dict[str, Union[str, List[_Opt], List[_VSlide]]]
 _Data = Dict[str, Union[str, bool, List[_HSlide]]]
 _YamlValue = Union[int, float, str, bool, list, dict]
 T = TypeVar('T', bound=_YamlValue)
@@ -36,14 +37,14 @@ def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]: ...
 
 
 def cast(t, value):
-    """Check the type of value."""
+    """Check value type."""
     if not isinstance(value, t):
         raise TypeError(f"expect type: {t}, get: {type(value)}")
     return value
 
 
 def uri(path: str) -> str:
-    """Handle relative path and URIs."""
+    """Handle the relative path and URIs."""
     if not path:
         return ""
     u = urlparse(path)
@@ -61,8 +62,11 @@ def slide_block(slide: _VSlide):
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
     slide['embed'] = uri(cast(str, slide.get('embed', "")))
-    slide['img'] = cast(list, slide.get('img', []))
-    for img in slide['img']:  # type: Dict[str, str]
+    imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
+    if isinstance(imgs, dict):
+        imgs: List[_Opt] = [imgs]
+    slide['img'] = imgs
+    for img in imgs:
         img['src'] = uri(cast(str, img.get('src', "")))
         img['width'] = cast(str, img.get('width', ""))
         img['height'] = cast(str, img.get('height', ""))
