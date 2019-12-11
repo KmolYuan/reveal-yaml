@@ -42,9 +42,24 @@ nav:
 
       - title: Build Static Page
         doc: |
+          Freeze a Flask app:
+
           ```bash
           python build_frozen.py
           ```
+
+          The Github actions will deploy to gh-pages automatically.
+
+          (Disable it by delete ".github" folder.)
+
+          In first time, create an [Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+          value named `ACCESS_TOKEN` under your repository "Secrets".
+          Then create "gh-pages" branch on remote side before next push.
+          At last, each commit will enable auto deployment.
+
+          The first time maybe takes longer.
+
+          Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
   - title: Project Options
     doc: |
