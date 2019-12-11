@@ -143,12 +143,16 @@ nav:
       - title: Image Attributes
         doc: |
           Must have at least `src` attribute to become a valid image.
+          Each group will map to a picture.
 
           ```yaml
-          src: # Image path: str ("")
-          width: # Width attribute of <img> tag: str ("")
-          height: # Height attribute of <img> tag: str ("")
+          - src: # Image path: str ("")
+            width: # Width attribute of <img> tag: str ("")
+            height: # Height attribute of <img> tag: str ("")
           ```
+
+          If there has only one image, the options can under "img" key directly
+          without to list them.
 
   - title: Examples
     doc: |
