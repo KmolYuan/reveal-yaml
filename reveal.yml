@@ -6,7 +6,7 @@ watermark-size: 25%
 nav:
   - title: Reveal.yml Documentation
     doc: |
-      Author: Yuan Chang
+      *Author: Yuan Chang*
 
       Github link: <https://github.com/KmolYuan/blank-reveal-yml>
 
@@ -170,14 +170,14 @@ nav:
         doc: |
           ```yaml
           doc: |
-            Some thing **important**.
+            *Something* **important**.
 
             | item 1 | item 2 |
             |:------:|:------:|
             | A | B |
           ```
 
-          Some thing **important**.
+          *Something* **important**.
 
           | item 1 | item 2 |
           |:------:|:------:|
