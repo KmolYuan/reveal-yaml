@@ -136,6 +136,10 @@ nav:
           doc: # Pargraph, allow multiline: str
           math: # Latex math without "$$" brackets, allow multiline: str
           embed: # Embeded source path, like PDF: str
+          youtube:
+            src: # Embeded YouTube srouce from embed code: str
+            width: # Video width: str
+            height: # Video height: str
           img:
             - ... # A list of image source, please see the documentation.
           ```
@@ -210,6 +214,19 @@ nav:
           \\
           &c(x) = 0
           \end{aligned}
+
+      - title: Embeded YouTube Video
+        doc: |
+          ```yaml
+          youtube:
+            src: https://www.youtube.com/embed/IpPH61BWObs
+            width: 800pt
+            height: 500pt
+          ```
+        youtube:
+          src: https://www.youtube.com/embed/IpPH61BWObs
+          width: 600pt
+          height: 400pt
 
       - title: Embeded PDF
         doc: |

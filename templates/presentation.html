@@ -70,7 +70,7 @@
 {% if n['title'] -%}
 ## {{ n['title'] }}
 
-{% if n['doc'] or n['math'] or n['img'] or n['embed'] %}---{% endif %}
+{% if n['doc'] or n['math'] or n['img'] or n['embed'] or n['youtube']['src'] %}---{% endif %}
 {%- endif %}
 
 {{ n['doc'] }}
@@ -79,15 +79,23 @@
 {%- endif %}
 {% if n['img'] -%}
 {% for img in n['img'] -%}
+{% if img['src'] -%}
 <img src="{{ img['src'] }}" alt=""
-    {%- if img['width'] %} width="{{ img['width'] }}" {% endif -%}
-    {%- if img['height'] %} height="{{ img['height'] }}" {% endif -%}/>
+  {%- if img['width'] %} width="{{ img['width'] }}" {% endif -%}
+  {%- if img['height'] %} height="{{ img['height'] }}" {% endif -%}/>
+{%- endif %}
 {%- endfor %}
 {%- endif %}
 {% if n['embed'] -%}
 <div style="position: relative">
 <embed class="stretch" width="1000px" height="500px" src="{{ n['embed'] }}"/>
 </div>
+{%- endif %}
+{% if n['youtube']['src'] -%}
+<iframe src="{{ n['youtube']['src'] }}"
+  {%- if n['youtube']['width'] %} width="{{ n['youtube']['width'] }}" {% endif -%}
+  {%- if n['youtube']['height'] %} height="{{ n['youtube']['height'] }}" {% endif -%}
+  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {%- endif %}
 </textarea></section>
 {%- endif %}

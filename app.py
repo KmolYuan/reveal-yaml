@@ -62,6 +62,13 @@ def slide_block(slide: _VSlide):
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
     slide['embed'] = uri(cast(str, slide.get('embed', "")))
+    # Youtube link
+    youtube: _Opt = cast(dict, slide.get('youtube', {}))
+    slide['youtube'] = youtube
+    youtube['src'] = cast(str, youtube.get('src', ""))
+    youtube['width'] = cast(str, youtube.get('width', ""))
+    youtube['height'] = cast(str, youtube.get('height', ""))
+    # Images
     imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
     if isinstance(imgs, dict):
         imgs: List[_Opt] = [imgs]
