@@ -32,8 +32,8 @@ nav:
           python -m flask app.py
           ```
 
-      - title: Generate SSL key
-        doc: |
+          Generate SSL key:
+
           ```bash
           openssl genrsa 2048 > localhost.key
           chmod 400 localhost.key
