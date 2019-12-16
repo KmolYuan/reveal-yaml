@@ -188,14 +188,17 @@ nav:
         doc: |
           ```yaml
           img:
-            - src: img/icon.png
-              width: 20%
-            - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          - label: Ubuntu Logo
+            src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
+          - label: Google Logo
+            src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
           ```
         img:
-          - src: img/icon.png
+          - label: Ubuntu Logo
+            src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
             width: 20%
-          - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          - label: Google Logo
+            src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
 
       - title: Maths
         doc: |

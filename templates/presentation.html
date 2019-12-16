@@ -31,6 +31,13 @@
 <body>
 <style>
 {%- if default_style %}
+    figure {
+        display: inline-block;
+        margin: 20px;
+    }
+    figure figcaption {
+        text-align: center;
+    }
     .reveal h1 { font-size: 40pt; }
     .reveal h2 { font-size: 35pt; }
     .reveal h3 { font-size: 30pt; }
@@ -41,7 +48,6 @@
         border: none;
         box-shadow: none !important;
     }
-    /*page number*/
     .reveal .slide-number {
         font-size: 24pt;
         position: absolute;
@@ -57,13 +63,11 @@
 <div class="reveal">
 <div class="slides">
 {% for n in nav %}
-<section data-background-transition="{{ transition }}"
-    {%- if watermark -%}
+<section data-background-transition="{{ transition }}" {% if watermark -%}
     data-background="{{ watermark }}"
-    {%- endif -%}
-    {%- if watermark_size -%}
+    {%- endif %} {% if watermark_size -%}
     data-background-size="{{ watermark_size }}"
-    {%- endif -%}>
+    {%- endif %}>
 {% macro slide(n) -%}
 {% if n['title'] or n['doc'] or n['img'] -%}
 <section data-markdown><textarea data-template>
