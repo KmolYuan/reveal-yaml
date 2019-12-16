@@ -76,14 +76,14 @@
 
 <div class="reveal">
 <div class="slides">
-{% for n in nav %}
+{% for n in nav -%}
 <section {% if watermark -%}
     data-background="{{ watermark }}"
     {%- endif %} {% if watermark_size -%}
     data-background-size="{{ watermark_size }}"
     {%- endif %}>
 {% macro slide(n) -%}
-{% if n['title'] or n['doc'] or n['img'] -%}
+{%- if n['title'] or n['doc'] or n['img'] -%}
 <section data-markdown><textarea data-template>
 {% if n['title'] -%}
 ## {{ n['title'] }}
@@ -108,9 +108,9 @@
 <figcaption>{{ img['label'] }}</figcaption>
 {%- endif %}
 </figure>
-{%- endif %}
-{%- endfor %}
-{%- endif %}
+{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
 {% if n['embed']['src'] -%}
 <div style="position: relative">
 <embed class="stretch" {% if n['embed']['width'] -%}
@@ -119,16 +119,16 @@
     height="{{ n['embed']['height'] }}"
     {%- endif %} src="{{ n['embed']['src'] }}"/>
 </div>
-{%- endif %}
+{%- endif -%}
 {% if n['youtube']['src'] -%}
 <iframe src="{{ n['youtube']['src'] }}"
   {%- if n['youtube']['width'] %} width="{{ n['youtube']['width'] }}" {% endif -%}
   {%- if n['youtube']['height'] %} height="{{ n['youtube']['height'] }}" {% endif -%}
   frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-{%- endif %}
+{%- endif -%}
 </textarea></section>
 {%- endif %}
-{%- endmacro %}
+{%- endmacro -%}
 {{ slide(n) }}
 {% for sn in n['sub'] %}{{ slide(sn) }}{% endfor %}
 </section>
