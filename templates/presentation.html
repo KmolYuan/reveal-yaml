@@ -31,24 +31,26 @@
 <body>
 <style>
 {%- if default_style %}
-    figure {
-        display: inline-block;
-        margin: 20px;
+    .reveal figure {
+      display: inline-block;
+      *display: inline;
+      *zoom: 1;
+      margin: 20px;
     }
-    figure figcaption { text-align: center; }
+    .reveal figure figcaption { text-align: center; }
     .reveal h1 { font-size: 40pt; }
     .reveal h2 { font-size: 35pt; }
     .reveal h3 { font-size: 30pt; }
     .reveal h4 { font-size: 25pt; }
     .reveal p, .reveal li, .reveal table { font-size: 20pt; }
     .reveal strong { color: red; }
-    .reveal pre, .reveal section img {
+    .reveal pre code, .reveal section img {
       border: none;
       -webkit-box-shadow: none !important;
       -moz-box-shadow: none !important;
       box-shadow: none !important;
     }
-    .reveal code {
+    .reveal pre code {
       font-family: Consolas, Mono;
       border-radius: 10px;
     }
@@ -75,7 +77,7 @@
 <div class="reveal">
 <div class="slides">
 {% for n in nav %}
-<section data-background-transition="{{ transition }}" {% if watermark -%}
+<section {% if watermark -%}
     data-background="{{ watermark }}"
     {%- endif %} {% if watermark_size -%}
     data-background-size="{{ watermark_size }}"
