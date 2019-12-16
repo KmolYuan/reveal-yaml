@@ -79,9 +79,14 @@
 {%- endif %}
 {% if n['img'] -%}
 {% for img in n['img'] -%}
+<figure>
 <img src="{{ img['src'] }}" alt=""
     {%- if img['width'] %} width="{{ img['width'] }}" {% endif -%}
     {%- if img['height'] %} height="{{ img['height'] }}" {% endif -%}/>
+{% if img['label'] -%}
+<figcaption>{{ img['label'] }}</figcaption>
+{%- endif %}
+</figure>
 {%- endfor %}
 {%- endif %}
 {% if n['embed'] -%}

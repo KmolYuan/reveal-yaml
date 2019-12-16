@@ -67,6 +67,7 @@ def slide_block(slide: _VSlide):
         imgs: List[_Opt] = [imgs]
     slide['img'] = imgs
     for img in imgs:
+        img['label'] = cast(str, img.get('label', ""))
         img['src'] = uri(cast(str, img.get('src', "")))
         img['width'] = cast(str, img.get('width', ""))
         img['height'] = cast(str, img.get('height', ""))
