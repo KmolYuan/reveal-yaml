@@ -137,13 +137,16 @@ nav:
           title: # Title, transform into H2 tag: str ("")
           doc: # Pargraph, allow multiline: str ("")
           math: # Latex math without "$$" brackets, allow multiline: str ("")
-          embed: # Embeded source path, like PDF: str (required)
           youtube:
             src: # Embeded YouTube srouce from embed code: str (required)
             width: # Video width: int / str ("")
             height: # Video height: int / str ("")
           img:
             - ... # A list of image source, please see the documentation.
+          embed:
+            src: # Embeded source path, like PDF: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
           ```
 
       - title: Image Attributes
@@ -190,13 +193,14 @@ nav:
           img:
           - label: Ubuntu Logo
             src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
+            width: 50%
           - label: Google Logo
             src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
           ```
         img:
           - label: Ubuntu Logo
             src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
-            width: 20%
+            width: 50%
           - label: Google Logo
             src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
 
@@ -237,6 +241,8 @@ nav:
       - title: Embeded PDF
         doc: |
           ```yaml
-          embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+          embed:
+            src: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
           ```
-        embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+        embed:
+          src: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf

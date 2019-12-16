@@ -35,25 +35,37 @@
         display: inline-block;
         margin: 20px;
     }
-    figure figcaption {
-        text-align: center;
-    }
+    figure figcaption { text-align: center; }
     .reveal h1 { font-size: 40pt; }
     .reveal h2 { font-size: 35pt; }
     .reveal h3 { font-size: 30pt; }
     .reveal h4 { font-size: 25pt; }
     .reveal p, .reveal li, .reveal table { font-size: 20pt; }
     .reveal strong { color: red; }
-    .reveal section img {
-        border: none;
-        box-shadow: none !important;
+    .reveal pre, .reveal section img {
+      border: none;
+      -webkit-box-shadow: none !important;
+      -moz-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+    .reveal code {
+      font-family: Consolas, Mono;
+      border-radius: 10px;
+    }
+    .reveal p code {
+      color: white;
+      border-style: solid;
+      border-width: 2px;
+      border-radius: 5px;
+      border-color: gray;
+      background: gray;
     }
     .reveal .slide-number {
         font-size: 24pt;
         position: absolute;
         right: 2em;
         top: 1em;
-        color: black;
+        color: #877b68;
         background-color: transparent;
     }
 {%- endif %}
@@ -85,9 +97,11 @@
 {% for img in n['img'] -%}
 {% if img['src'] -%}
 <figure>
-<img src="{{ img['src'] }}" alt=""
-    {%- if img['width'] %} width="{{ img['width'] }}" {% endif -%}
-    {%- if img['height'] %} height="{{ img['height'] }}" {% endif -%}/>
+<img src="{{ img['src'] }}" alt="" {% if img['width'] -%}
+    width="{{ img['width'] }}"
+    {%- endif %} {% if img['height'] -%}
+    height="{{ img['height'] }}"
+    {%- endif %}/>
 {% if img['label'] -%}
 <figcaption>{{ img['label'] }}</figcaption>
 {%- endif %}
@@ -95,9 +109,13 @@
 {%- endif %}
 {%- endfor %}
 {%- endif %}
-{% if n['embed'] -%}
+{% if n['embed']['src'] -%}
 <div style="position: relative">
-<embed class="stretch" width="1000px" height="500px" src="{{ n['embed'] }}"/>
+<embed class="stretch" {% if n['embed']['width'] -%}
+    width="{{ n['embed']['width'] }}"
+    {%- endif %} {% if n['embed']['height'] -%}
+    height="{{ n['embed']['height'] }}"
+    {%- endif %} src="{{ n['embed']['src'] }}"/>
 </div>
 {%- endif %}
 {% if n['youtube']['src'] -%}

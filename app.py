@@ -48,7 +48,7 @@ def uri(path: str) -> str:
     if not path:
         return ""
     u = urlparse(path)
-    if all([u.scheme, u.netloc, u.path]):
+    if all((u.scheme, u.netloc, u.path)):
         return path
     if app.config.get('FREEZER_RELATIVE_URLS', False):
         return relative_url_for('static', filename=path)
@@ -63,18 +63,24 @@ def pixel(value: Union[int, str]) -> str:
     return f"{value}pt"
 
 
+def sized_block(block: _Opt, w: str = "", h: str = ""):
+    """Ensure the attributes of sized resource."""
+    block['src'] = uri(cast(str, block.get('src', "")))
+    block['width'] = pixel(cast((int, str), block.get('width', w)))
+    block['height'] = pixel(cast((int, str), block.get('height', h)))
+
+
 def slide_block(slide: _VSlide):
-    """Ensure slide attributes."""
+    """Ensure the attributes of slide."""
     slide['title'] = cast(str, slide.get('title', ""))
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
-    slide['embed'] = uri(cast(str, slide.get('embed', "")))
     # Youtube link
-    youtube: _Opt = cast(dict, slide.get('youtube', {}))
-    slide['youtube'] = youtube
-    youtube['src'] = cast(str, youtube.get('src', ""))
-    youtube['width'] = pixel(cast((int, str), youtube.get('width', "")))
-    youtube['height'] = pixel(cast((int, str), youtube.get('height', "")))
+    slide['youtube'] = cast(dict, slide.get('youtube', {}))
+    sized_block(slide['youtube'])
+    # Embeded resource
+    slide['embed'] = cast(dict, slide.get('embed', {}))
+    sized_block(slide['embed'], '1000px', '450px')
     # Images
     imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
     if isinstance(imgs, dict):
@@ -82,9 +88,7 @@ def slide_block(slide: _VSlide):
     slide['img'] = imgs
     for img in imgs:
         img['label'] = cast(str, img.get('label', ""))
-        img['src'] = uri(cast(str, img.get('src', "")))
-        img['width'] = pixel(cast((int, str), img.get('width', "")))
-        img['height'] = pixel(cast((int, str), img.get('height', "")))
+        sized_block(img)
 
 
 @app.route('/')
