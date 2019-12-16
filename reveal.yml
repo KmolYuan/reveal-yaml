@@ -134,14 +134,14 @@ nav:
           The path string are allow remote URI.
 
           ```yaml
-          title: # Title, transform into H2 tag: str
-          doc: # Pargraph, allow multiline: str
-          math: # Latex math without "$$" brackets, allow multiline: str
-          embed: # Embeded source path, like PDF: str
+          title: # Title, transform into H2 tag: str ("")
+          doc: # Pargraph, allow multiline: str ("")
+          math: # Latex math without "$$" brackets, allow multiline: str ("")
+          embed: # Embeded source path, like PDF: str (required)
           youtube:
-            src: # Embeded YouTube srouce from embed code: str
-            width: # Video width: str
-            height: # Video height: str
+            src: # Embeded YouTube srouce from embed code: str (required)
+            width: # Video width: int / str ("")
+            height: # Video height: int / str ("")
           img:
             - ... # A list of image source, please see the documentation.
           ```
@@ -152,9 +152,10 @@ nav:
           Each group will map to a picture.
 
           ```yaml
-          - src: # Image path: str ("")
-            width: # Width attribute of <img> tag: str ("")
-            height: # Height attribute of <img> tag: str ("")
+          - label: # Image caption: str ("")
+            src: # Image path: str (required)
+            width: # Width attribute of <img> tag: int / str ("")
+            height: # Height attribute of <img> tag: int / str ("")
           ```
 
           If there has only one image, the options can under "img" key directly

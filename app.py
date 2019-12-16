@@ -56,6 +56,13 @@ def uri(path: str) -> str:
         return url_for('static', filename=path)
 
 
+def pixel(value: Union[int, str]) -> str:
+    """Support pure number input of the size."""
+    if isinstance(value, str):
+        return value
+    return f"{value}pt"
+
+
 def slide_block(slide: _VSlide):
     """Ensure slide attributes."""
     slide['title'] = cast(str, slide.get('title', ""))
@@ -66,8 +73,8 @@ def slide_block(slide: _VSlide):
     youtube: _Opt = cast(dict, slide.get('youtube', {}))
     slide['youtube'] = youtube
     youtube['src'] = cast(str, youtube.get('src', ""))
-    youtube['width'] = cast(str, youtube.get('width', ""))
-    youtube['height'] = cast(str, youtube.get('height', ""))
+    youtube['width'] = pixel(cast((int, str), youtube.get('width', "")))
+    youtube['height'] = pixel(cast((int, str), youtube.get('height', "")))
     # Images
     imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
     if isinstance(imgs, dict):
@@ -76,8 +83,8 @@ def slide_block(slide: _VSlide):
     for img in imgs:
         img['label'] = cast(str, img.get('label', ""))
         img['src'] = uri(cast(str, img.get('src', "")))
-        img['width'] = cast(str, img.get('width', ""))
-        img['height'] = cast(str, img.get('height', ""))
+        img['width'] = pixel(cast((int, str), img.get('width', "")))
+        img['height'] = pixel(cast((int, str), img.get('height', "")))
 
 
 @app.route('/')
