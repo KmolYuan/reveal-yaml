@@ -48,7 +48,7 @@ def uri(path: str) -> str:
     if not path:
         return ""
     u = urlparse(path)
-    if all([u.scheme, u.netloc, u.path]):
+    if all((u.scheme, u.netloc, u.path)):
         return path
     if app.config.get('FREEZER_RELATIVE_URLS', False):
         return relative_url_for('static', filename=path)
@@ -56,20 +56,44 @@ def uri(path: str) -> str:
         return url_for('static', filename=path)
 
 
+def pixel(value: Union[int, str]) -> str:
+    """Support pure number input of the size."""
+    if isinstance(value, str):
+        return value
+    return f"{value}pt"
+
+
+def sized_block(block: _Opt, w: str = "", h: str = ""):
+    """Ensure the attributes of sized resource."""
+    block['src'] = uri(cast(str, block.get('src', "")))
+    block['width'] = pixel(cast((int, str), block.get('width', w)))
+    block['height'] = pixel(cast((int, str), block.get('height', h)))
+
+
 def slide_block(slide: _VSlide):
-    """Ensure slide attributes."""
+    """Ensure the attributes of slide."""
     slide['title'] = cast(str, slide.get('title', ""))
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
-    slide['embed'] = uri(cast(str, slide.get('embed', "")))
+    # Youtube link
+    slide['youtube'] = cast(dict, slide.get('youtube', {}))
+    sized_block(slide['youtube'])
+    # Embeded resource
+    slide['embed'] = cast(dict, slide.get('embed', {}))
+    sized_block(slide['embed'], '1000px', '450px')
+    # Images
     imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
     if isinstance(imgs, dict):
         imgs: List[_Opt] = [imgs]
     slide['img'] = imgs
     for img in imgs:
-        img['src'] = uri(cast(str, img.get('src', "")))
-        img['width'] = cast(str, img.get('width', ""))
-        img['height'] = cast(str, img.get('height', ""))
+        img['label'] = cast(str, img.get('label', ""))
+        sized_block(img)
+    # Fragment
+    fragment: _Opt = cast(dict, slide.get('fragment', {}))
+    slide['fragment'] = fragment
+    for name, value in fragment.items():
+        fragment[name] = "" if value is None else " " + value
 
 
 @app.route('/')

@@ -6,7 +6,7 @@ watermark-size: 25%
 nav:
   - title: Reveal.yml Documentation
     doc: |
-      Author: Yuan Chang
+      *Author: Yuan Chang*
 
       Github link: <https://github.com/KmolYuan/blank-reveal-yml>
 
@@ -26,18 +26,20 @@ nav:
 
       - title: Startup
         doc: |
-          ```bash
-          python app.py
-          # Without SSH
-          python -m flask app.py
-          ```
+          Generate SSL key:
 
-      - title: Generate SSL key
-        doc: |
           ```bash
           openssl genrsa 2048 > localhost.key
           chmod 400 localhost.key
           openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
+          ```
+
+          Startup in localhost:
+
+          ```bash
+          python app.py
+          # Without SSL
+          flask run
           ```
 
       - title: Build Static Page
@@ -132,12 +134,19 @@ nav:
           The path string are allow remote URI.
 
           ```yaml
-          title: # Title, transform into H2 tag: str
-          doc: # Pargraph, allow multiline: str
-          math: # Latex math without "$$" brackets, allow multiline: str
-          embed: # Embeded source path, like PDF: str
-          img:
-            - ... # A list of image source, please see the documentation.
+          title: # Title, transform into H2 tag: str ("")
+          doc: # Pargraph, allow multiline: str ("")
+          math: # Latex math without "$$" brackets, allow multiline: str ("")
+          youtube:
+            src: # Embeded YouTube srouce from embed code: str (required)
+            width: # Video width: int / str ("")
+            height: # Video height: int / str ("")
+          img: ... # A list of image source, please see the documentation.
+          embed:
+            src: # Embeded source path, like PDF: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
+          fragment: ... # Fragment option, please see the documentation.
           ```
 
       - title: Image Attributes
@@ -146,25 +155,29 @@ nav:
           Each group will map to a picture.
 
           ```yaml
-          - src: # Image path: str ("")
-            width: # Width attribute of <img> tag: str ("")
-            height: # Height attribute of <img> tag: str ("")
+          - label: # Image caption: str ("")
+            src: # Image path: str (required)
+            width: # Width attribute of <img> tag: int / str ("")
+            height: # Height attribute of <img> tag: int / str ("")
           ```
 
-          If there has only one image, the options can under "img" key directly
+          If there has only one image, the options can under `img` key directly
           without to list them.
 
       - title: Fragment Elements
         doc: |
-          Each slide can added "fragment" option.
+          Each slide can added a `fragment` option. Except `title` and `doc`.
+
+          Images will apply the effect one by one.
 
           ```yaml
           fragment:
-            title: # Default, left blank or "".
-            doc: grow
-            math: shrink
-            embed: fade-out
-            img: ...
+            ELEMENT: EFFECT # Syntax
+            # Examples
+            math: # (Default, left blank or "")
+            youtube: grow
+            img: fade-out
+            embed: ...
           ```
 
   - title: Examples
@@ -177,14 +190,14 @@ nav:
         doc: |
           ```yaml
           doc: |
-            Some thing **important**.
+            *Something* **important**.
 
             | item 1 | item 2 |
             |:------:|:------:|
             | A | B |
           ```
 
-          Some thing **important**.
+          *Something* **important**.
 
           | item 1 | item 2 |
           |:------:|:------:|
@@ -194,14 +207,22 @@ nav:
         doc: |
           ```yaml
           img:
-            - src: img/icon.png
-              width: 20%
-            - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          - label: Ubuntu Logo
+            src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
+            width: 50%
+          - label: Google Logo
+            src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          fragment:
+            img: fade-in-then-out
           ```
         img:
-          - src: img/icon.png
-            width: 20%
-          - src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          - label: Ubuntu Logo
+            src: https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg
+            width: 50%
+          - label: Google Logo
+            src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+        fragment:
+          img: fade-in-then-out
 
       - title: Maths
         doc: |
@@ -224,9 +245,24 @@ nav:
           &c(x) = 0
           \end{aligned}
 
+      - title: Embeded YouTube Video
+        doc: |
+          ```yaml
+          youtube:
+            src: https://www.youtube.com/embed/IpPH61BWObs
+            width: 800pt
+            height: 500pt
+          ```
+        youtube:
+          src: https://www.youtube.com/embed/IpPH61BWObs
+          width: 600pt
+          height: 400pt
+
       - title: Embeded PDF
         doc: |
           ```yaml
-          embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+          embed:
+            src: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
           ```
-        embed: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+        embed:
+          src: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
