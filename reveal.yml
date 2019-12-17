@@ -154,6 +154,19 @@ nav:
           If there has only one image, the options can under "img" key directly
           without to list them.
 
+      - title: Fragment Elements
+        doc: |
+          Each slide can added "fragment" option.
+
+          ```yaml
+          fragment:
+            title: # Default, left blank or "".
+            doc: grow
+            math: shrink
+            embed: fade-out
+            img: ...
+          ```
+
   - title: Examples
     doc: |
       The source of this doc: <https://github.com/KmolYuan/blank-reveal-yml/blob/gh-pages/reveal.yml>
