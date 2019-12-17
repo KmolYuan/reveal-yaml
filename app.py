@@ -72,6 +72,7 @@ def sized_block(block: _Opt, w: str = "", h: str = ""):
 
 def slide_block(slide: _VSlide):
     """Ensure the attributes of slide."""
+    slide['id'] = cast(str, slide.get('id', ""))
     slide['title'] = cast(str, slide.get('title', ""))
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))

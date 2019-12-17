@@ -134,6 +134,7 @@ nav:
           The path string are allow remote URI.
 
           ```yaml
+          id: # Custom section id: str ("")
           title: # Title, transform into H2 tag: str ("")
           doc: # Pargraph, allow multiline: str ("")
           math: # Latex math without "$$" brackets, allow multiline: str ("")
@@ -166,7 +167,8 @@ nav:
 
       - title: Fragment Elements
         doc: |
-          Each slide can added a `fragment` option. Except `title` and `doc`.
+          Each slide can added a [Fragment option](https://github.com/hakimel/reveal.js#fragments).
+          Except `title` and `doc`.
 
           Images will apply the effect one by one.
 
