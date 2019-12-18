@@ -160,6 +160,7 @@ nav:
           The path string are allow remote URI.
 
           ```yaml
+          id: # Custom section id: str ("")
           title: # Title, transform into H2 tag: str ("")
           doc: # Pargraph, allow multiline: str ("")
           math: # Latex math without "$$" brackets, allow multiline: str ("")
@@ -194,12 +195,29 @@ nav:
           </figure> ...
           ```
 
-          If there has only one image, the options can under "img" key directly
+          If there has only one image, the options can under `img` key directly
           without to list them.
+
+      - title: Fragment Elements
+        doc: |
+          Each slide can added a [Fragment option](https://github.com/hakimel/reveal.js#fragments).
+          Except `title` and `doc`.
+
+          Images will apply the effect one by one.
+
+          ```yaml
+          fragment:
+            ELEMENT: EFFECT # Syntax
+            # Examples
+            math: # (Default, left blank or "")
+            youtube: grow
+            img: fade-out
+            embed: ...
+          ```
 
   - title: Examples
     doc: |
-      The source of this doc: <https://github.com/KmolYuan/blank-reveal-yml/blob/gh-pages/reveal.yml>
+      The source of this doc: <https://github.com/KmolYuan/blank-reveal-yml/blob/master/reveal.yml>
 
       Scroll down ↓ to see the examples.
     sub:
@@ -229,6 +247,8 @@ nav:
             width: 50%
           - label: Google Logo
             src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+          fragment:
+            img: fade-in-then-out
           ```
         img:
           - label: Ubuntu Logo
@@ -236,6 +256,8 @@ nav:
             width: 50%
           - label: Google Logo
             src: https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+        fragment:
+          img: fade-in-then-out
 
       - title: Maths
         doc: |

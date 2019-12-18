@@ -82,23 +82,26 @@
     {%- endif %} {% if watermark_size -%}
     data-background-size="{{ watermark_size }}"
     {%- endif %}>
+{%- macro fragment(n, tag) -%}
+{% if tag in n['fragment'] %} class="fragment{{ n['fragment'][tag] }}"{% endif %}
+{%- endmacro -%}
 {% macro slide(n) -%}
 {%- if n['title'] or n['doc'] or n['img'] -%}
-<section data-markdown><textarea data-template>
+<section data-markdown{% if n['id'] %} id="{{ n['id'] }}"{% endif %}><textarea data-template>
 {% if n['title'] -%}
 ## {{ n['title'] }}
 
 {% if n['doc'] or n['math'] or n['img'] or n['embed'] or n['youtube']['src'] %}---{% endif %}
 {%- endif %}
 
-{{ n['doc'] }}
+{{ n['doc'] -}}
 {% if n['math'] -%}
-<script type="math/tex; mode=display">{{ n['math'] }}</script>
+<script{{ fragment(n, 'math') }} type="math/tex; mode=display">{{ n['math'] }}</script>
 {%- endif %}
 {% if n['img'] -%}
 {% for img in n['img'] -%}
 {% if img['src'] -%}
-<figure>
+<figure{{ fragment(n, 'img') }}>
 <img src="{{ img['src'] }}" alt="" {% if img['width'] -%}
     width="{{ img['width'] }}"
     {%- endif %} {% if img['height'] -%}
@@ -112,7 +115,7 @@
 {%- endfor -%}
 {%- endif -%}
 {% if n['embed']['src'] -%}
-<div style="position: relative">
+<div{{ fragment(n, 'embed') }} style="position: relative">
 <embed class="stretch" {% if n['embed']['width'] -%}
     width="{{ n['embed']['width'] }}"
     {%- endif %} {% if n['embed']['height'] -%}
@@ -121,7 +124,7 @@
 </div>
 {%- endif -%}
 {% if n['youtube']['src'] -%}
-<iframe src="{{ n['youtube']['src'] }}"
+<iframe{{ fragment(n, 'youtube') }} src="{{ n['youtube']['src'] }}"
   {%- if n['youtube']['width'] %} width="{{ n['youtube']['width'] }}" {% endif -%}
   {%- if n['youtube']['height'] %} height="{{ n['youtube']['height'] }}" {% endif -%}
   frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

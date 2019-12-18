@@ -72,6 +72,7 @@ def sized_block(block: _Opt, w: str = "", h: str = ""):
 
 def slide_block(slide: _VSlide):
     """Ensure the attributes of slide."""
+    slide['id'] = cast(str, slide.get('id', ""))
     slide['title'] = cast(str, slide.get('title', ""))
     slide['doc'] = cast(str, slide.get('doc', ""))
     slide['math'] = cast(str, slide.get('math', ""))
@@ -89,6 +90,11 @@ def slide_block(slide: _VSlide):
     for img in imgs:
         img['label'] = cast(str, img.get('label', ""))
         sized_block(img)
+    # Fragment
+    fragment: _Opt = cast(dict, slide.get('fragment', {}))
+    slide['fragment'] = fragment
+    for name, value in fragment.items():
+        fragment[name] = "" if value is None else " " + value
 
 
 @app.route('/')
