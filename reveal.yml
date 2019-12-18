@@ -101,6 +101,21 @@ nav:
             src: ...
       ```
     sub:
+      - title: Slides in HTML
+        doc: |
+          In Reveal.js, the HTML structure shown as follow:
+
+          ```html
+          <section> <!-- Horizontal slide 1 -->
+          <section>...</section> <!-- Vertical slide 1 -->
+          <section>...</section> <!-- Vertical slide 2 -->
+          ...
+          </section>
+          <section> <!-- Horizontal slide 2 -->
+          ...
+          </section>
+          ```
+
       - title: Slides in YAML
         doc: |
           The **horizontal** slides are as list in the `nav` node.
@@ -120,11 +135,11 @@ nav:
 
           ```yaml
           nav:
-            - title: First
-              doc: ...
+            - title: Horizontal slide 1
               sub:
-                - title: Vertical Slide
-                  doc: ...
+                - title: Vertical slide 1
+                - title: Vertical slide 2
+            - title: Horizontal slide 2
           ```
 
       - title: Sized Attributes
