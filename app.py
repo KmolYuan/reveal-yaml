@@ -6,10 +6,11 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
+from sys import argv
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from flask_frozen import relative_url_for
+from flask_frozen import Freezer, relative_url_for
 
 _Opt = Dict[str, str]
 _VSlide = Dict[str, Union[str, Union[List[_Opt], _Opt]]]
@@ -127,6 +128,10 @@ def presentation() -> str:
 
 def main() -> None:
     """Main function startup with SSH."""
+    if '--freeze' in argv:
+        app.config['FREEZER_RELATIVE_URLS'] = True
+        Freezer(app).freeze()
+        return
     from ssl import SSLContext, PROTOCOL_TLSv1_2
     context = SSLContext(PROTOCOL_TLSv1_2)
     context.load_cert_chain('localhost.crt', 'localhost.key')
