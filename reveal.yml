@@ -127,6 +127,32 @@ nav:
                   doc: ...
           ```
 
+      - title: Sized Attributes
+        doc: |
+          Some of options are support resize. Based on HTML.
+
+          So their attributes are defined as:
+
+          ```yaml
+          sized: &sized
+            src: # Source path: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
+          ```
+
+          And they will be interpreted as:
+
+          ```html
+          <tag src="..." width="..." height="..."></tag>
+          ```
+
+          The "sized" block in the following sections will represented as YAML references.
+
+          ```yaml
+          <<: *sized
+          ...: # other options
+          ```
+
       - title: Slide Attributes
         doc: |
           All attributes are default to empty string.
@@ -137,16 +163,13 @@ nav:
           title: # Title, transform into H2 tag: str ("")
           doc: # Pargraph, allow multiline: str ("")
           math: # Latex math without "$$" brackets, allow multiline: str ("")
-          youtube:
-            src: # Embeded YouTube srouce from embed code: str (required)
-            width: # Video width: int / str ("")
-            height: # Video height: int / str ("")
+          youtube: # Embeded YouTube srouce from embed code (<iframe>)
+            <<: *sized
           img:
             - ... # A list of image source, please see the documentation.
-          embed:
-            src: # Embeded source path, like PDF: str (required)
-            width: # Source width: int / str ("")
-            height: # Source height: int / str ("")
+          embed: # External resource, like PDF (<embed>)
+            <<: *sized
+          fragment: ... # Fragment option, please see the documentation.
           ```
 
       - title: Image Attributes
@@ -155,10 +178,20 @@ nav:
           Each group will map to a picture.
 
           ```yaml
-          - label: # Image caption: str ("")
-            src: # Image path: str (required)
-            width: # Width attribute of <img> tag: int / str ("")
-            height: # Height attribute of <img> tag: int / str ("")
+          - <<: *sized
+            label: # Image caption: str ("")
+          ```
+
+          They will interpreted like:
+
+          ```html
+          <figure>
+          <img src="fig1"/>
+          <figcaption>...</figcaption>
+          </figure><figure>
+          <img src="fig2"/>
+          <figcaption>...</figcaption>
+          </figure> ...
           ```
 
           If there has only one image, the options can under "img" key directly
