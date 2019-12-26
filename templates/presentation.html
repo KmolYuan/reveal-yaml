@@ -77,17 +77,19 @@
 <div class="reveal">
 <div class="slides">
 {% for n in nav -%}
-<section {% if watermark -%}
-    data-background="{{ watermark }}"
-    {%- endif %} {% if watermark_size -%}
-    data-background-size="{{ watermark_size }}"
-    {%- endif %}>
+<section>
 {%- macro fragment(n, tag) -%}
 {% if tag in n['fragment'] %} class="fragment{{ n['fragment'][tag] }}"{% endif %}
 {%- endmacro -%}
 {% macro slide(n) -%}
 {%- if n['title'] or n['doc'] or n['img'] -%}
-<section data-markdown{% if n['id'] %} id="{{ n['id'] }}"{% endif %}><textarea data-template>
+<section data-markdown {% if n['id'] -%}
+    id="{{ n['id'] }}"
+    {%- endif %} {% if watermark -%}
+    data-background="{{ watermark }}"
+    {%- endif %} {% if watermark_size -%}
+    data-background-size="{{ watermark_size }}"
+    {%- endif %}><textarea data-template>
 {% if n['title'] -%}
 ## {{ n['title'] }}
 
@@ -152,7 +154,7 @@
             {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
             {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
                 async: true,
-                callback: () => hljs.initHighlightingOnLoad()},
+                callback: function() {return hljs.initHighlightingOnLoad();}},
             {src: '{{ url_for('static', filename="plugin/zoom-js/zoom.js") }}', async: true},
         ]
     });
