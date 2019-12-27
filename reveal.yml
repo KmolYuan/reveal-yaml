@@ -4,9 +4,10 @@ author: Yuan Chang
 watermark: img/icon.png
 watermark-size: 25%
 footer:
-  label: 機器與機電設計實驗室
   src: img/footer-icon.png
   width: 20%
+  label: 機器與機電設計實驗室
+  link: http://mmd-lab.herokuapp.com/
 nav:
   - title: Reveal.yml Documentation
     doc: |
@@ -120,7 +121,8 @@ nav:
           ```yaml
           footer:
             <<: *sized
-            label: # A caption at the right of logo.
+            label: # A caption at the right of logo: str ("")
+            link: # A URL link for footer: str ("")
           ```
 
   - title: Markdown

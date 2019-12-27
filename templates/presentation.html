@@ -38,9 +38,10 @@
     font-size: 20pt;
     font-family: "Microsoft JhengHei", "Apple LiGothic Medium";
   }
-  #footer-left > * {
+  #footer-left > a > * {
     display: inline-block;
     vertical-align: middle;
+    opacity: 0.5;
   }
 {%- endif %}
 {%- if default_style %}
@@ -57,7 +58,7 @@
   .reveal h4 { font-size: 25pt; }
   .reveal p, .reveal li, .reveal table { font-size: 20pt; }
   .reveal strong { color: red; }
-  .reveal pre code, .reveal section img {
+  .reveal pre code, .reveal section img, #footer-left > a > img {
     border: none;
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
@@ -99,7 +100,9 @@
 <div id="hidden" style="display:none;">
   <div id="footer">
     <div id="footer-left">
+      {% if footer['link'] %}<a href="{{ footer['link'] }}">{% endif -%}
       {% if footer['src'] %}<img {{ sized(footer) }}/>{% endif %}<span>&nbsp;{{ footer['label'] }}</span>
+      {%- if footer['link'] %}</a>{% endif %}
     </div>
   </div>
 </div>

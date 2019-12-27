@@ -110,6 +110,7 @@ def presentation() -> str:
             slide_block(sn)
     footer = cast(dict, config.get('footer', {}))
     footer['label'] = cast(str, footer.get('label', ""))
+    footer['link'] = uri(cast(str, footer.get('link', "")))
     sized_block(footer)
     return render_template(
         "presentation.html",
