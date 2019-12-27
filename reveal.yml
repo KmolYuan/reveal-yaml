@@ -3,6 +3,10 @@ description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
 watermark: img/icon.png
 watermark-size: 25%
+footer:
+  label: 機器與機電設計實驗室
+  src: img/footer-icon.png
+  width: 20%
 nav:
   - title: Reveal.yml Documentation
     doc: |
@@ -63,6 +67,32 @@ nav:
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
+  - title: Sized Attributes
+    doc: |
+      Some of options are support resize. Based on HTML.
+
+      So their attributes are defined as:
+
+      ```yaml
+      sized: &sized
+        src: # Source path: str (required)
+        width: # Source width: int / str ("")
+        height: # Source height: int / str ("")
+      ```
+
+      And they will be interpreted as:
+
+      ```html
+      <tag src="..." width="..." height="..."></tag>
+      ```
+
+      The "sized" block in the following sections will represented as YAML references.
+
+      ```yaml
+      <<: *sized
+      ...: # other options
+      ```
+
   - title: Project Options
     doc: |
       This App will read the YAML file `reveal.yml` in the root directory.
@@ -78,7 +108,20 @@ nav:
       history: # Enable page history: bool (true)
       transition: # Transition mode: str (linear)
       slide-num: # Reveal.js slide number style: str / bool (c/t)
+      footer: ... # Footer option, please see the documentation.
       ```
+    sub:
+      - title: Footer
+        doc: |
+          The footer is at left buttom side.
+
+          Its height is adjusted by its logo size and text height.
+
+          ```yaml
+          footer:
+            <<: *sized
+            label: # A caption at the right of logo.
+          ```
 
   - title: Markdown
     doc: |
@@ -140,32 +183,6 @@ nav:
                 - title: Vertical slide 1
                 - title: Vertical slide 2
             - title: Horizontal slide 2
-          ```
-
-      - title: Sized Attributes
-        doc: |
-          Some of options are support resize. Based on HTML.
-
-          So their attributes are defined as:
-
-          ```yaml
-          sized: &sized
-            src: # Source path: str (required)
-            width: # Source width: int / str ("")
-            height: # Source height: int / str ("")
-          ```
-
-          And they will be interpreted as:
-
-          ```html
-          <tag src="..." width="..." height="..."></tag>
-          ```
-
-          The "sized" block in the following sections will represented as YAML references.
-
-          ```yaml
-          <<: *sized
-          ...: # other options
           ```
 
       - title: Slide Attributes

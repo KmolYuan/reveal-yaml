@@ -108,6 +108,9 @@ def presentation() -> str:
         n['sub'] = cast(list, n.get('sub', []))
         for sn in n['sub']:  # type: _VSlide
             slide_block(sn)
+    footer = cast(dict, config.get('footer', {}))
+    footer['label'] = cast(str, footer.get('label', ""))
+    sized_block(footer)
     return render_template(
         "presentation.html",
         title=cast(str, config.get('title', "Untitled")),
@@ -122,6 +125,7 @@ def presentation() -> str:
         history=str(cast(bool, config.get('history', True))).lower(),
         transition=cast(str, config.get('transition', 'linear')),
         slide_num=cast((str, bool), config.get('slide-num', 'c/t')),
+        footer=footer,
         nav=nav
     )
 

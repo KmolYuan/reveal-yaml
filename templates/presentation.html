@@ -30,11 +30,19 @@
 </head>
 <body>
 <style>
+{%- if footer or footer_logo %}
   #footer-left {
     position: absolute;
     bottom: 1em;
     left: 1em;
+    font-size: 20pt;
+    font-family: "Microsoft JhengHei", "Apple LiGothic Medium";
   }
+  #footer-left > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+{%- endif %}
 {%- if default_style %}
   .reveal figure {
     display: inline-block;
@@ -79,6 +87,24 @@
   {{ extra_style }}
 </style>
 
+{%- macro sized(block) -%}
+  src="{{ block['src'] }}" {% if block['width'] -%}
+  width="{{ block['width'] }}"
+  {%- endif %} {% if block['height'] -%}
+  height="{{ block['height'] }}"
+  {%- endif -%}
+{%- endmacro -%}
+
+{% if footer['label'] or footer['src'] -%}
+<div id="hidden" style="display:none;">
+  <div id="footer">
+    <div id="footer-left">
+      {% if footer['src'] %}<img {{ sized(footer) }}/>{% endif %}<span>&nbsp;{{ footer['label'] }}</span>
+    </div>
+  </div>
+</div>
+{%- endif %}
+
 <div class="reveal">
 <div class="slides">
 {% for n in nav -%}
@@ -109,11 +135,7 @@
 {% for img in n['img'] -%}
 {% if img['src'] -%}
 <figure{{ fragment(n, 'img') }}>
-<img src="{{ img['src'] }}" alt="" {% if img['width'] -%}
-  width="{{ img['width'] }}"
-  {%- endif %} {% if img['height'] -%}
-  height="{{ img['height'] }}"
-  {%- endif %}/>
+<img {{ sized(img) }}/>
 {% if img['label'] -%}
 <figcaption>{{ img['label'] }}</figcaption>
 {%- endif %}
@@ -123,18 +145,11 @@
 {%- endif -%}
 {% if n['embed']['src'] -%}
 <div{{ fragment(n, 'embed') }} style="position: relative">
-<embed class="stretch" {% if n['embed']['width'] -%}
-  width="{{ n['embed']['width'] }}"
-  {%- endif %} {% if n['embed']['height'] -%}
-  height="{{ n['embed']['height'] }}"
-  {%- endif %} src="{{ n['embed']['src'] }}"/>
+<embed class="stretch" {{ sized(n['embed']) }}/>
 </div>
 {%- endif -%}
 {% if n['youtube']['src'] -%}
-<iframe{{ fragment(n, 'youtube') }} src="{{ n['youtube']['src'] }}"
-  {%- if n['youtube']['width'] %} width="{{ n['youtube']['width'] }}" {% endif -%}
-  {%- if n['youtube']['height'] %} height="{{ n['youtube']['height'] }}" {% endif -%}
-  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe{{ fragment(n, 'youtube') }} {{ sized(n['youtube']) }} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {%- endif -%}
 </textarea></section>
 {%- endif %}
@@ -164,5 +179,17 @@
     ]
   });
 </script>
+{% if footer or footer_logo -%}
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script>
+  let footer = $('#footer').html();
+  if ( window.location.search.match(/print-pdf/gi))
+    Reveal.addEventListener('ready', function(event) {
+      $('.slide-background').append(footer);
+    });
+  else
+    $('div.reveal').append(footer);
+</script>
+{%- endif -%}
 </body>
 </html>
