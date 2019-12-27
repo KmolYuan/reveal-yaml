@@ -5,7 +5,7 @@ watermark: img/icon.png
 watermark-size: 25%
 footer:
   src: img/footer-icon.png
-  width: 20%
+  width: 50pt
   label: 機器與機電設計實驗室
   link: http://mmd-lab.herokuapp.com/
 nav:
@@ -118,11 +118,23 @@ nav:
 
           Its height is adjusted by its logo size and text height.
 
+          Pixel unit `pt` is recommended for fixed size in any screen.
+
           ```yaml
           footer:
             <<: *sized
             label: # A caption at the right of logo: str ("")
             link: # A URL link for footer: str ("")
+          ```
+
+          The example of this slides is:
+
+          ```yaml
+          footer:
+            src: img/footer-icon.png
+            width: 50pt
+            label: 機器與機電設計實驗室
+            link: http://mmd-lab.herokuapp.com/
           ```
 
   - title: Markdown
