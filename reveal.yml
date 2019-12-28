@@ -68,50 +68,56 @@ nav:
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
-  - title: Sized Attributes
+  - title: Brief Introduction
     doc: |
-      Some of options are support resize. Based on HTML.
-
-      So their attributes are defined as:
-
-      ```yaml
-      sized: &sized
-        src: # Source path: str (required)
-        width: # Source width: int / str ("")
-        height: # Source height: int / str ("")
-      ```
-
-      And they will be interpreted as:
-
-      ```html
-      <tag src="..." width="..." height="..."></tag>
-      ```
-
-      The "sized" block in the following sections will represented as YAML references.
-
-      ```yaml
-      <<: *sized
-      ...: # other options
-      ```
-
-  - title: Project Options
-    doc: |
-      This App will read the YAML file `reveal.yml` in the root directory.
-
-      ```yaml
-      title: # Web page title: str (Untitled)
-      description: # Page description: str ("")
-      author: # Page author: str ("")
-      theme: # Reveal.js theme: str (serif)
-      icon: # icon path: str (img/icon.png)
-      default-style: # Enable default style: bool (true)
-      extra-style: # Extra style in CSS: str ("")
-      history: # Enable page history: bool (true)
-      transition: # Transition mode: str (linear)
-      slide-num: # Reveal.js slide number style: str / bool (c/t)
-      footer: ... # Footer option, please see the documentation.
-      ```
+      The basic rules and options of Reveal.js.
     sub:
+      - title: Project Options
+        doc: |
+          This App will read the YAML file `reveal.yml` in the root directory.
+
+          ```yaml
+          title: # Web page title: str (Untitled)
+          description: # Page description: str ("")
+          author: # Page author: str ("")
+          watermark: # Watermark source: str ("")
+          watermark-size: # Source width: int / str ("")
+          theme: # Reveal.js theme: str (serif)
+          icon: # icon path: str (img/icon.png)
+          default-style: # Enable default style: bool (true)
+          extra-style: # Extra style in CSS: str ("")
+          history: # Enable page history: bool (true)
+          transition: # Transition mode: str (linear)
+          slide-num: # Reveal.js slide number style: str / bool (c/t)
+          footer: ... # Footer option, please see the documentation.
+          ```
+
+      - title: Sized Attributes
+        doc: |
+          Some of options are support resize. Based on HTML.
+
+          So their attributes are defined as:
+
+          ```yaml
+          sized: &sized
+          src: # Source path: str (required)
+          width: # Source width: int / str ("")
+          height: # Source height: int / str ("")
+          ```
+
+          And they will be interpreted as:
+
+          ```html
+          <tag src="..." width="..." height="..."></tag>
+          ```
+
+          The "sized" block in the following sections will represented as YAML references.
+
+          ```yaml
+          <<: *sized
+          ...: # other options
+          ```
+
       - title: Footer
         doc: |
           The footer is at left buttom side.
@@ -137,10 +143,10 @@ nav:
             link: http://mmd-lab.herokuapp.com/
           ```
 
-  - title: Markdown
-    doc: |
-      **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
-      But **not** allow HTML syntax.
+      - title: Markdown
+        doc: |
+          **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
+          But **not** allow HTML syntax.
 
   - title: Reveal.js Slides
     doc: |
