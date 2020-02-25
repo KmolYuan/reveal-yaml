@@ -35,7 +35,7 @@
     position: absolute;
     bottom: 1em;
     left: 1em;
-    font-family: "Microsoft JhengHei", "Apple LiGothic Medium";
+    font-family: "Microsoft JhengHei", "Apple LiGothic Medium", serif;
   }
   #footer-left > a > * {
     display: inline-block;
@@ -52,6 +52,13 @@
     margin: 20px;
   }
   .reveal figure figcaption { text-align: center; }
+  .img-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+  .img-column { padding: 5px; }
   .reveal h1 { font-size: 40pt; }
   .reveal h2 { font-size: 35pt; }
   .reveal h3 { font-size: 30pt; }
@@ -65,7 +72,7 @@
     box-shadow: none !important;
   }
   .reveal pre code {
-    font-family: Consolas, Mono;
+    font-family: Consolas, Mono, monospace;
     border-radius: 10px;
   }
   .reveal p code {
@@ -120,16 +127,20 @@ data-background-size="{{ watermark_size }}"
 <script {{- fragment(n, 'math') }} type="math/tex; mode=display">{{ n['math'] }}</script>
 {%- endif %}
 {% if n['img'] -%}
+<div class="img-row">
 {% for img in n['img'] -%}
 {% if img['src'] -%}
+<div class="img-column">
 <figure {{- fragment(n, 'img') }}>
 <img {{ sized(img) }}/>
 {% if img['label'] -%}
 <figcaption>{{ img['label'] }}</figcaption>
 {%- endif %}
 </figure>
+</div>
 {%- endif -%}
 {%- endfor -%}
+</div>
 {%- endif -%}
 {% if n['embed']['src'] -%}
 <div {{- fragment(n, 'embed') }} style="position: relative">
@@ -137,7 +148,7 @@ data-background-size="{{ watermark_size }}"
 </div>
 {%- endif -%}
 {% if n['youtube']['src'] -%}
-<iframe {{- fragment(n, 'youtube') }} {{ sized(n['youtube']) }} frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe {{- fragment(n, 'youtube') }} {{ sized(n['youtube']) }} allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 {%- endif -%}
 </textarea></section>
 {%- endif %}
