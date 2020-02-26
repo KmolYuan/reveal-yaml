@@ -98,15 +98,40 @@ def slide_block(slide: _VSlide):
         fragment[name] = "" if value is None else " " + value
 
 
+def _outline(nav: List[_HSlide], nest: bool) -> str:
+    """Generate markdown outline."""
+    doc = []
+    for n in nav[1:]:
+        title = n.get('title', "")
+        if title:
+            doc.append(f"+ {title}")
+        if not nest:
+            continue
+        sub: List[_VSlide] = n['sub']
+        for sn in sub:
+            title = sn.get('title', "")
+            if title:
+                doc.append("  " + f"+ {title}")
+    return '\n'.join(doc)
+
+
 @app.route('/')
 def presentation() -> str:
     """Generate the presentation."""
     config = load_yaml()
+    outline = cast(int, config.get('outline', 0))
     nav: List[_HSlide] = cast(list, config.get('nav', []))
-    for n in nav:
+    for i in range(len(nav)):
+        n = nav[i]
         slide_block(n)
         n['sub'] = cast(list, n.get('sub', []))
-        for sn in n['sub']:  # type: _VSlide
+        sub: List[_VSlide] = n['sub']
+        if i == 0 and outline > 0:
+            sub.append({
+                'title': "Outline",
+                'doc': _outline(nav, outline >= 2),
+            })
+        for sn in sub:
             slide_block(sn)
     footer = cast(dict, config.get('footer', {}))
     footer['label'] = cast(str, footer.get('label', ""))

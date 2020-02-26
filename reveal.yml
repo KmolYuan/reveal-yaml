@@ -3,6 +3,7 @@ description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
 watermark: img/icon.png
 watermark-size: 25%
+outline: 2
 footer:
   src: img/footer-icon.png
   width: 50pt
@@ -82,6 +83,7 @@ nav:
           author: # Page author: str ("")
           watermark: # Watermark source: str ("")
           watermark-size: # Source width: int / str ("")
+          outline: # Generate a outline slide under first column with depth: int (0)
           theme: # Reveal.js theme: str (serif)
           icon: # icon path: str (img/icon.png)
           default-style: # Enable default style: bool (true)
