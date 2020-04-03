@@ -107,6 +107,7 @@ def _outline(nav: List[_HSlide], nest: bool) -> str:
             doc.append(f"+ {title}")
         if not nest:
             continue
+        n['sub'] = cast(list, n.get('sub', []))
         sub: List[_VSlide] = n['sub']
         for sn in sub:
             title = sn.get('title', "")
@@ -126,7 +127,7 @@ def presentation() -> str:
         slide_block(n)
         n['sub'] = cast(list, n.get('sub', []))
         sub: List[_VSlide] = n['sub']
-        if i == 0 and outline > 0:
+        if nav[1:] and i == 0 and outline > 0:
             sub.append({
                 'title': "Outline",
                 'doc': _outline(nav, outline >= 2),
