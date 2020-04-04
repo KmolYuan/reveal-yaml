@@ -1,11 +1,11 @@
 title: Reveal.yml Documentation
 description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
-watermark: img/icon.png
+watermark: img/watermark.png
 watermark-size: 25%
 outline: 2
 footer:
-  src: img/footer-icon.png
+  src: img/icon.png
   width: 50pt
   label: 機器與機電設計實驗室
   link: http://mmd-lab.herokuapp.com/
