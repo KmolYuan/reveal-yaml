@@ -7,7 +7,7 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
 from sys import argv
-from http.client import HTTPException
+from werkzeug.exceptions import HTTPException
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
@@ -41,9 +41,14 @@ def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]: ...
 
 def cast(t, value):
     """Check value type."""
-    if not isinstance(value, t):
-        raise TypeError(f"expect type: {t}, get: {type(value)}")
-    return value
+    if value is None:
+        # Create an empty instance
+        return t()
+    elif not isinstance(value, t):
+        abort(500, f"expect type: {t}, get: {type(value)}")
+        return value
+    else:
+        return value
 
 
 def uri(path: str) -> str:
@@ -150,8 +155,8 @@ def presentation() -> str:
 @app.errorhandler(500)
 def internal_server_error(e: HTTPException) -> str:
     """Error pages."""
-    title = f"{e}".rsplit(':', maxsplit=1)[0]
-    cover = {'title': title, 'doc': f"```sh\n{e}\n```"}
+    title = f"{e.code} {e.name}"
+    cover = {'title': title, 'doc': f"```sh\n{e.description}\n```"}
     slide_block(cover)
     return render_slides({'title': title, 'theme': 'night'}, {}, [cover])
 
