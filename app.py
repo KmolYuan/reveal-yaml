@@ -7,9 +7,11 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
 from sys import argv
+from http.client import HTTPException
 from urllib.parse import urlparse
 from yaml import safe_load
-from flask import Flask, render_template, url_for
+from yaml.parser import ParserError
+from flask import Flask, render_template, url_for, abort
 from flask_frozen import Freezer, relative_url_for
 
 _Opt = Dict[str, str]
@@ -119,7 +121,11 @@ def _outline(nav: List[_HSlide], nest: bool) -> str:
 @app.route('/')
 def presentation() -> str:
     """Generate the presentation."""
-    config = load_yaml()
+    try:
+        config = load_yaml()
+    except ParserError as e:
+        abort(500, e)
+        return ""
     outline = cast(int, config.get('outline', 0))
     nav: List[_HSlide] = cast(list, config.get('nav', []))
     for i in range(len(nav)):
@@ -128,16 +134,30 @@ def presentation() -> str:
         n['sub'] = cast(list, n.get('sub', []))
         sub: List[_VSlide] = n['sub']
         if nav[1:] and i == 0 and outline > 0:
-            sub.append({
-                'title': "Outline",
-                'doc': _outline(nav, outline >= 2),
-            })
+            sub.append({'title': "Outline", 'doc': _outline(nav, outline >= 2)})
         for sn in sub:
             slide_block(sn)
     footer = cast(dict, config.get('footer', {}))
     footer['label'] = cast(str, footer.get('label', ""))
     footer['link'] = uri(cast(str, footer.get('link', "")))
     sized_block(footer)
+    return render_slides(config, footer, nav)
+
+
+@app.errorhandler(404)
+@app.errorhandler(403)
+@app.errorhandler(410)
+@app.errorhandler(500)
+def internal_server_error(e: HTTPException) -> str:
+    """Error pages."""
+    title = f"{e}".rsplit(':', maxsplit=1)[0]
+    cover = {'title': title, 'doc': f"```sh\n{e}\n```"}
+    slide_block(cover)
+    return render_slides({'title': title, 'theme': 'night'}, {}, [cover])
+
+
+def render_slides(config: _Data, footer: _Opt, nav: List[_HSlide]):
+    """Rendered slides."""
     return render_template(
         "presentation.html",
         title=cast(str, config.get('title', "Untitled")),
