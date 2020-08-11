@@ -124,7 +124,9 @@ data-background-size="{{ watermark_size }}"
 
 {{ n['doc'] -}}
 {% if n['math'] -%}
-<script {{- fragment(n, 'math') }} type="math/tex; mode=display">{{ n['math'] }}</script>
+<div {{- fragment(n, 'math') }}>
+<script type="math/tex; mode=display">{{ n['math'] }}</script>
+<div>
 {%- endif %}
 {% if n['img'] -%}
 <div class="img-row">
