@@ -5,7 +5,12 @@ __copyright__ = "Copyright (C) 2019"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
+from typing import (
+    cast, get_type_hints, get_origin, overload, TypeVar, Tuple, List, Sequence,
+    Dict, Mapping, Union, Type, Optional, Any,
+)
+from abc import ABCMeta
+from dataclasses import dataclass, field, InitVar
 from sys import argv
 from urllib.parse import urlparse
 from yaml import safe_load
@@ -14,10 +19,8 @@ from flask import Flask, render_template, url_for, abort
 from flask_frozen import Freezer, relative_url_for
 from werkzeug.exceptions import HTTPException
 
-_Opt = Dict[str, str]
-_VSlide = Dict[str, Union[str, Union[List[_Opt], _Opt]]]
-_HSlide = Dict[str, Union[str, List[_Opt], List[_VSlide]]]
-_Data = Dict[str, Union[str, bool, List[_HSlide]]]
+_Opt = Mapping[str, str]
+_Data = Dict[str, Any]
 _YamlValue = Union[int, float, str, bool, list, dict]
 T = TypeVar('T', bound=_YamlValue)
 U = TypeVar('U', bound=_YamlValue)
@@ -32,19 +35,21 @@ def load_yaml() -> _Data:
 
 
 @overload
-def cast(t: Type[T], value: _YamlValue) -> T:
+def cast_to(t: Type[T], value: _YamlValue) -> T:
     pass
 
 
 @overload
-def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]:
+def cast_to(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]:
     pass
 
 
-def cast(t, value):
+def cast_to(t, value):
     """Check value type."""
     if value is None:
         # Create an empty instance
+        if isinstance(t, Sequence):
+            t = t[0]
         return t()
     elif not isinstance(value, t):
         abort(500, f"expect type: {t}, get: {type(value)}")
@@ -73,55 +78,110 @@ def pixel(value: Union[int, str]) -> str:
     return f"{value}pt"
 
 
-def sized_block(block: _Opt, w: str = "", h: str = ""):
-    """Ensure the attributes of sized resource."""
-    block['src'] = uri(cast(str, block.get('src', "")))
-    block['width'] = pixel(cast((int, str), block.get('width', w)))
-    block['height'] = pixel(cast((int, str), block.get('height', h)))
+class TypeChecker(metaclass=ABCMeta):
+    """Type checker function."""
+
+    def __setattr__(self, key, value):
+        t = get_origin(get_type_hints(self.__class__)[key])
+        if t is not None:
+            value = cast_to(t, value)
+        super(TypeChecker, self).__setattr__(key, value)
 
 
-def slide_block(slide: _VSlide):
-    """Ensure the attributes of slide."""
-    slide['id'] = cast(str, slide.get('id', ""))
-    slide['title'] = cast(str, slide.get('title', ""))
-    slide['doc'] = cast(str, slide.get('doc', ""))
-    slide['math'] = cast(str, slide.get('math', ""))
-    # Youtube link
-    slide['youtube'] = cast(dict, slide.get('youtube', {}))
-    sized_block(slide['youtube'])
-    # Embedded resource
-    slide['embed'] = cast(dict, slide.get('embed', {}))
-    sized_block(slide['embed'], '1000px', '450px')
-    # Images
-    imgs: Union[List[_Opt], _Opt] = cast((list, dict), slide.get('img', []))
-    if isinstance(imgs, dict):
-        imgs: List[_Opt] = [imgs]
-    slide['img'] = imgs
-    for img in imgs:
-        img['label'] = cast(str, img.get('label', ""))
-        sized_block(img)
-    # Fragment
-    fragment: _Opt = cast(dict, slide.get('fragment', {}))
-    slide['fragment'] = fragment
-    for name, value in fragment.items():
-        fragment[name] = "" if value is None else " " + value
+@dataclass(repr=False, eq=False)
+class Size(TypeChecker):
+    """The block has size attributes."""
+    src: str = ""
+    width: str = ""
+    height: str = ""
+
+    def __post_init__(self):
+        """Replace URI."""
+        self.src = uri(self.src)
 
 
-def outline(nav: List[_HSlide], nest: bool) -> str:
+@dataclass(repr=False, eq=False)
+class Img(Size):
+    """Image class."""
+    label: str = ""
+
+
+@dataclass(repr=False, eq=False)
+class Footer(Img):
+    """Footer class."""
+    link: str = ""
+
+
+@dataclass(repr=False, eq=False)
+class Fragment(TypeChecker):
+    """Fragment option."""
+    img: str = ""
+    math: str = ""
+    youtube: str = ""
+    embed: str = ""
+
+
+@dataclass(repr=False, eq=False)
+class Slide(TypeChecker):
+    """Slide class."""
+    id: str = ""
+    title: str = ""
+    doc: str = ""
+    math: str = ""
+    img: InitVar[List[Img]] = None
+    youtube: InitVar[Size] = None
+    embed: InitVar[Size] = None
+    fragment: InitVar[Fragment] = None
+    _img: List[Img] = field(init=False)
+    _youtube: Size = field(init=False)
+    _embed: Size = field(init=False)
+    _fragment: Fragment = field(init=False)
+
+    def __post_init__(self, img: Union[_Data, Sequence[_Data]],
+                      youtube: _Opt, embed: _Opt, fragment: _Opt):
+        """Check arguments after assigned."""
+        if not isinstance(img, Sequence):
+            _img = [cast(_Data, img)]
+        if img is None:
+            self._img = []
+        else:
+            self._img = [Img(**img or {}) for img in img]
+        self._youtube = Size(**youtube or {})
+        self._embed = Size(**embed or {})
+        if not self._embed.width:
+            self._embed.width = '1000px'
+        if not self._embed.height:
+            self._embed.height = '450px'
+        self._fragment = Fragment(**fragment or {})
+
+
+@dataclass(repr=False, eq=False)
+class HSlide(Slide):
+    """Root slide class."""
+    sub: InitVar[List[Slide]] = None
+    _sub: List[Slide] = field(init=False)
+
+    def __post_init__(self, img: Any, youtube: _Opt, embed: _Opt,
+                      fragment: _Opt, sub: Sequence[_Data]):
+        """Check arguments after assigned."""
+        super(HSlide, self).__post_init__(img, youtube, embed, fragment)
+        if sub is None:
+            self._sub = []
+        else:
+            self._sub = [Slide(**s or {}) for s in sub]
+
+
+def outline(nav, nest) -> str:
     """Generate markdown outline."""
     doc = []
     for i, n in enumerate(nav[1:]):
-        title = n.get('title', "")
-        if title:
-            doc.append(f"+ [{title}](#/{i + 1})")
+        if n.title:
+            doc.append(f"+ [{n.title}](#/{i + 1})")
         if not nest:
             continue
-        n['sub'] = cast(list, n.get('sub', []))
-        sub: List[_VSlide] = n['sub']
-        for j, sn in enumerate(sub):
-            title = sn.get('title', "")
-            if title:
-                doc.append("  " + f"+ [{title}](#/{i + 1}/{j + 1})")
+        for j, sn in enumerate(n._sub):
+            if sn.title:
+                doc.append("  " + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
     return '\n'.join(doc)
 
 
@@ -133,22 +193,13 @@ def presentation() -> str:
     except ParserError as e:
         abort(500, e)
         return ""
-    ol = cast(int, config.get('outline', 0))
-    nav: List[_HSlide] = cast(list, config.get('nav', []))
+    ol = cast_to(int, config.get('outline', 0))
+    nav = cast_to(list, config.get('nav', []))
     for i in range(len(nav)):
-        n = nav[i]
-        slide_block(n)
-        n['sub'] = cast(list, n.get('sub', []))
-        sub: List[_VSlide] = n['sub']
-        if nav[1:] and i == 0 and ol > 0:
-            sub.append({'title': "Outline", 'doc': outline(nav, ol >= 2)})
-        for sn in sub:
-            slide_block(sn)
-    footer: _Opt = cast(dict, config.get('footer', {}))
-    footer['label'] = cast(str, footer.get('label', ""))
-    footer['link'] = uri(cast(str, footer.get('link', "")))
-    sized_block(footer)
-    return render_slides(config, footer, nav)
+        nav[i] = HSlide(**nav[i] or {})
+    if nav[1:] and ol > 0:
+        nav[0]._sub.append(Slide(title="Outline", doc=outline(nav, ol >= 2)))
+    return render_slides(config, nav, Footer(**config.get('footer', {})))
 
 
 @app.errorhandler(404)
@@ -158,27 +209,32 @@ def presentation() -> str:
 def internal_server_error(e: HTTPException) -> str:
     """Error pages."""
     title = f"{e.code} {e.name}"
-    cover = {'title': title, 'doc': f"```sh\n{e.description}\n```"}
-    slide_block(cover)
-    return render_slides({'title': title, 'theme': 'night'}, {}, [cover])
+    return render_slides(
+        {'title': title, 'theme': 'night'},
+        [HSlide(title=title, doc=f"```sh\n{e.description}\n```")]
+    )
 
 
-def render_slides(config: _Data, footer: _Opt, nav: List[_HSlide]):
+def render_slides(config: _Data, nav: Sequence[HSlide],
+                  footer: Optional[Footer] = None):
     """Rendered slides."""
+    if footer is None:
+        footer = Footer()
     return render_template(
         "presentation.html",
-        title=cast(str, config.get('title', "Untitled")),
-        description=cast(str, config.get('description', "")),
-        author=cast(str, config.get('author', "")),
-        theme=cast(str, config.get('theme', 'serif')),
-        icon=uri(cast(str, config.get('icon', "img/icon.png"))),
-        default_style=cast(bool, config.get('default-style', True)),
-        extra_style=cast(str, config.get('extra-style', "")),
-        watermark=uri(cast(str, config.get('watermark', ""))),
-        watermark_size=pixel(cast((int, str), config.get('watermark-size', ""))),
-        history=str(cast(bool, config.get('history', True))).lower(),
-        transition=cast(str, config.get('transition', 'linear')),
-        slide_num=cast((str, bool), config.get('slide-num', 'c/t')),
+        title=cast_to(str, config.get('title', "Untitled")),
+        description=cast_to(str, config.get('description', "")),
+        author=cast_to(str, config.get('author', "")),
+        theme=cast_to(str, config.get('theme', 'serif')),
+        icon=uri(cast_to(str, config.get('icon', "img/icon.png"))),
+        default_style=cast_to(bool, config.get('default-style', True)),
+        extra_style=cast_to(str, config.get('extra-style', "")),
+        watermark=uri(cast_to(str, config.get('watermark', ""))),
+        watermark_size=pixel(
+            cast_to((int, str), config.get('watermark-size', ""))),
+        history=str(cast_to(bool, config.get('history', True))).lower(),
+        transition=cast_to(str, config.get('transition', 'linear')),
+        slide_num=cast_to((str, bool), config.get('slide-num', 'c/t')),
         footer=footer,
         nav=nav
     )
