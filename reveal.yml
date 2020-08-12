@@ -14,7 +14,8 @@ nav:
     doc: |
       *Author: Yuan Chang*
 
-      Github link: <https://github.com/KmolYuan/blank-reveal-yml>
+      + <https://github.com/KmolYuan/blank-reveal-yml>
+      + <https://github.com/hakimel/reveal.js>
 
       Scroll right → to see the tutorial.
 
@@ -152,8 +153,6 @@ nav:
 
   - title: Reveal.js Slides
     doc: |
-      Github link: <https://github.com/hakimel/reveal.js>
-
       The slides are 2D arrary-like.
 
       Scroll down ↓ to learn the rules.

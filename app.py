@@ -7,12 +7,12 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import overload, TypeVar, Tuple, List, Dict, Union, Type
 from sys import argv
-from werkzeug.exceptions import HTTPException
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
 from flask import Flask, render_template, url_for, abort
 from flask_frozen import Freezer, relative_url_for
+from werkzeug.exceptions import HTTPException
 
 _Opt = Dict[str, str]
 _VSlide = Dict[str, Union[str, Union[List[_Opt], _Opt]]]
@@ -32,11 +32,13 @@ def load_yaml() -> _Data:
 
 
 @overload
-def cast(t: Type[T], value: _YamlValue) -> T: ...
+def cast(t: Type[T], value: _YamlValue) -> T:
+    pass
 
 
 @overload
-def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]: ...
+def cast(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]:
+    pass
 
 
 def cast(t, value):
@@ -105,21 +107,21 @@ def slide_block(slide: _VSlide):
         fragment[name] = "" if value is None else " " + value
 
 
-def _outline(nav: List[_HSlide], nest: bool) -> str:
+def outline(nav: List[_HSlide], nest: bool) -> str:
     """Generate markdown outline."""
     doc = []
-    for n in nav[1:]:
+    for i, n in enumerate(nav[1:]):
         title = n.get('title', "")
         if title:
-            doc.append(f"+ {title}")
+            doc.append(f"+ [{title}](#/{i + 1})")
         if not nest:
             continue
         n['sub'] = cast(list, n.get('sub', []))
         sub: List[_VSlide] = n['sub']
-        for sn in sub:
+        for j, sn in enumerate(sub):
             title = sn.get('title', "")
             if title:
-                doc.append("  " + f"+ {title}")
+                doc.append("  " + f"+ [{title}](#/{i + 1}/{j + 1})")
     return '\n'.join(doc)
 
 
@@ -131,18 +133,18 @@ def presentation() -> str:
     except ParserError as e:
         abort(500, e)
         return ""
-    outline = cast(int, config.get('outline', 0))
+    ol = cast(int, config.get('outline', 0))
     nav: List[_HSlide] = cast(list, config.get('nav', []))
     for i in range(len(nav)):
         n = nav[i]
         slide_block(n)
         n['sub'] = cast(list, n.get('sub', []))
         sub: List[_VSlide] = n['sub']
-        if nav[1:] and i == 0 and outline > 0:
-            sub.append({'title': "Outline", 'doc': _outline(nav, outline >= 2)})
+        if nav[1:] and i == 0 and ol > 0:
+            sub.append({'title': "Outline", 'doc': outline(nav, ol >= 2)})
         for sn in sub:
             slide_block(sn)
-    footer = cast(dict, config.get('footer', {}))
+    footer: _Opt = cast(dict, config.get('footer', {}))
     footer['label'] = cast(str, footer.get('label', ""))
     footer['link'] = uri(cast(str, footer.get('link', "")))
     sized_block(footer)
