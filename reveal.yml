@@ -103,9 +103,9 @@ nav:
 
           ```yaml
           sized: &sized
-          src: # Source path: str (required)
-          width: # Source width: int / str ("")
-          height: # Source height: int / str ("")
+            src: # Source path: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
           ```
 
           And they will be interpreted as:

@@ -6,8 +6,8 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import (
-    cast, get_type_hints, get_origin, overload, TypeVar, Tuple, List, Sequence,
-    Dict, Mapping, Union, Type, Optional, Any,
+    cast, get_type_hints, overload, TypeVar, Tuple, List, Sequence, Dict,
+    Mapping, Union, Type, Optional, Any,
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, InitVar
@@ -32,6 +32,11 @@ def load_yaml() -> _Data:
     """Load "reveal.yml" project."""
     with open("reveal.yml", 'r', encoding='utf-8') as f:
         return safe_load(f)
+
+
+@overload
+def cast_to(t: type, value: _YamlValue) -> Any:
+    pass
 
 
 @overload
@@ -82,8 +87,8 @@ class TypeChecker(metaclass=ABCMeta):
     """Type checker function."""
 
     def __setattr__(self, key, value):
-        t = get_origin(get_type_hints(self.__class__)[key])
-        if t is not None:
+        t = get_type_hints(self.__class__)[key]
+        if isinstance(t, type):
             value = cast_to(t, value)
         super(TypeChecker, self).__setattr__(key, value)
 
