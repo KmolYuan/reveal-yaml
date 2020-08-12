@@ -275,8 +275,9 @@ nav:
 
       Scroll down ↓ to see the examples.
     sub:
-      - title: Markdown
-        doc: |
+      - doc: |
+          Markdown
+
           ```yaml
           doc: |
             *Something* **important**.
@@ -292,8 +293,9 @@ nav:
           |:------:|:------:|
           | A | B |
 
-      - title: Images
-        doc: |
+      - doc: |
+          Images
+
           ```yaml
           img:
           - label: Ubuntu Logo
@@ -313,8 +315,9 @@ nav:
         fragment:
           img: fade-in-then-out
 
-      - title: Maths
-        doc: |
+      - doc: |
+          Maths
+
           ```yaml
           math: |
             \small\begin{aligned}
@@ -324,6 +327,8 @@ nav:
             \\
             &c(x) = 0
             \end{aligned}
+          fragment:
+            math: fade-in-then-out
           ```
         math: |
           \small\begin{aligned}
@@ -333,9 +338,12 @@ nav:
           \\
           &c(x) = 0
           \end{aligned}
+        fragment:
+          math: fade-in-then-out
 
-      - title: Embeded YouTube Video
-        doc: |
+      - doc: |
+          Embeded YouTube Video
+
           ```yaml
           youtube:
             src: https://www.youtube.com/embed/IpPH61BWObs
@@ -347,8 +355,9 @@ nav:
           width: 600pt
           height: 400pt
 
-      - title: Embeded PDF
-        doc: |
+      - doc: |
+          Embeded PDF
+
           ```yaml
           embed:
             src: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
