@@ -10,7 +10,7 @@ from typing import (
     Mapping, Union, Type, Optional, Any,
 )
 from abc import ABCMeta
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass, field, is_dataclass
 from sys import argv
 from urllib.parse import urlparse
 from yaml import safe_load
@@ -22,6 +22,9 @@ from werkzeug.exceptions import HTTPException
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
 _YamlValue = Union[int, float, str, bool, list, dict]
+Self = TypeVar('Self')
+_MaybeDict = Union[_Data, Self]
+_MaybeList = Union[_Data, Sequence[_Data], Sequence[Self], Self]
 T = TypeVar('T', bound=_YamlValue)
 U = TypeVar('U', bound=_YamlValue)
 
@@ -32,11 +35,6 @@ def load_yaml() -> _Data:
     """Load "reveal.yml" project."""
     with open("reveal.yml", 'r', encoding='utf-8') as f:
         return safe_load(f)
-
-
-@overload
-def cast_to(t: type, value: _YamlValue) -> Any:
-    pass
 
 
 @overload
@@ -56,11 +54,12 @@ def cast_to(t, value):
         if isinstance(t, Sequence):
             t = t[0]
         return t()
-    elif not isinstance(value, t):
-        abort(500, f"expect type: {t}, get: {type(value)}")
+    elif is_dataclass(t) and isinstance(value, dict):
+        return value
+    elif isinstance(value, t):
         return value
     else:
-        return value
+        abort(500, f"expect type: {t}, get: {type(value)}")
 
 
 def uri(path: str) -> str:
@@ -86,9 +85,26 @@ def pixel(value: Union[int, str]) -> str:
 class TypeChecker(metaclass=ABCMeta):
     """Type checker function."""
 
+    @classmethod
+    def from_dict(cls: Type[Self], data: _MaybeDict) -> Self:
+        """Generate data class from dict object."""
+        if isinstance(data, cls):
+            return data
+        return cls(**data or {})  # type: ignore
+
+    @classmethod
+    def from_list(cls: Type[Self], data: _MaybeList) -> List[Self]:
+        """Generate list of Self from dict object."""
+        if isinstance(data, cls):
+            return [data]
+        if not isinstance(data, Sequence):
+            data = [cast(_Data, data)]
+        return [cls(**d or {}) for d in data]  # type: ignore
+
     def __setattr__(self, key, value):
         t = get_type_hints(self.__class__)[key]
-        if isinstance(t, type):
+        if t in {str, bytes, int, float, bool}:
+            # Cast only basic types, others will be handled by their classes
             value = cast_to(t, value)
         super(TypeChecker, self).__setattr__(key, value)
 
@@ -103,6 +119,8 @@ class Size(TypeChecker):
     def __post_init__(self):
         """Replace URI."""
         self.src = uri(self.src)
+        self.width = pixel(self.width)
+        self.height = pixel(self.height)
 
 
 @dataclass(repr=False, eq=False)
@@ -133,47 +151,32 @@ class Slide(TypeChecker):
     title: str = ""
     doc: str = ""
     math: str = ""
-    img: InitVar[List[Img]] = None
-    youtube: InitVar[Size] = None
-    embed: InitVar[Size] = None
-    fragment: InitVar[Fragment] = None
-    _img: List[Img] = field(init=False)
-    _youtube: Size = field(init=False)
-    _embed: Size = field(init=False)
-    _fragment: Fragment = field(init=False)
+    img: List[Img] = field(default_factory=list)
+    youtube: Size = field(default_factory=Size)
+    embed: Size = field(default_factory=Size)
+    fragment: Fragment = field(default_factory=Fragment)
 
-    def __post_init__(self, img: Union[_Data, Sequence[_Data]],
-                      youtube: _Opt, embed: _Opt, fragment: _Opt):
+    def __post_init__(self):
         """Check arguments after assigned."""
-        if not isinstance(img, Sequence):
-            _img = [cast(_Data, img)]
-        if img is None:
-            self._img = []
-        else:
-            self._img = [Img(**img or {}) for img in img]
-        self._youtube = Size(**youtube or {})
-        self._embed = Size(**embed or {})
-        if not self._embed.width:
-            self._embed.width = '1000px'
-        if not self._embed.height:
-            self._embed.height = '450px'
-        self._fragment = Fragment(**fragment or {})
+        self.img = Img.from_list(self.img)
+        self.youtube = Size.from_dict(self.youtube)
+        self.embed = Size.from_dict(self.embed)
+        if not self.embed.width:
+            self.embed.width = '1000px'
+        if not self.embed.height:
+            self.embed.height = '450px'
+        self.fragment = Fragment.from_dict(self.fragment)
 
 
 @dataclass(repr=False, eq=False)
 class HSlide(Slide):
     """Root slide class."""
-    sub: InitVar[List[Slide]] = None
-    _sub: List[Slide] = field(init=False)
+    sub: List[Slide] = field(default_factory=list)
 
-    def __post_init__(self, img: Any, youtube: _Opt, embed: _Opt,
-                      fragment: _Opt, sub: Sequence[_Data]):
+    def __post_init__(self):
         """Check arguments after assigned."""
-        super(HSlide, self).__post_init__(img, youtube, embed, fragment)
-        if sub is None:
-            self._sub = []
-        else:
-            self._sub = [Slide(**s or {}) for s in sub]
+        super(HSlide, self).__post_init__()
+        self.sub = Slide.from_list(self.sub)
 
 
 def outline(nav, nest) -> str:
@@ -184,7 +187,7 @@ def outline(nav, nest) -> str:
             doc.append(f"+ [{n.title}](#/{i + 1})")
         if not nest:
             continue
-        for j, sn in enumerate(n._sub):
+        for j, sn in enumerate(n.sub):
             if sn.title:
                 doc.append("  " + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
     return '\n'.join(doc)
@@ -197,14 +200,14 @@ def presentation() -> str:
         config = load_yaml()
     except ParserError as e:
         abort(500, e)
-        return ""
-    ol = cast_to(int, config.get('outline', 0))
-    nav = cast_to(list, config.get('nav', []))
-    for i in range(len(nav)):
-        nav[i] = HSlide(**nav[i] or {})
-    if nav[1:] and ol > 0:
-        nav[0]._sub.append(Slide(title="Outline", doc=outline(nav, ol >= 2)))
-    return render_slides(config, nav, Footer(**config.get('footer', {})))
+    else:
+        ol = cast_to(int, config.get('outline', 0))
+        nav = cast_to(list, config.get('nav', []))
+        for i in range(len(nav)):
+            nav[i] = HSlide(**nav[i] or {})
+        if nav[1:] and ol > 0:
+            nav[0].sub.append(Slide(title="Outline", doc=outline(nav, ol >= 2)))
+        return render_slides(config, nav, Footer(**config.get('footer', {})))
 
 
 @app.errorhandler(404)
@@ -225,6 +228,7 @@ def render_slides(config: _Data, nav: Sequence[HSlide],
     """Rendered slides."""
     if footer is None:
         footer = Footer()
+    # TODO: Simplify options with a data class
     return render_template(
         "presentation.html",
         title=cast_to(str, config.get('title', "Untitled")),
