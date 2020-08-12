@@ -87,7 +87,7 @@ def slide_block(slide: _VSlide):
     # Youtube link
     slide['youtube'] = cast(dict, slide.get('youtube', {}))
     sized_block(slide['youtube'])
-    # Embeded resource
+    # Embedded resource
     slide['embed'] = cast(dict, slide.get('embed', {}))
     sized_block(slide['embed'], '1000px', '450px')
     # Images

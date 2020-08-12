@@ -218,7 +218,7 @@ nav:
           title: # Title, transform into H2 tag: str ("")
           doc: # Pargraph, allow multiline: str ("")
           math: # Latex math without "$$" brackets, allow multiline: str ("")
-          youtube: # Embeded YouTube srouce from embed code (<iframe>)
+          youtube: # Embedded YouTube srouce from embed code (<iframe>)
             <<: *sized
           img:
             - ... # A list of image source, please see the documentation.
@@ -342,7 +342,7 @@ nav:
           math: fade-in-then-out
 
       - doc: |
-          Embeded YouTube Video
+          Embedded YouTube Video
 
           ```yaml
           youtube:
@@ -356,7 +356,7 @@ nav:
           height: 400pt
 
       - doc: |
-          Embeded PDF
+          Embedded PDF
 
           ```yaml
           embed:
