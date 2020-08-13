@@ -98,14 +98,14 @@ class TypeChecker(metaclass=ABCMeta):
 
     @classmethod
     def from_dict(cls: Type[Self], data: MaybeDict) -> Self:
-        """Generate data class from dict object."""
+        """Generate a data class from dict object."""
         if isinstance(data, cls):
             return data
         return cls(**data or {})  # type: ignore
 
     @classmethod
     def as_list(cls: Type[Self], data: MaybeList) -> List[Self]:
-        """Generate list of Self from dict object."""
+        """Generate a list of Self from dict object."""
         if isinstance(data, cls):
             return [data]
         if not isinstance(data, Sequence):
