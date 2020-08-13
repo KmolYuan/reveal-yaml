@@ -6,8 +6,8 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import (
-    cast, get_type_hints, overload, TypeVar, Tuple, List, Sequence, Dict,
-    Mapping, Union, Type, Any,
+    cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
+    Union, Type, Any,
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass
@@ -22,7 +22,7 @@ from werkzeug.exceptions import HTTPException
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
 _YamlValue = Union[bool, int, float, str, list, dict]
-T = TypeVar('T', bound=_YamlValue)
+T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 
 app = Flask(__name__)
@@ -38,12 +38,12 @@ def load_yaml() -> _Data:
 
 
 @overload
-def cast_to(t: Type[T], value: _YamlValue) -> T:
+def cast_to(t: Type[List[T]], value: _YamlValue) -> List[T]:
     pass
 
 
 @overload
-def cast_to(t: Tuple[Type[T], Type[U]], value: _YamlValue) -> Union[T, U]:
+def cast_to(t: Type[T], value: _YamlValue) -> T:
     pass
 
 
@@ -51,15 +51,23 @@ def cast_to(t, value):
     """Check value type."""
     if value is None:
         # Create an empty instance
-        if isinstance(t, Sequence):
-            t = t[0]
         return t()
-    elif is_dataclass(t) and isinstance(value, dict):
-        return value
+    elif hasattr(t, '__origin__') and t.__origin__ is list:
+        # Is listed items
+        t = t.__args__[0]
+        if issubclass(t, TypeChecker) and is_dataclass(t):
+            return t.as_list(value)
+        else:
+            return [t(value)]
     elif isinstance(value, t):
         return value
-    else:
-        abort(500, f"expect type: {t}, get: {type(value)}")
+    elif (
+        issubclass(t, TypeChecker)
+        and is_dataclass(t)
+        and isinstance(value, dict)
+    ):
+        return t.from_dict(value)
+    abort(500, f"expect type: {t}, get: {type(value)}")
 
 
 def uri(path: str) -> str:
@@ -106,10 +114,7 @@ class TypeChecker(metaclass=ABCMeta):
 
     def __setattr__(self, key, value):
         t = get_type_hints(self.__class__).get(key, None)
-        if t in {bool, int, float, str}:
-            # Cast only basic types, others will be handled by their classes
-            value = cast_to(t, value)
-        super(TypeChecker, self).__setattr__(key, value)
+        super(TypeChecker, self).__setattr__(key, cast_to(t, value))
 
 
 @dataclass(repr=False, eq=False)
@@ -161,25 +166,16 @@ class Slide(TypeChecker):
 
     def __post_init__(self):
         """Check arguments after assigned."""
-        self.img = Img.as_list(self.img)
-        self.youtube = Size.from_dict(self.youtube)
-        self.embed = Size.from_dict(self.embed)
         if not self.embed.width:
             self.embed.width = '1000px'
         if not self.embed.height:
             self.embed.height = '450px'
-        self.fragment = Fragment.from_dict(self.fragment)
 
 
 @dataclass(repr=False, eq=False)
 class HSlide(Slide):
     """Root slide class."""
     sub: List[Slide] = field(default_factory=list)
-
-    def __post_init__(self):
-        """Check arguments after assigned."""
-        super(HSlide, self).__post_init__()
-        self.sub = Slide.as_list(self.sub)
 
 
 @dataclass(repr=False, eq=False)
@@ -203,8 +199,6 @@ class Config(TypeChecker):
     def __post_init__(self):
         """Check arguments after assigned."""
         self.watermark_size = pixel(self.watermark_size)
-        self.footer = Footer.from_dict(self.footer)
-        self.nav = HSlide.as_list(self.nav)
         if self.nav[1:] and self.outline > 0:
             self.make_outline(self.outline)
 
