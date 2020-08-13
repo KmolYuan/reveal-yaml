@@ -7,7 +7,7 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import (
     cast, get_type_hints, overload, TypeVar, Tuple, List, Sequence, Dict,
-    Mapping, Union, Type, Optional, Any,
+    Mapping, Union, Type, Any,
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass
@@ -21,10 +21,7 @@ from werkzeug.exceptions import HTTPException
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
-_YamlValue = Union[int, float, str, bool, list, dict]
-Self = TypeVar('Self')
-_MaybeDict = Union[_Data, Self]
-_MaybeList = Union[_Data, Sequence[_Data], Sequence[Self], Self]
+_YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=_YamlValue)
 U = TypeVar('U', bound=_YamlValue)
 
@@ -34,7 +31,10 @@ app = Flask(__name__)
 def load_yaml() -> _Data:
     """Load "reveal.yml" project."""
     with open("reveal.yml", 'r', encoding='utf-8') as f:
-        return safe_load(f)
+        data: _Data = safe_load(f)
+    for key in tuple(data):
+        data[key.replace('-', '_')] = data.pop(key)
+    return data
 
 
 @overload
@@ -84,26 +84,29 @@ def pixel(value: Union[int, str]) -> str:
 
 class TypeChecker(metaclass=ABCMeta):
     """Type checker function."""
+    Self = TypeVar('Self', bound='TypeChecker')
+    MaybeDict = Union[_Data, Self]
+    MaybeList = Union[_Data, Sequence[_Data], Self, Sequence[Self]]
 
     @classmethod
-    def from_dict(cls: Type[Self], data: _MaybeDict) -> Self:
+    def from_dict(cls: Type[Self], data: MaybeDict) -> Self:
         """Generate data class from dict object."""
         if isinstance(data, cls):
             return data
         return cls(**data or {})  # type: ignore
 
     @classmethod
-    def from_list(cls: Type[Self], data: _MaybeList) -> List[Self]:
+    def as_list(cls: Type[Self], data: MaybeList) -> List[Self]:
         """Generate list of Self from dict object."""
         if isinstance(data, cls):
             return [data]
         if not isinstance(data, Sequence):
             data = [cast(_Data, data)]
-        return [cls(**d or {}) for d in data]  # type: ignore
+        return [cls.from_dict(d) for d in data]
 
     def __setattr__(self, key, value):
-        t = get_type_hints(self.__class__)[key]
-        if t in {str, bytes, int, float, bool}:
+        t = get_type_hints(self.__class__).get(key, None)
+        if t in {bool, int, float, str}:
             # Cast only basic types, others will be handled by their classes
             value = cast_to(t, value)
         super(TypeChecker, self).__setattr__(key, value)
@@ -158,7 +161,7 @@ class Slide(TypeChecker):
 
     def __post_init__(self):
         """Check arguments after assigned."""
-        self.img = Img.from_list(self.img)
+        self.img = Img.as_list(self.img)
         self.youtube = Size.from_dict(self.youtube)
         self.embed = Size.from_dict(self.embed)
         if not self.embed.width:
@@ -176,21 +179,52 @@ class HSlide(Slide):
     def __post_init__(self):
         """Check arguments after assigned."""
         super(HSlide, self).__post_init__()
-        self.sub = Slide.from_list(self.sub)
+        self.sub = Slide.as_list(self.sub)
 
 
-def outline(nav, nest) -> str:
-    """Generate markdown outline."""
-    doc = []
-    for i, n in enumerate(nav[1:]):
-        if n.title:
-            doc.append(f"+ [{n.title}](#/{i + 1})")
-        if not nest:
-            continue
-        for j, sn in enumerate(n.sub):
-            if sn.title:
-                doc.append("  " + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
-    return '\n'.join(doc)
+@dataclass(repr=False, eq=False)
+class Config(TypeChecker):
+    title: str = "Untitled"
+    description: str = ""
+    author: str = ""
+    theme: str = "serif"
+    icon: str = "img/icon.png"
+    outline: int = 0
+    default_style: bool = True
+    extra_style: str = ""
+    watermark: str = ""
+    watermark_size: str = ""
+    history: bool = True
+    transition: str = "linear"
+    slide_num: str = "c/t"
+    footer: Footer = field(default_factory=Footer)
+    nav: List[HSlide] = field(default_factory=list)
+
+    def __post_init__(self):
+        """Check arguments after assigned."""
+        self.watermark_size = pixel(self.watermark_size)
+        self.footer = Footer.from_dict(self.footer)
+        self.nav = HSlide.as_list(self.nav)
+        if self.nav[1:] and self.outline > 0:
+            self.make_outline(self.outline)
+
+    @property
+    def history_str(self) -> str:
+        """Return a string version history option."""
+        return repr(self.history).lower()
+
+    def make_outline(self, level: int) -> None:
+        """Make a outline page."""
+        doc = []
+        for i, n in enumerate(self.nav[1:]):
+            if n.title:
+                doc.append(f"+ [{n.title}](#/{i + 1})")
+            if not level >= 2:
+                continue
+            for j, sn in enumerate(n.sub):
+                if sn.title:
+                    doc.append("  " + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
+        self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
 @app.route('/')
@@ -201,13 +235,7 @@ def presentation() -> str:
     except ParserError as e:
         abort(500, e)
     else:
-        ol = cast_to(int, config.get('outline', 0))
-        nav = cast_to(list, config.get('nav', []))
-        for i in range(len(nav)):
-            nav[i] = HSlide(**nav[i] or {})
-        if nav[1:] and ol > 0:
-            nav[0].sub.append(Slide(title="Outline", doc=outline(nav, ol >= 2)))
-        return render_slides(config, nav, Footer(**config.get('footer', {})))
+        return render_slides(Config(**config))
 
 
 @app.errorhandler(404)
@@ -218,35 +246,13 @@ def internal_server_error(e: HTTPException) -> str:
     """Error pages."""
     title = f"{e.code} {e.name}"
     return render_slides(
-        {'title': title, 'theme': 'night'},
-        [HSlide(title=title, doc=f"```sh\n{e.description}\n```")]
-    )
+        Config(title=title, theme='night',
+               nav=[HSlide(title=title, doc=f"```sh\n{e.description}\n```")]))
 
 
-def render_slides(config: _Data, nav: Sequence[HSlide],
-                  footer: Optional[Footer] = None):
+def render_slides(config: Config):
     """Rendered slides."""
-    if footer is None:
-        footer = Footer()
-    # TODO: Simplify options with a data class
-    return render_template(
-        "presentation.html",
-        title=cast_to(str, config.get('title', "Untitled")),
-        description=cast_to(str, config.get('description', "")),
-        author=cast_to(str, config.get('author', "")),
-        theme=cast_to(str, config.get('theme', 'serif')),
-        icon=uri(cast_to(str, config.get('icon', "img/icon.png"))),
-        default_style=cast_to(bool, config.get('default-style', True)),
-        extra_style=cast_to(str, config.get('extra-style', "")),
-        watermark=uri(cast_to(str, config.get('watermark', ""))),
-        watermark_size=pixel(
-            cast_to((int, str), config.get('watermark-size', ""))),
-        history=str(cast_to(bool, config.get('history', True))).lower(),
-        transition=cast_to(str, config.get('transition', 'linear')),
-        slide_num=cast_to((str, bool), config.get('slide-num', 'c/t')),
-        footer=footer,
-        nav=nav
-    )
+    return render_template("presentation.html", config=config)
 
 
 def main() -> None:
