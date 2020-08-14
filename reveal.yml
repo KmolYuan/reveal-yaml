@@ -62,7 +62,7 @@ nav:
 
           (Disable it by delete ".github" folder.)
 
-          In first time, create an [Access Token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+          In first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
           value named `ACCESS_TOKEN` under your repository "Secrets".
           Then create "gh-pages" branch on remote side before next push.
           At last, each commit will enable auto deployment.
@@ -196,7 +196,8 @@ nav:
           | history | Enable page history, default is enabled | `bool` |
           | transition | Transition mode, default is "linear" | `str` |
           | slide-num | Slide number style, default is "c/t" | `bool` / `str` |
-          | [footer](#/2/3) | Footer option | `*sized` |
+          | [footer](#/2/3) | Footer option | `Footer` |
+          | nav | Horizontal slides | `List[HSlide]` |
 
       - title: Footer
         doc: |
@@ -234,9 +235,10 @@ nav:
       | [doc](#/4/1) | Multiline Markdown pargraph | `str` |
       | ol / ul | Ordered list, HTML `<ol>` / `<ul>` | `List[str]` |
       | math | Latex math without "$$" brackets | `str` |
-      | youtube / embed | YouTube or external resource like PDF | `*sized` |
-      | [img](#/4/2) | A list of image source | `List[*sized]` |
-      | [fragment](#/4/3) | Fragment option | |
+      | youtube / embed | YouTube or external resource like PDF | `Sized` |
+      | [img](#/4/2) | A list of image source | `Img` / `List[Img]` |
+      | [fragment](#/4/3) | Fragment option | `Fragment` |
+      | sub | Vertical slides, for horizontal slide only | `List[Slide]` |
     sub:
       - title: Markdown Article
         doc: |
