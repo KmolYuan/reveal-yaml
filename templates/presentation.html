@@ -9,24 +9,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" href="{{ config.icon }}">
-<link rel="stylesheet" href="{{ url_for('static', filename="css/reset.css") }}">
-<link rel="stylesheet" href="{{ url_for('static', filename="css/reveal.css") }}">
-<link rel="stylesheet" href="{{ url_for('static', filename="css/theme/" + config.theme + ".css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/reset.css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/reveal.css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/theme/" + config.theme + ".css") }}">
 <!-- Theme used for syntax highlighting of code -->
-<link rel="stylesheet" href="{{ url_for('static', filename="lib/css/zenburn.css") }}">
+<link rel="stylesheet" href="{{ url_for('static', filename="plugin/highlight/monokai.css") }}" id="highlight-theme">
 <!-- Printing and PDF exports -->
 <script>
-let link = document.createElement('link');
-link.rel = 'stylesheet';
-link.type = 'text/css';
-link.href = window.location.search.match(/print-pdf/gi) ?
-    '{{ url_for('static', filename="css/print/pdf.css") }}' :
-    '{{ url_for('static', filename="css/print/paper.css") }}';
-document.getElementsByTagName('head')[0].appendChild(link);
+    let link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ?
+        '{{ url_for('static', filename="css/print/pdf.css") }}' :
+        '{{ url_for('static', filename="css/print/paper.css") }}';
+    document.getElementsByTagName('head')[0].appendChild(link);
 </script>
-<!--[if lt IE 9]>
-<script src="{{ url_for('static', filename="lib/js/html5shiv.js")}}"></script>
-<![endif]-->
 </head>
 <body>
 <style>
@@ -72,10 +69,7 @@ document.getElementsByTagName('head')[0].appendChild(link);
     -moz-box-shadow: none !important;
     box-shadow: none !important;
 }
-.reveal pre code {
-    border-radius: 10px;
-}
-.reveal p code, .reveal table code {
+.reveal pre code, .reveal p code, .reveal table code {
     color: white;
     border-style: solid;
     border-width: 2px;
@@ -83,6 +77,9 @@ document.getElementsByTagName('head')[0].appendChild(link);
     {#Origin is #3F3F3F#}
     border-color: #3F3F3F;
     background: #3F3F3F;
+}
+.reveal pre code {
+    border-radius: 10px;
 }
 .reveal .slide-number {
     font-size: 24pt;
@@ -185,35 +182,33 @@ data-background-size="{{ config.watermark_size }}"
 {% endfor %}
 </div>
 </div>
-<script src="{{ url_for('static', filename="js/reveal.js") }}"></script>
+<script src="{{ url_for('static', filename="reveal.js/reveal.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/markdown/markdown.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>
+<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>
 <script>
-Reveal.initialize({
-    transition: '{{ config.transition }}',
-    slideNumber: '{{ config.slide_num_str }}',
-    history: {{ config.history_str }},
-    hash: true,
-    dependencies: [
-        {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
-        {src: '{{ url_for('static', filename="plugin/markdown/markdown.js") }}'},
-        {src: '{{ url_for('static', filename="plugin/notes/notes.js") }}', async: true},
-        {src: '{{ url_for('static', filename="plugin/math/math.js") }}', async: true},
-        {src: '{{ url_for('static', filename="plugin/highlight/highlight.js") }}',
-            async: true,
-            callback: function() {return hljs.initHighlightingOnLoad();}},
-        {src: '{{ url_for('static', filename="plugin/zoom-js/zoom.js") }}', async: true},
-    ]
-});
+    Reveal.initialize({
+        transition: '{{ config.transition }}',
+        slideNumber: '{{ config.slide_num_str }}',
+        history: {{ config.history_str }},
+        hash: true,
+        plugins: [RevealHighlight, RevealMarkdown, RevealSearch, RevealNotes,
+            RevealMath, RevealZoom],
+    });
 </script>
 {% if config.footer.src or config.footer.label -%}
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script>
-let footer = $('#footer').html();
-if ( window.location.search.match(/print-pdf/gi))
-    Reveal.addEventListener('ready', function(event) {
-        $('.slide-background').append(footer);
-    });
-else
-    $('div.reveal').append(footer);
+    let footer = $('#footer').html();
+    if ( window.location.search.match(/print-pdf/gi))
+        Reveal.addEventListener('ready', function(event) {
+            $('.slide-background').append(footer);
+        });
+    else
+        $('div.reveal').append(footer);
 </script>
 {%- endif -%}
 </body>

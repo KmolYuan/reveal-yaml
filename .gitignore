@@ -108,3 +108,7 @@ venv.bak/
 # SSL
 *.crt
 *.key
+
+# Dependencies
+static/
+!static/img/

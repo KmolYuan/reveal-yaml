@@ -12,7 +12,7 @@ from typing import (
 from argparse import ArgumentParser
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass
-from os.path import isfile
+from os.path import isfile, isdir
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
@@ -274,8 +274,22 @@ def main() -> None:
     parser = ArgumentParser()
     parser.add_argument('--freeze', action='store_true',
                         help="freeze the project")
+    s = parser.add_subparsers(dest='cmd')
+    s.add_parser('install', add_help=False)
     args = parser.parse_args()
-    if args.freeze:
+    if args.cmd == 'install':
+        if not isdir("reveal.js/dist"):
+            raise FileNotFoundError("submodules are not fetched yet")
+        from distutils.dir_util import mkpath, copy_tree
+
+        for path in ("reveal.js", "css", "plugin"):
+            mkpath(f"static/{path}")
+            if path == "reveal.js":
+                copy_tree("reveal.js/dist", f"static/{path}")
+            else:
+                copy_tree(f"reveal.js/{path}", f"static/{path}")
+        return
+    elif args.freeze:
         app.config['FREEZER_RELATIVE_URLS'] = True
         Freezer(app).freeze()
         return
