@@ -1,4 +1,4 @@
-title: Reveal.yml Documentation
+title: Reveal.yaml Documentation
 description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
 watermark: img/watermark.png
@@ -10,13 +10,13 @@ footer:
   label: 機器與機電設計實驗室
   link: http://mmd-lab.herokuapp.com/
 nav:
-  - title: Reveal.yml Documentation
+  - title: Reveal.yaml Documentation
     doc: |
       *Author: Yuan Chang*
 
       Required Python 3.7+
 
-      + <https://github.com/KmolYuan/blank-reveal-yml>
+      + <https://github.com/KmolYuan/reveal-yaml>
       + <https://github.com/hakimel/reveal.js>
 
       Scroll right → to see the tutorial.
@@ -25,7 +25,7 @@ nav:
 
   - title: Build Environment
     doc: |
-      This App will read the YAML file `reveal.yml` in the root directory.
+      This App will read the YAML file `reveal.yaml` or `reveal.yml` in the root directory.
 
       Install requirements:
 
@@ -289,7 +289,7 @@ nav:
 
   - title: Examples
     doc: |
-      You can found [the source](https://github.com/KmolYuan/blank-reveal-yml/blob/master/reveal.yml)
+      You can found [the source](https://github.com/KmolYuan/reveal-yaml/blob/master/reveal.yaml)
       of this doc to see those example.
 
       Scroll down ↓ to see the examples.
