@@ -11,8 +11,8 @@ from typing import (
 )
 from argparse import ArgumentParser
 from abc import ABCMeta
-from dataclasses import dataclass, field, is_dataclass
-from os.path import isfile, isdir
+from dataclasses import dataclass, field, is_dataclass, InitVar
+from os.path import isfile, isdir, join
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
@@ -131,7 +131,6 @@ class Size(TypeChecker):
     height: str = ""
 
     def __post_init__(self):
-        """Replace URI."""
         self.src = uri(self.src)
         self.width = pixel(self.width)
         self.height = pixel(self.height)
@@ -169,9 +168,12 @@ class Slide(TypeChecker):
     youtube: Size = field(default_factory=Size)
     embed: Size = field(default_factory=Size)
     fragment: Fragment = field(default_factory=Fragment)
+    include: InitVar[str] = None
 
-    def __post_init__(self):
-        """Check arguments after assigned."""
+    def __post_init__(self, include):
+        if include is not None:
+            with open(join("templates", include), 'r') as f:
+                self.doc = f.read()
         if not self.embed.width:
             self.embed.width = '1000px'
         if not self.embed.height:

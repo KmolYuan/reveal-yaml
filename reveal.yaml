@@ -233,22 +233,23 @@ nav:
 
   - title: Slide Attributes
     doc: |
-      All attributes are default to disabled.
+      All attributes are default to disable.
 
       | Key | Description | Type |
       |:---:|:------------|:----:|
       | id | Custom section id | `str` |
       | title | Single line Markdown level 2 title | `str` |
-      | [doc](#/4/1) | Multiline Markdown pargraph | `str` |
+      | [doc](#/4/2) | Multiline Markdown pargraph | `str` |
+      | include | Include a Markdown file name from root path "templates/", replace "doc" key | `str` |
       | math | Latex math without "$$" brackets | `str` |
-      | youtube / embed | YouTube or external resource like PDF | `Sized` |
-      | [img](#/4/2) | A list of image source | `Img` / `List[Img]` |
-      | [fragment](#/4/3) | Fragment option | `Fragment` |
+      | [img](#/4/3) | A list of image source | `Img` / `List[Img]` |
     sub:
       - doc: |
           | Key | Description | Type |
           |:---:|:------------|:----:|
-          | sub | Vertical slides, for horizontal slide only | `List[Slide]` |
+          | youtube / embed | YouTube or external resource like PDF | `Sized` |
+          | [fragment](#/4/4) | Fragment option | `Fragment` |
+          | sub | Vertical slides, for horizontal slides only | `List[Slide]` |
 
       - title: Markdown Article
         doc: |
