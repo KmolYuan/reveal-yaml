@@ -19,45 +19,43 @@ nav:
 
       Scroll right → to see the tutorial.
 
-      Scroll down ↓ to see how to launch and deployment.
+      Scroll down ↓ to see the outline.
+
+  - title: Build Environment
+    doc: |
+      Required Python 3.7+.
+      Install modules:
+
+      ```bash
+      pip install -r requirements.txt
+      ```
+
+      Generate key by Open SSL:
+
+      ```bash
+      openssl genrsa 2048 > localhost.key
+      chmod 400 localhost.key
+      openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
+      ```
+
+      Startup in localhost:
+
+      ```bash
+      # With SSL
+      python app.py
+      # Without SSL
+      flask run
+      ```
     sub:
-      - title: Requirements
+      - title: Deploy Static Page
         doc: |
-          + Python 3.7+
-
-          Install modules:
+          Freeze the app in `build` folder:
 
           ```bash
-          pip install -r requirements.txt
+          python app.py --freeze
           ```
 
-      - title: Startup
-        doc: |
-          Generate SSL key:
-
-          ```bash
-          openssl genrsa 2048 > localhost.key
-          chmod 400 localhost.key
-          openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
-          ```
-
-          Startup in localhost:
-
-          ```bash
-          python app.py
-          # Without SSL
-          flask run
-          ```
-
-      - title: Build Static Page
-        doc: |
-          Freeze a Flask app:
-
-          ```bash
-          python build_frozen.py
-          ```
-
-          The Github actions will deploy to gh-pages automatically.
+          The Github actions will deploy `build` to gh-pages automatically.
 
           (Disable it by delete ".github" folder.)
 
