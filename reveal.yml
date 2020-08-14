@@ -146,11 +146,6 @@ nav:
             link: http://mmd-lab.herokuapp.com/
           ```
 
-      - title: Markdown
-        doc: |
-          **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
-          But **not** allow HTML syntax.
-
   - title: Reveal.js Slides
     doc: |
       The slides are 2D arrary-like.
@@ -205,27 +200,51 @@ nav:
                 - title: Vertical slide 2
             - title: Horizontal slide 2
           ```
+      - doc: |
+          YAML Flow style and anchors is also valid in this project.
 
-      - title: Slide Attributes
-        doc: |
-          All attributes are default to empty string.
-
-          The path string are allow remote URI.
+          Please see [offical documentation](https://yaml.org/) for more information.
 
           ```yaml
-          id: # Custom section id: str ("")
-          title: # Title, transform into H2 tag: str ("")
-          doc: # Pargraph, allow multiline: str ("")
-          math: # Latex math without "$$" brackets, allow multiline: str ("")
-          youtube: # Embedded YouTube srouce from embed code (<iframe>)
-            <<: *sized
-          img:
-            - ... # A list of image source, please see the documentation.
-          embed: # External resource, like PDF (<embed>)
-            <<: *sized
-          fragment: ... # Fragment option, please see the documentation.
+          a:
+            - B
+            - C
+          a: [B, C]  # Flow style
+          1:
+            2: 3
+            4: 5
+          1: {2: 3, 4: 5}  # Flow style
           ```
 
+          ```yaml
+          - &my-title-page  # Create anchor
+            title: Title 1
+            doc: Hello!
+          - <<: *my-title-page  # Extend from anchor
+            title: Hello Again
+          ```
+
+      - title: Markdown
+        doc: |
+          **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
+          But **not** allow HTML syntax.
+
+  - title: Slide Attributes
+    doc: |
+      All attributes are default to disabled.
+
+      | Key | Description | Type |
+      |:---:|:------------|:----:|
+      | id | Custom section id | `str` |
+      | title | Single line Markdown level 2 title | `str` |
+      | doc | Multiline Markdown pargraph | `str` |
+      | ol / ul | Ordered list, HTML `<ol>` / `<ul>` | `List[str]` |
+      | math | Latex math without "$$" brackets | `str` |
+      | youtube | YouTube srouce, HTML `<iframe>` | `*sized` |
+      | embed | External resource like PDF, HTML `<embed>` | `*sized` |
+      | [img](#/3/1) | A list of image source | |
+      | [fragment](#/3/2) | Fragment option | |
+    sub:
       - title: Image Attributes
         doc: |
           Must have at least `src` attribute to become a valid image.
@@ -253,19 +272,17 @@ nav:
 
       - title: Fragment Elements
         doc: |
-          Each slide can added a [Fragment option](https://github.com/hakimel/reveal.js#fragments).
-          Except `title` and `doc`.
+          Each slide can be added [Fragment option](https://revealjs.com/fragments).
+          Supports:
 
-          Images will apply the effect one by one.
+          + math
+          + img (one by one)
+          + ol & ul list (one by one)
+          + youtube
+          + embed
 
           ```yaml
-          fragment:
-            ELEMENT: EFFECT # Syntax
-            # Examples
-            math: # (Default, left blank or "")
-            youtube: grow
-            img: fade-out
-            embed: ...
+          fragment: {img: grow}
           ```
 
   - title: Examples
@@ -315,6 +332,28 @@ nav:
           img: fade-in-then-out
 
       - doc: |
+          List
+
+          ```yaml
+          ul:
+            - AAA
+            - BBB
+            - CCC
+          ol: ["123", "456", "789"]
+          fragment:
+            ul: fade-in
+            ol: fade-out
+          ```
+        ul:
+          - AAA
+          - BBB
+          - CCC
+        ol: ["123", "456", "789"]
+        fragment:
+          ul: fade-in
+          ol: fade-out
+
+      - doc: |
           Maths
 
           ```yaml
@@ -327,7 +366,7 @@ nav:
             &c(x) = 0
             \end{aligned}
           fragment:
-            math: fade-in-then-out
+            math: highlight-blue
           ```
         math: |
           \small\begin{aligned}
@@ -338,7 +377,7 @@ nav:
           &c(x) = 0
           \end{aligned}
         fragment:
-          math: fade-in-then-out
+          math: highlight-blue
 
       - doc: |
           Embedded YouTube Video

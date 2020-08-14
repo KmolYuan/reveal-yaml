@@ -58,7 +58,7 @@ def cast_to(t, value):
         if issubclass(t, TypeChecker) and is_dataclass(t):
             return t.as_list(value)
         else:
-            return [t(value)]
+            return [cast_to(t, v) for v in value]
     elif isinstance(value, t):
         return value
     elif (
@@ -150,6 +150,8 @@ class Fragment(TypeChecker):
     math: str = ""
     youtube: str = ""
     embed: str = ""
+    ul: str = ""
+    ol: str = ""
 
 
 @dataclass(repr=False, eq=False)
@@ -159,6 +161,8 @@ class Slide(TypeChecker):
     title: str = ""
     doc: str = ""
     math: str = ""
+    ol: List[str] = field(default_factory=list)
+    ul: List[str] = field(default_factory=list)
     img: List[Img] = field(default_factory=list)
     youtube: Size = field(default_factory=Size)
     embed: Size = field(default_factory=Size)

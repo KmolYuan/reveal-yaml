@@ -119,6 +119,16 @@ data-background-size="{{ config.watermark_size }}"
 {%- endif %}
 
 {{ n.doc -}}
+{% if n.ol %}<ol>
+{% for item in n.ol -%}
+<li {% if n.fragment.ol -%} class="fragment {{ n.fragment.ol }}"{% endif %}>{{ item }}</li>
+{%- endfor %}
+</ol>{% endif %}
+{% if n.ul %}<ul>
+{% for item in n.ul -%}
+<li {% if n.fragment.ul -%} class="fragment {{ n.fragment.ul }}"{% endif %}>{{ item }}</li>
+{%- endfor %}
+</ul>{% endif %}
 {% if n.math -%}
 <div {% if n.fragment.math -%} class="fragment {{ n.fragment.math }}"{% endif %}>
 <script type="math/tex; mode=display">{{ n.math }}</script>
