@@ -33,29 +33,36 @@ nav:
       pip install -r requirements.txt
       ```
 
-      Generate key by Open SSL:
+      Fetch Reveal.js repository and get the required files:
 
       ```bash
-      openssl genrsa 2048 > localhost.key
-      chmod 400 localhost.key
-      openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
-      ```
-
-      Startup in localhost:
-
-      ```bash
-      # With SSL
-      python app.py
-      # Without SSL
-      flask run
+      git submodule update --init
+      python app.py install
       ```
     sub:
+      - doc: |
+          Generate key by Open SSL:
+
+          ```bash
+          openssl genrsa 2048 > localhost.key
+          chmod 400 localhost.key
+          openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
+          ```
+
+          Startup in localhost:
+
+          ```bash
+          # With SSL
+          python app.py
+          # Without SSL
+          flask run
+          ```
       - title: Deploy Static Page
         doc: |
           Freeze the app in `build` folder:
 
           ```bash
-          python app.py --freeze
+          python app.py freeze
           ```
 
           The Github actions will deploy `build` to gh-pages automatically.
