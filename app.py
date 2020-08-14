@@ -9,9 +9,9 @@ from typing import (
     cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
     Union, Type, Any,
 )
+from argparse import ArgumentParser
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass
-from sys import argv
 from os.path import isfile
 from urllib.parse import urlparse
 from yaml import safe_load
@@ -271,7 +271,11 @@ def render_slides(config: Config):
 
 def main() -> None:
     """Main function startup with SSH."""
-    if '--freeze' in argv:
+    parser = ArgumentParser()
+    parser.add_argument('--freeze', action='store_true',
+                        help="freeze the project")
+    args = parser.parse_args()
+    if args.freeze:
         app.config['FREEZER_RELATIVE_URLS'] = True
         Freezer(app).freeze()
         return
