@@ -94,7 +94,7 @@ nav:
     sub:
       - title: Slides in HTML
         doc: |
-          In Reveal.js, the HTML structure shown as follow:
+          In Reveal.js, the HTML structure shown as following:
 
           ```html
           <section> <!-- Horizontal slide 1 -->
@@ -109,7 +109,7 @@ nav:
 
       - title: Sized Attributes
         doc: |
-          Some of options are support resize. Based on HTML.
+          Some of the options are support resize. Based on HTML.
 
           So their attributes are defined as:
 
@@ -136,7 +136,7 @@ nav:
       - title: Slides in YAML
         doc: |
           The **horizontal** slides are as list in the `nav` node.
-          And a slide can works with at least **one** attribute structure:
+          And a slide can work with at least **one** attribute structure:
 
           ```yaml
           nav:
@@ -218,10 +218,10 @@ nav:
           footer:
             <<: *sized
             label: # A caption at the right of logo: str ("")
-            link: # A URL link for footer: str ("")
+            link: # A URL link for the footer: str ("")
           ```
 
-          The example of this slides is:
+          The example of this slide is:
 
           ```yaml
           footer:
