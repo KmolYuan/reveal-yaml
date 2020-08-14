@@ -186,7 +186,7 @@ nav:
       | watermark-size | Source width | `int` / `str` |
       | outline | Outline page under first column with depth | `int` {0, 1, 2} |
       | theme | Reveal.js theme, default is "serif" | `str` |
-      | icon | Icon path, default is "`img/icon.png`" | `str` |
+      | icon | Icon path, default is "img/icon.png" | `str` |
       | default-style | Use default style, default is enabled | `bool` |
       | extra-style | Extra CSS style | `str` |
     sub:
@@ -233,19 +233,29 @@ nav:
       | id | Custom section id | `str` |
       | title | Single line Markdown level 2 title | `str` |
       | [doc](#/4/1) | Multiline Markdown pargraph | `str` |
-      | ol / ul | Ordered list, HTML `<ol>` / `<ul>` | `List[str]` |
       | math | Latex math without "$$" brackets | `str` |
       | youtube / embed | YouTube or external resource like PDF | `Sized` |
       | [img](#/4/2) | A list of image source | `Img` / `List[Img]` |
       | [fragment](#/4/3) | Fragment option | `Fragment` |
-      | sub | Vertical slides, for horizontal slide only | `List[Slide]` |
     sub:
+      - doc: |
+          | Key | Description | Type |
+          |:---:|:------------|:----:|
+          | sub | Vertical slides, for horizontal slide only | `List[Slide]` |
+
       - title: Markdown Article
         doc: |
-          Paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax)
-          but **not** allow HTML syntax.
+          Paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
+          HTML is also supported.
 
-          All of special characters will be escaped from HTML like `&gt;`.
+          All of special characters will be auto escaped from HTML like `&gt;`.
+
+          Slide & element attributes are allowed.
+
+          ```html
+          &lt;!-- .slide: data-background="red" -->
+          &lt;!-- .element: class="fragment" data-fragment-index="1" -->
+          ```
 
       - title: Image Attributes
         doc: |
@@ -279,7 +289,6 @@ nav:
 
           + math
           + img (one by one)
-          + ol & ul list (one by one)
           + youtube
           + embed
 
@@ -304,6 +313,9 @@ nav:
             | item 1 | item 2 |
             |:------:|:------:|
             | A | B |
+
+            + Item 1 &lt;!-- .element: class="fragment" data-fragment-index="2" -->
+            + Item 2 &lt;!-- .element: class="fragment" data-fragment-index="1" -->
           ```
 
           *Something* **important**.
@@ -311,6 +323,29 @@ nav:
           | item 1 | item 2 |
           |:------:|:------:|
           | A | B |
+
+          + Item 1 <!-- .element: class="fragment" data-fragment-index="2" -->
+          + Item 2 <!-- .element: class="fragment" data-fragment-index="1" -->
+
+      - doc: |
+          Code block
+
+          ```markdown
+          doc: |
+            &#96;&#96;&#96;python [1-2]
+            import sys
+            print(sys.path)
+            for i in range(10):
+                print("Hello World!")
+            &#96;&#96;&#96;
+          ```
+
+          ```python [1-2]
+          import sys
+          print(sys.path)
+          for i in range(10):
+              print("Hello World!")
+          ```
 
       - doc: |
           Images
@@ -335,34 +370,12 @@ nav:
           img: fade-in-then-out
 
       - doc: |
-          List
-
-          ```yaml
-          ul:
-            - AAA
-            - BBB
-            - CCC
-          ol: ["123", "456", "789"]
-          fragment:
-            ul: fade-in
-            ol: fade-out
-          ```
-        ul:
-          - AAA
-          - BBB
-          - CCC
-        ol: ["123", "456", "789"]
-        fragment:
-          ul: fade-in
-          ol: fade-out
-
-      - doc: |
           Maths
 
           ```yaml
           math: |
             \small\begin{aligned}
-            \min_{x}&f(x)
+            \min_{x_1, x_2}&f(x)
             \\
             \text{s.t. } &b(x) \le 0
             \\
@@ -373,7 +386,7 @@ nav:
           ```
         math: |
           \small\begin{aligned}
-          \min_{x}&f(x)
+          \min_{x_1, x_2}&f(x)
           \\
           \text{s.t. } &b(x) \le 0
           \\

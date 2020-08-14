@@ -119,8 +119,8 @@ class TypeChecker(metaclass=ABCMeta):
         return [cls.from_dict(d) for d in data]
 
     def __setattr__(self, key, value):
-        t = get_type_hints(self.__class__).get(key, None)
-        super(TypeChecker, self).__setattr__(key, cast_to(t, value))
+        super(TypeChecker, self).__setattr__(key, cast_to(
+            get_type_hints(self.__class__).get(key, None), value))
 
 
 @dataclass(repr=False, eq=False)
@@ -156,8 +156,6 @@ class Fragment(TypeChecker):
     math: str = ""
     youtube: str = ""
     embed: str = ""
-    ul: str = ""
-    ol: str = ""
 
 
 @dataclass(repr=False, eq=False)
@@ -167,8 +165,6 @@ class Slide(TypeChecker):
     title: str = ""
     doc: str = ""
     math: str = ""
-    ol: List[str] = field(default_factory=list)
-    ul: List[str] = field(default_factory=list)
     img: List[Img] = field(default_factory=list)
     youtube: Size = field(default_factory=Size)
     embed: Size = field(default_factory=Size)
@@ -201,7 +197,7 @@ class Config(TypeChecker):
     watermark: str = ""
     watermark_size: str = ""
     history: bool = True
-    transition: str = "linear"
+    transition: str = "slide"
     slide_num: str = "c/t"
     footer: Footer = field(default_factory=Footer)
     nav: List[HSlide] = field(default_factory=list)

@@ -13,17 +13,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/reveal.css") }}">
 <link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/theme/" + config.theme + ".css") }}">
 <!-- Theme used for syntax highlighting of code -->
-<link rel="stylesheet" href="{{ url_for('static', filename="plugin/highlight/monokai.css") }}" id="highlight-theme">
-<!-- Printing and PDF exports -->
-<script>
-    let link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = window.location.search.match(/print-pdf/gi) ?
-        '{{ url_for('static', filename="css/print/pdf.css") }}' :
-        '{{ url_for('static', filename="css/print/paper.css") }}';
-    document.getElementsByTagName('head')[0].appendChild(link);
-</script>
+<link rel="stylesheet" href="{{ url_for('static', filename="plugin/highlight/zenburn.css") }}" id="highlight-theme">
 </head>
 <body>
 <style>
@@ -69,8 +59,10 @@
     -moz-box-shadow: none !important;
     box-shadow: none !important;
 }
-.reveal pre code, .reveal p code, .reveal table code {
+.reveal p code, .reveal table code {
     color: white;
+}
+.reveal pre code, .reveal p code, .reveal table code {
     border-style: solid;
     border-width: 2px;
     border-radius: 5px;
@@ -117,16 +109,6 @@ data-background-size="{{ config.watermark_size }}"
 {%- endif %}
 
 {{ n.doc -}}
-{% if n.ol %}<ol>
-{% for item in n.ol -%}
-<li {% if n.fragment.ol -%} class="fragment {{ n.fragment.ol }}"{% endif %}>{{ item }}</li>
-{%- endfor %}
-</ol>{% endif %}
-{% if n.ul %}<ul>
-{% for item in n.ul -%}
-<li {% if n.fragment.ul -%} class="fragment {{ n.fragment.ul }}"{% endif %}>{{ item }}</li>
-{%- endfor %}
-</ul>{% endif %}
 {% if n.math -%}
 <div {% if n.fragment.math -%} class="fragment {{ n.fragment.math }}"{% endif %}>
 <script type="math/tex; mode=display">{{ n.math }}</script>
@@ -154,7 +136,7 @@ data-background-size="{{ config.watermark_size }}"
 </div>
 {%- endif -%}
 {% if n.youtube.src -%}
-<iframe {% if n.fragment.youtube -%} class="fragment {{ n.fragment.youtube }}"{% endif %} {{ sized(n.youtube) }} allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe {% if n.fragment.youtube -%} class="fragment {{ n.fragment.youtube }}"{% endif %} {{ sized(n.youtube) }} allowfullscreen></iframe>
 {%- endif -%}
 </textarea></section>
 {%- endif %}
@@ -193,10 +175,11 @@ data-background-size="{{ config.watermark_size }}"
     Reveal.initialize({
         transition: '{{ config.transition }}',
         slideNumber: '{{ config.slide_num_str }}',
-        history: {{ config.history_str }},
         hash: true,
-        plugins: [RevealHighlight, RevealMarkdown, RevealSearch, RevealNotes,
-            RevealMath, RevealZoom],
+        history: {{ config.history_str }},
+        {#Import order must be fixed!#}
+        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight, RevealMath],
+        markdown: {smartypants: true},
     });
 </script>
 {% if config.footer.src or config.footer.label -%}
