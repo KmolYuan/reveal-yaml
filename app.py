@@ -12,6 +12,7 @@ from typing import (
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass
 from sys import argv
+from os.path import isfile
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
@@ -29,8 +30,13 @@ app = Flask(__name__)
 
 
 def load_yaml() -> _Data:
-    """Load "reveal.yml" project."""
-    with open("reveal.yml", 'r', encoding='utf-8') as f:
+    """Load project."""
+    project = "reveal.yaml"
+    if not isfile(project):
+        project = "reveal.yml"
+    if not isfile(project):
+        raise FileNotFoundError("project file 'reveal.yaml' is not found")
+    with open(project, 'r', encoding='utf-8') as f:
         data: _Data = safe_load(f)
     for key in tuple(data):
         data[key.replace('-', '_')] = data.pop(key)
@@ -214,7 +220,12 @@ class Config(TypeChecker):
     @property
     def history_str(self) -> str:
         """Return a string version history option."""
-        return repr(self.history).lower()
+        return str(self.history).lower()
+
+    @property
+    def slide_num_str(self) -> str:
+        """Return a string version slide number option."""
+        return str(self.slide_num).lower()
 
     def make_outline(self) -> None:
         """Make a outline page."""

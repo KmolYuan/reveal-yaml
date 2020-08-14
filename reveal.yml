@@ -14,6 +14,8 @@ nav:
     doc: |
       *Author: Yuan Chang*
 
+      Required Python 3.7+
+
       + <https://github.com/KmolYuan/blank-reveal-yml>
       + <https://github.com/hakimel/reveal.js>
 
@@ -23,8 +25,9 @@ nav:
 
   - title: Build Environment
     doc: |
-      Required Python 3.7+.
-      Install modules:
+      This App will read the YAML file `reveal.yml` in the root directory.
+
+      Install requirements:
 
       ```bash
       pip install -r requirements.txt
@@ -68,82 +71,6 @@ nav:
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
-  - title: Brief Introduction
-    doc: |
-      The basic rules and options of Reveal.js.
-    sub:
-      - title: Project Options
-        doc: |
-          This App will read the YAML file `reveal.yml` in the root directory.
-
-          ```yaml
-          title: # Web page title: str (Untitled)
-          description: # Page description: str ("")
-          author: # Page author: str ("")
-          watermark: # Watermark source: str ("")
-          watermark-size: # Source width: int / str ("")
-          outline: # Generate a outline slide under first column with depth: int (0)
-          theme: # Reveal.js theme: str (serif)
-          icon: # icon path: str (img/icon.png)
-          default-style: # Enable default style: bool (true)
-          extra-style: # Extra style in CSS: str ("")
-          history: # Enable page history: bool (true)
-          transition: # Transition mode: str (linear)
-          slide-num: # Reveal.js slide number style: str / bool (c/t)
-          footer: ... # Footer option, please see the documentation.
-          ```
-
-      - title: Sized Attributes
-        doc: |
-          Some of options are support resize. Based on HTML.
-
-          So their attributes are defined as:
-
-          ```yaml
-          sized: &sized
-            src: # Source path: str (required)
-            width: # Source width: int / str ("")
-            height: # Source height: int / str ("")
-          ```
-
-          And they will be interpreted as:
-
-          ```html
-          <tag src="..." width="..." height="..."></tag>
-          ```
-
-          The "sized" block in the following sections will represented as YAML references.
-
-          ```yaml
-          <<: *sized
-          ...: # other options
-          ```
-
-      - title: Footer
-        doc: |
-          The footer is at left buttom side.
-
-          Its height is adjusted by its logo size and text height.
-
-          Pixel unit `pt` is recommended for fixed size in any screen.
-
-          ```yaml
-          footer:
-            <<: *sized
-            label: # A caption at the right of logo: str ("")
-            link: # A URL link for footer: str ("")
-          ```
-
-          The example of this slides is:
-
-          ```yaml
-          footer:
-            src: img/footer-icon.png
-            width: 50pt
-            label: 機器與機電設計實驗室
-            link: http://mmd-lab.herokuapp.com/
-          ```
-
   - title: Reveal.js Slides
     doc: |
       The slides are 2D arrary-like.
@@ -171,6 +98,32 @@ nav:
           <section> <!-- Horizontal slide 2 -->
           ...
           </section>
+          ```
+
+      - title: Sized Attributes
+        doc: |
+          Some of options are support resize. Based on HTML.
+
+          So their attributes are defined as:
+
+          ```yaml
+          sized: &sized
+            src: # Source path: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
+          ```
+
+          And they will be interpreted as:
+
+          ```html
+          <tag src="..." width="..." height="..."></tag>
+          ```
+
+          The "sized" block in the following sections will represented as YAML references.
+
+          ```yaml
+          <<: *sized
+          ...: # other options
           ```
 
       - title: Slides in YAML
@@ -222,10 +175,53 @@ nav:
             title: Hello Again
           ```
 
-      - title: Markdown
+  - title: Project Options
+    doc: |
+      | Key | Description | Type |
+      |:---:|:------------|:----:|
+      | title | Web page title, default is "Untitled" | `str` |
+      | description | Page description | `str` |
+      | author | Page author | `str` |
+      | watermark | Watermark source | `str` |
+      | watermark-size | Source width | `int` / `str` |
+      | outline | Outline page under first column with depth | `int` {0, 1, 2} |
+      | theme | Reveal.js theme, default is "serif" | `str` |
+      | icon | Icon path, default is "`img/icon.png`" | `str` |
+      | default-style | Use default style, default is enabled | `bool` |
+      | extra-style | Extra CSS style | `str` |
+    sub:
+      - doc: |
+          | Key | Description | Type |
+          |:---:|:------------|:----:|
+          | history | Enable page history, default is enabled | `bool` |
+          | transition | Transition mode, default is "linear" | `str` |
+          | slide-num | Slide number style, default is "c/t" | `bool` / `str` |
+          | [footer](#/2/3) | Footer option | `*sized` |
+
+      - title: Footer
         doc: |
-          **All** paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax).
-          But **not** allow HTML syntax.
+          The footer is at left buttom side.
+
+          Its height is adjusted by its logo size and text height.
+
+          Pixel unit `pt` is recommended for fixed size in any screen.
+
+          ```yaml
+          footer:
+            <<: *sized
+            label: # A caption at the right of logo: str ("")
+            link: # A URL link for footer: str ("")
+          ```
+
+          The example of this slides is:
+
+          ```yaml
+          footer:
+            src: img/footer-icon.png
+            width: 50pt
+            label: 機器與機電設計實驗室
+            link: http://mmd-lab.herokuapp.com/
+          ```
 
   - title: Slide Attributes
     doc: |
@@ -235,14 +231,20 @@ nav:
       |:---:|:------------|:----:|
       | id | Custom section id | `str` |
       | title | Single line Markdown level 2 title | `str` |
-      | doc | Multiline Markdown pargraph | `str` |
+      | [doc](#/4/1) | Multiline Markdown pargraph | `str` |
       | ol / ul | Ordered list, HTML `<ol>` / `<ul>` | `List[str]` |
       | math | Latex math without "$$" brackets | `str` |
-      | youtube | YouTube srouce, HTML `<iframe>` | `*sized` |
-      | embed | External resource like PDF, HTML `<embed>` | `*sized` |
-      | [img](#/3/1) | A list of image source | |
-      | [fragment](#/3/2) | Fragment option | |
+      | youtube / embed | YouTube or external resource like PDF | `*sized` |
+      | [img](#/4/2) | A list of image source | `List[*sized]` |
+      | [fragment](#/4/3) | Fragment option | |
     sub:
+      - title: Markdown Article
+        doc: |
+          Paragarphs are written in [Markdown](https://daringfireball.net/projects/markdown/syntax)
+          but **not** allow HTML syntax.
+
+          All of special characters will be escaped from HTML like `&gt;`.
+
       - title: Image Attributes
         doc: |
           Must have at least `src` attribute to become a valid image.
@@ -285,7 +287,8 @@ nav:
 
   - title: Examples
     doc: |
-      The source of this doc: <https://github.com/KmolYuan/blank-reveal-yml/blob/master/reveal.yml>
+      You can found [the source](https://github.com/KmolYuan/blank-reveal-yml/blob/master/reveal.yml)
+      of this doc to see those example.
 
       Scroll down ↓ to see the examples.
     sub:

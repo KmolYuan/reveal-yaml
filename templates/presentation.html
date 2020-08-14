@@ -189,7 +189,7 @@ data-background-size="{{ config.watermark_size }}"
   Reveal.initialize({
     history: {{ config.history_str }},
     transition: '{{ config.transition }}',
-    slideNumber: '{{ config.slide_num }}',
+    slideNumber: '{{ config.slide_num_str }}',
     hash: true,
     dependencies: [
       {src: '{{ url_for('static', filename="plugin/markdown/marked.js") }}'},
