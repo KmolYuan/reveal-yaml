@@ -98,14 +98,14 @@ class TypeChecker(metaclass=ABCMeta):
 
     @classmethod
     def from_dict(cls: Type[Self], data: MaybeDict) -> Self:
-        """Generate data class from dict object."""
+        """Generate a data class from dict object."""
         if isinstance(data, cls):
             return data
         return cls(**data or {})  # type: ignore
 
     @classmethod
     def as_list(cls: Type[Self], data: MaybeList) -> List[Self]:
-        """Generate list of Self from dict object."""
+        """Generate a list of Self from dict object."""
         if isinstance(data, cls):
             return [data]
         if not isinstance(data, Sequence):
@@ -202,26 +202,31 @@ class Config(TypeChecker):
 
     def __post_init__(self):
         """Check arguments after assigned."""
+        self.icon = uri(self.icon)
+        self.watermark = uri(self.watermark)
         self.watermark_size = pixel(self.watermark_size)
+        if self.outline not in {0, 1, 2}:
+            raise ValueError(f"outline level should be 0, 1 or 2, "
+                             f"not {self.outline}")
         if self.nav[1:] and self.outline > 0:
-            self.make_outline(self.outline)
+            self.make_outline()
 
     @property
     def history_str(self) -> str:
         """Return a string version history option."""
         return repr(self.history).lower()
 
-    def make_outline(self, level: int) -> None:
+    def make_outline(self) -> None:
         """Make a outline page."""
         doc = []
         for i, n in enumerate(self.nav[1:]):
             if n.title:
                 doc.append(f"+ [{n.title}](#/{i + 1})")
-            if not level >= 2:
+            if self.outline < 2:
                 continue
             for j, sn in enumerate(n.sub):
                 if sn.title:
-                    doc.append("  " + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
+                    doc.append(" " * 2 + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
         self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
@@ -262,7 +267,7 @@ def main() -> None:
     from ssl import SSLContext, PROTOCOL_TLSv1_2
     context = SSLContext(PROTOCOL_TLSv1_2)
     context.load_cert_chain('localhost.crt', 'localhost.key')
-    app.run(host='127.0.0.1', port=9443, debug=True, ssl_context=context)
+    app.run(host='127.0.0.1', port=0, ssl_context=context)
 
 
 if __name__ == "__main__":
