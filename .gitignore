@@ -110,5 +110,6 @@ venv.bak/
 *.key
 
 # Dependencies
-static/
-!static/img/
+static/css/
+static/plugin/
+static/reveal.js/

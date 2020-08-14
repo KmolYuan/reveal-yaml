@@ -214,21 +214,9 @@ class Config(TypeChecker):
         if self.outline not in {0, 1, 2}:
             raise ValueError(f"outline level should be 0, 1 or 2, "
                              f"not {self.outline}")
-        if self.nav[1:] and self.outline > 0:
-            self.make_outline()
-
-    @property
-    def history_str(self) -> str:
-        """Return a string version history option."""
-        return str(self.history).lower()
-
-    @property
-    def slide_num_str(self) -> str:
-        """Return a string version slide number option."""
-        return str(self.slide_num).lower()
-
-    def make_outline(self) -> None:
-        """Make a outline page."""
+        if not self.nav[1:] or self.outline == 0:
+            return
+        # Make an outline page
         doc = []
         for i, n in enumerate(self.nav[1:]):
             if n.title:
@@ -239,6 +227,16 @@ class Config(TypeChecker):
                 if sn.title:
                     doc.append(" " * 2 + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
         self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
+
+    @property
+    def history_str(self) -> str:
+        """Return a string version history option."""
+        return str(self.history).lower()
+
+    @property
+    def slide_num_str(self) -> str:
+        """Return a string version slide number option."""
+        return str(self.slide_num).lower()
 
 
 @app.route('/')
@@ -272,16 +270,14 @@ def render_slides(config: Config):
 def main() -> None:
     """Main function startup with SSH."""
     parser = ArgumentParser()
-    parser.add_argument('--freeze', action='store_true',
-                        help="freeze the project")
     s = parser.add_subparsers(dest='cmd')
-    s.add_parser('install', add_help=False)
+    s.add_parser('install', help="install the dependencies")
+    s.add_parser('freeze', help="freeze the project")
     args = parser.parse_args()
     if args.cmd == 'install':
         if not isdir("reveal.js/dist"):
             raise FileNotFoundError("submodules are not fetched yet")
         from distutils.dir_util import mkpath, copy_tree
-
         for path in ("reveal.js", "css", "plugin"):
             mkpath(f"static/{path}")
             if path == "reveal.js":
@@ -289,7 +285,7 @@ def main() -> None:
             else:
                 copy_tree(f"reveal.js/{path}", f"static/{path}")
         return
-    elif args.freeze:
+    elif args.cmd == 'freeze':
         app.config['FREEZER_RELATIVE_URLS'] = True
         Freezer(app).freeze()
         return

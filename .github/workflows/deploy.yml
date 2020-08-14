@@ -24,7 +24,7 @@ jobs:
     - name: Freeze
       run: |
         python app.py install
-        python app.py --freeze
+        python app.py freeze
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
