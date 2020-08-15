@@ -110,6 +110,7 @@ venv.bak/
 *.key
 
 # Dependencies
-static/css/
-static/plugin/
-static/reveal.js/
+/static/
+/reveal_yaml/static/css/
+/reveal_yaml/static/plugin/
+/reveal_yaml/static/reveal.js/

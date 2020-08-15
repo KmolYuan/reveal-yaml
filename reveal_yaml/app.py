@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 __author__ = "Yuan Chang"
-__copyright__ = "Copyright (C) 2019"
+__copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
@@ -9,15 +9,15 @@ from typing import (
     cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
     Union, Type, Any,
 )
-from argparse import ArgumentParser
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from os.path import isfile, isdir, join
+from os import getcwd
+from os.path import isfile, join, dirname, abspath
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
 from flask import Flask, render_template, url_for, abort
-from flask_frozen import Freezer, relative_url_for
+from flask_frozen import relative_url_for
 from werkzeug.exceptions import HTTPException
 
 _Opt = Mapping[str, str]
@@ -26,17 +26,16 @@ _YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 
+PWD = abspath(getcwd())
+ROOT = abspath(dirname(__file__))
+PROJECT = "reveal.yaml"
+KEY = (join(PWD, 'localhost.crt'), join(PWD, 'localhost.key'))
 app = Flask(__name__)
 
 
 def load_yaml() -> _Data:
     """Load project."""
-    project = "reveal.yaml"
-    if not isfile(project):
-        project = "reveal.yml"
-    if not isfile(project):
-        raise FileNotFoundError("project file 'reveal.yaml' is not found")
-    with open(project, 'r', encoding='utf-8') as f:
+    with open(PROJECT, 'r', encoding='utf-8') as f:
         data: _Data = safe_load(f)
     for key in tuple(data):
         data[key.replace('-', '_')] = data.pop(key)
@@ -265,33 +264,26 @@ def render_slides(config: Config):
     return render_template("presentation.html", config=config)
 
 
-def main() -> None:
-    """Main function startup with SSH."""
-    parser = ArgumentParser()
-    s = parser.add_subparsers(dest='cmd')
-    s.add_parser('install', help="install the dependencies")
-    s.add_parser('freeze', help="freeze the project")
-    args = parser.parse_args()
-    if args.cmd == 'install':
-        if not isdir("reveal.js/dist"):
-            raise FileNotFoundError("submodules are not fetched yet")
-        from distutils.dir_util import mkpath, copy_tree
-        for path in ("reveal.js", "css", "plugin"):
-            mkpath(f"static/{path}")
-            if path == "reveal.js":
-                copy_tree("reveal.js/dist", f"static/{path}")
-            else:
-                copy_tree(f"reveal.js/{path}", f"static/{path}")
-        return
-    elif args.cmd == 'freeze':
-        app.config['FREEZER_RELATIVE_URLS'] = True
-        Freezer(app).freeze()
-        return
-    from ssl import SSLContext, PROTOCOL_TLSv1_2
-    context = SSLContext(PROTOCOL_TLSv1_2)
-    context.load_cert_chain('localhost.crt', 'localhost.key')
-    app.run(host='127.0.0.1', port=0, ssl_context=context)
+def init(path: str):
+    """Create project."""
+    from distutils.dir_util import mkpath, copy_tree
+    mkpath(join(path, "templates"))
+    copy_tree(join(ROOT, "static"), join(path, "static"))
+    open(join(path, PROJECT), 'a').close()
 
 
-if __name__ == "__main__":
-    main()
+def serve(ip: str):
+    """Start server."""
+    global PROJECT
+    if not isfile(PROJECT):
+        PROJECT = "reveal.yml"
+    PROJECT = join(PWD, PROJECT)
+    if not isfile(PROJECT):
+        raise FileNotFoundError("project file 'reveal.yaml' is not found")
+    if isfile(KEY[0]) and isfile(KEY[1]):
+        from ssl import SSLContext, PROTOCOL_TLSv1_2
+        context = SSLContext(PROTOCOL_TLSv1_2)
+        context.load_cert_chain(KEY[0], KEY[1])
+        app.run(host=ip, port=0, ssl_context=context)
+    else:
+        app.run(host=ip, port=0)

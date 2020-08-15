@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
   pull_request:
     branches:
       - master
@@ -12,19 +14,20 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Download submodules
-      run: git submodule update --init --recursive
-    - name: Set up Python 3.7
+      run: git submodule update --init
+    - name: Setup Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        python -m pip install pip -U
+        python -m pip install pip setuptools wheel -U
         pip install -r requirements.txt
     - name: Freeze
       run: |
-        python app.py install
-        python app.py freeze
+        python sync.py
+        python entry.py init
+        python entry.py pack
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
@@ -32,3 +35,12 @@ jobs:
         BRANCH: gh-pages # The branch the action should deploy to.
         FOLDER: build
         CLEAN: true
+    - name: Pack
+      run: python setup.py bdist_wheel
+    - name: Publish package
+      if: github.repository == 'KmolYuan/reveal-yaml' && startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.TWINE_USERNAME }}
+        password: ${{ secrets.TWINE_PASSWORD }}
+        skip_existing: true

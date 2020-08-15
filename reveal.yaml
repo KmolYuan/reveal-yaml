@@ -23,58 +23,72 @@ nav:
 
       Scroll down ↓ to see the outline.
 
-  - title: Build Environment
+  - title: Quick Start
     doc: |
-      This App will read the YAML file `reveal.yaml` or `reveal.yml` in the root directory.
-
-      Install requirements:
+      Install from PyPI:
 
       ```bash
-      pip install -r requirements.txt
+      pip install reveal-yaml
       ```
 
-      Fetch Reveal.js repository and get the required files:
+      Create a project:
 
       ```bash
-      git submodule update --init
-      python app.py install
+      mkdir myproject
+      cd myproject
+      rym init .
+      ```
+
+      This App will read the YAML file `reveal.yaml` or `reveal.yml` in the root directory.
+      Startup a local server to preview the slides.
+
+      ```bash
+      rym serve
+      ```
+
+      Release the webpage to "build" directory:
+
+      ```bash
+      rym pack
       ```
     sub:
-      - doc: |
-          Generate key by Open SSL:
+      - title: Certificate
+        doc: |
+          Generate a key by Open SSL to create "https" protocol:
 
           ```bash
           openssl genrsa 2048 > localhost.key
           chmod 400 localhost.key
           openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
           ```
-
-          Startup in localhost:
-
-          ```bash
-          # With SSL
-          python app.py
-          # Without SSL
-          flask run
-          ```
-      - title: Deploy Static Page
+      - title: From Repository
         doc: |
-          Freeze the app in `build` folder:
+          Install requirements:
 
           ```bash
-          python app.py freeze
+          pip install -r requirements.txt
           ```
 
-          The Github actions will deploy `build` to gh-pages automatically.
+          Fetch Reveal.js repository and get the required files:
 
-          (Disable it by delete ".github" folder.)
+          ```bash
+          git submodule update --init
+          python sync.py
+          # Directly use
+          python entry.py --help
+          # Install
+          python setup.py install
+          ```
+      - title: GH Pages
+        doc: |
+          The Github actions can deploy "build" to gh-pages automatically.
+
+          You can refer the [config](https://github.com/KmolYuan/reveal-yaml/blob/master/.github/workflows/deploy.yml) of this repo.
 
           In first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
           value named `ACCESS_TOKEN` under your repository "Secrets".
           Then create "gh-pages" branch on remote side before next push.
           At last, each commit will enable auto deployment.
-
-          The first time maybe takes longer.
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
