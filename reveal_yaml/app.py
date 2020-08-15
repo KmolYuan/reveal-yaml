@@ -209,6 +209,9 @@ class Config(TypeChecker):
         self.icon = uri(self.icon)
         self.watermark = uri(self.watermark)
         self.watermark_size = pixel(self.watermark_size)
+        if self.extra_style:
+            with open(join("templates", self.extra_style), 'r') as f:
+                self.extra_style = f.read()
         if self.outline not in {0, 1, 2}:
             raise ValueError(f"outline level should be 0, 1 or 2, "
                              f"not {self.outline}")

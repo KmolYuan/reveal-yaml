@@ -59,9 +59,7 @@
     -moz-box-shadow: none !important;
     box-shadow: none !important;
 }
-.reveal p code, .reveal table code {
-    color: white;
-}
+.reveal p code, .reveal table code { color: white; }
 .reveal pre code, .reveal p code, .reveal table code {
     border-style: solid;
     border-width: 2px;
@@ -70,9 +68,7 @@
     border-color: #3F3F3F;
     background: #3F3F3F;
 }
-.reveal pre code {
-    border-radius: 10px;
-}
+.reveal pre code { border-radius: 10px; }
 .reveal .slide-number {
     font-size: 24pt;
     position: absolute;
@@ -187,7 +183,7 @@ data-background-size="{{ config.watermark_size }}"
 <script>
     let footer = $('#footer').html();
     if ( window.location.search.match(/print-pdf/gi))
-        Reveal.addEventListener('ready', function(event) {
+        Reveal.addEventListener('ready', function(_) {
             $('.slide-background').append(footer);
         });
     else

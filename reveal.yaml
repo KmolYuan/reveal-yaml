@@ -209,7 +209,7 @@ nav:
       | theme | Reveal.js theme, default is "serif" | `str` |
       | icon | Icon path, default is "img/icon.png" | `str` |
       | default-style | Use default style, default is enabled | `bool` |
-      | extra-style | Extra CSS style | `str` |
+      | extra-style | Extra CSS style path in "templates" | `str` |
     sub:
       - doc: |
           | Key | Description | Type |
