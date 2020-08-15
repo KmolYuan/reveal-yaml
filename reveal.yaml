@@ -175,7 +175,7 @@ nav:
       - doc: |
           YAML Flow style and anchors is also valid in this project.
 
-          Please see [offical documentation](https://yaml.org/) for more information.
+          Please see the [official documentation](https://yaml.org/) for more information.
 
           ```yaml
           a:
