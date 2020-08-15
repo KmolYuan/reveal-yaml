@@ -422,12 +422,12 @@ nav:
 
           ```yaml
           youtube:
-            src: https://www.youtube.com/embed/IpPH61BWObs
+            src: https://www.youtube.com/embed/LcuvxJNIgfE
             width: 800pt
             height: 500pt
           ```
         youtube:
-          src: https://www.youtube.com/embed/IpPH61BWObs
+          src: https://www.youtube.com/embed/LcuvxJNIgfE
           width: 600pt
           height: 400pt
 
