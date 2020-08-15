@@ -183,7 +183,7 @@ data-background-size="{{ config.watermark_size }}"
     });
 </script>
 {% if config.footer.src or config.footer.label -%}
-<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
 <script>
     let footer = $('#footer').html();
     if ( window.location.search.match(/print-pdf/gi))

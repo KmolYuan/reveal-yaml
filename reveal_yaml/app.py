@@ -200,6 +200,7 @@ class Config(TypeChecker):
     history: bool = True
     transition: str = "slide"
     slide_num: str = "c/t"
+    progress: bool = True
     footer: Footer = field(default_factory=Footer)
     nav: List[HSlide] = field(default_factory=list)
 
