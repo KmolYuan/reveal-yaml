@@ -169,10 +169,17 @@ data-background-size="{{ config.watermark_size }}"
 <script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>
 <script>
     Reveal.initialize({
-        transition: '{{ config.transition }}',
-        slideNumber: '{{ config.slide_num_str }}',
+        navigationMode: '{{ config.nav_mode }}',
+        controls: {{ config.show_arrows | lower }},
+        center: {{ config.center | lower }},
+        loop: {{ config.loop | lower }},
         hash: true,
-        history: {{ config.history_str }},
+        history: {{ config.history | lower }},
+        slideNumber: '{{ config.slide_num }}',
+        progress: {{ config.progress | lower }},
+        mouseWheel: {{ config.mouse_wheel | lower }},
+        previewLinks: {{ config.preview_links | lower }},
+        transition: '{{ config.transition }}',
         {#Import order must be fixed!#}
         plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight, RevealMath],
         markdown: {smartypants: true},
@@ -182,12 +189,19 @@ data-background-size="{{ config.watermark_size }}"
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
 <script>
     let footer = $('#footer').html();
-    if ( window.location.search.match(/print-pdf/gi))
+    if (window.location.search.match(/print-pdf/gi))
         Reveal.addEventListener('ready', function(_) {
             $('.slide-background').append(footer);
         });
     else
         $('div.reveal').append(footer);
+    // Open external links in new windows or tabs
+    $(document).ready(function ($) {
+        $('a').filter('[href^="http"], [href^="//"]')
+              .not('[href*="' + window.location.host + '"]')
+              .attr('rel', 'noopener noreferrer')
+              .attr('target', '_blank');
+    });
 </script>
 {%- endif -%}
 </body>

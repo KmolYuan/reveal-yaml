@@ -197,10 +197,16 @@ class Config(TypeChecker):
     extra_style: str = ""
     watermark: str = ""
     watermark_size: str = ""
+    nav_mode: str = "default"
+    show_arrows: bool = True
+    center: bool = True
+    loop: bool = False
     history: bool = True
-    transition: str = "slide"
     slide_num: str = "c/t"
     progress: bool = True
+    mouse_wheel: bool = False
+    preview_links: bool = False
+    transition: str = "slide"
     footer: Footer = field(default_factory=Footer)
     nav: List[HSlide] = field(default_factory=list)
 
@@ -228,16 +234,6 @@ class Config(TypeChecker):
                 if sn.title:
                     doc.append(" " * 2 + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
         self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
-
-    @property
-    def history_str(self) -> str:
-        """Return a string version history option."""
-        return str(self.history).lower()
-
-    @property
-    def slide_num_str(self) -> str:
-        """Return a string version slide number option."""
-        return str(self.slide_num).lower()
 
 
 @app.route('/')
