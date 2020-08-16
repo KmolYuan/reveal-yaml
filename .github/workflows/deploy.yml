@@ -28,6 +28,7 @@ jobs:
         python sync.py
         python entry.py init
         python entry.py pack
+        cp reveal_yaml/schema.json build/
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:

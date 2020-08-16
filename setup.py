@@ -45,7 +45,7 @@ setup(
     long_description_content_type='text/markdown',
     url="https://kmolyuan.github.io/reveal-yaml",
     packages=find_packages(),
-    package_data={'reveal_yaml': ['py.typed'], '': extra_files},
+    package_data={'reveal_yaml': ['py.typed', 'schema.*'], '': extra_files},
     entry_points={'console_scripts': ['rym=reveal_yaml.__main__:main']},
     zip_safe=False,
     python_requires=">=3.7",

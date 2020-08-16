@@ -112,6 +112,7 @@ venv.bak/
 # Dependencies
 /static/
 /templates/
+/reveal_yaml/schema.json
 /reveal_yaml/static/css/
 /reveal_yaml/static/js/
 /reveal_yaml/static/plugin/

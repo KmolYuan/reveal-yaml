@@ -3,6 +3,8 @@
 from os.path import isdir
 from distutils.file_util import copy_file
 from distutils.dir_util import copy_tree, mkpath
+import yaml
+import json
 
 
 def main():
@@ -15,6 +17,11 @@ def main():
             copy_tree(f"reveal.js/{path}", f"reveal_yaml/static/{path}")
     mkpath("reveal_yaml/static/js")
     copy_file("jquery/dist/jquery.min.js", "reveal_yaml/static/js")
+    # Generate JSON schema
+    with open("reveal_yaml/schema.yaml", 'r') as f:
+        data = yaml.safe_load(f)
+    with open("reveal_yaml/schema.json", 'w+') as f:
+        json.dump(data, f)
 
 
 if __name__ == '__main__':

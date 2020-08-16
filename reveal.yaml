@@ -46,14 +46,27 @@ nav:
       rym serve
       ```
 
-      Release the webpage to "build" directory:
-
-      ```bash
-      rym pack
-      ```
+      Scroll down ↓ to see what should do next.
     sub:
-      - title: Certificate
-        doc: |
+      - doc: |
+          ## JSON Schema
+
+          If your IDE supports [JSON Schema](https://json-schema.org/understanding-json-schema/index.html),
+          you can use the installed or remote files to validate your Reveal.yaml project.
+
+          + [schema.json](https://raw.githubusercontent.com/KmolYuan/reveal-yaml/gh-pages/schema.json)
+          + [schema.yaml](https://raw.githubusercontent.com/KmolYuan/reveal-yaml/master/reveal_yaml/schema.yaml)
+
+          ## Deployment
+
+          Release the webpage to "build" directory:
+
+          ```bash
+          rym pack
+          ```
+
+          ## Certification
+
           Generate a key by Open SSL to create "https" protocol:
 
           ```bash
@@ -61,6 +74,7 @@ nav:
           chmod 400 localhost.key
           openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
           ```
+
       - title: From Repository
         doc: |
           Install requirements:
@@ -79,6 +93,7 @@ nav:
           # Install
           python setup.py install
           ```
+
       - title: GH Pages
         doc: |
           The Github actions can deploy "build" to gh-pages automatically.
@@ -172,6 +187,7 @@ nav:
                 - title: Vertical slide 2
             - title: Horizontal slide 2
           ```
+
       - doc: |
           YAML Flow style and anchors is also valid in this project.
 
@@ -200,8 +216,8 @@ nav:
     doc: |
       | Key | Description | Type |
       |:---:|:------------|:----:|
-      | title | Web page title, default is "Untitled" | `str` |
-      | description | Page description | `str` |
+      | title | Webpage title, default is "Untitled" | `str` |
+      | description | Webpage description | `str` |
       | author | Page author | `str` |
       | watermark | Watermark source | `str` |
       | watermark-size | Source width | `int` / `str` |
