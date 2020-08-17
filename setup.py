@@ -30,7 +30,8 @@ def package_files(path: str) -> Iterator[str]:
             yield join('..', root, filename)
 
 
-extra_files = list(package_files(join('reveal_yaml', 'static')))
+extra_files = list(package_files(join('reveal_yaml', '.github')))
+extra_files.extend(package_files(join('reveal_yaml', 'static')))
 extra_files.extend(package_files(join('reveal_yaml', 'templates')))
 
 setup(

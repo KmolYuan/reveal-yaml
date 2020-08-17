@@ -30,7 +30,7 @@ nav:
       pip install reveal-yaml
       ```
 
-      Create a project:
+      Create a project by Reveal.yaml Manager (RYM):
 
       ```bash
       mkdir myproject
@@ -87,7 +87,7 @@ nav:
           ```bash
           git submodule update --init
           python sync.py
-          # Directly use
+          # Directly use (same as "rym --help")
           python entry.py --help
           # Install
           python setup.py install
@@ -96,10 +96,15 @@ nav:
       - title: GH Pages
         doc: |
           The Github actions can deploy "build" to gh-pages automatically.
+          Disable it by:
+
+          ```bash
+          rym init --no-workflow
+          ```
 
           You can refer the [config](https://github.com/KmolYuan/reveal-yaml/blob/master/.github/workflows/deploy.yml) of this repo.
 
-          In first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+          At the first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
           value named `ACCESS_TOKEN` under your repository "Secrets".
           Then create "gh-pages" branch on remote side before next push.
           At last, each commit will enable auto deployment.

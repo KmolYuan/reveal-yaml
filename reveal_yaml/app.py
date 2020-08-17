@@ -248,10 +248,13 @@ def presentation() -> str:
 @app.errorhandler(500)
 def internal_server_error(e: HTTPException) -> str:
     """Error pages."""
+    from traceback import format_exc
     title = f"{e.code} {e.name}"
     return render_slides(
-        Config(title=title, theme='night',
-               nav=[HSlide(title=title, doc=f"```sh\n{e.description}\n```")]))
+        Config(title=title, theme='night', nav=[HSlide(
+            title=title,
+            doc=f"```sh\n{format_exc()}\n{e.description}\n```"
+        )]))
 
 
 def render_slides(config: Config):
