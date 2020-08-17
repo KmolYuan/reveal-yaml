@@ -11,8 +11,7 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from os import getcwd
-from os.path import isfile, join, dirname, abspath
+from os.path import isfile, join
 from urllib.parse import urlparse
 from yaml import safe_load
 from yaml.parser import ParserError
@@ -26,10 +25,7 @@ _YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 
-PWD = abspath(getcwd())
-ROOT = abspath(dirname(__file__))
 PROJECT = "reveal.yaml"
-KEY = (join(PWD, 'localhost.crt'), join(PWD, 'localhost.key'))
 app = Flask(__name__)
 
 
@@ -191,7 +187,7 @@ class Config(TypeChecker):
     author: str = ""
     theme: str = "serif"
     icon: str = "img/icon.png"
-    outline: int = 0
+    outline: int = 2
     default_style: bool = True
     extra_style: str = ""
     watermark: str = ""
@@ -263,26 +259,19 @@ def render_slides(config: Config):
     return render_template("presentation.html", config=config)
 
 
-def init(path: str):
-    """Create project."""
-    from distutils.dir_util import mkpath, copy_tree
-    mkpath(join(path, "templates"))
-    copy_tree(join(ROOT, "static"), join(path, "static"))
-    open(join(path, PROJECT), 'a').close()
-
-
-def serve(ip: str):
+def serve(pwd: str, ip: str, port: int):
     """Start server."""
     global PROJECT
     if not isfile(PROJECT):
         PROJECT = "reveal.yml"
-    PROJECT = join(PWD, PROJECT)
+    PROJECT = join(pwd, PROJECT)
     if not isfile(PROJECT):
         raise FileNotFoundError("project file 'reveal.yaml' is not found")
-    if isfile(KEY[0]) and isfile(KEY[1]):
+    key = (join(pwd, 'localhost.crt'), join(pwd, 'localhost.key'))
+    if isfile(key[0]) and isfile(key[1]):
         from ssl import SSLContext, PROTOCOL_TLSv1_2
         context = SSLContext(PROTOCOL_TLSv1_2)
-        context.load_cert_chain(KEY[0], KEY[1])
-        app.run(host=ip, port=0, ssl_context=context)
+        context.load_cert_chain(key[0], key[1])
+        app.run(ip, port, ssl_context=context)
     else:
-        app.run(host=ip, port=0)
+        app.run(ip, port)

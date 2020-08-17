@@ -6,13 +6,13 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from argparse import ArgumentParser
-from os.path import join
-from flask_frozen import Freezer
-from reveal_yaml.app import PWD, app, serve, init
+from os import getcwd
+from os.path import join, abspath, dirname, isfile
 
 
 def main() -> None:
     """Main function startup with SSH."""
+    pwd = abspath(getcwd())
     parser = ArgumentParser(
         prog='Reveal.yaml',
         description="A YAML, Markdown, reveal.js based Flask application. "
@@ -21,22 +21,37 @@ def main() -> None:
         epilog=f"{__copyright__} {__license__} {__author__} {__email__}",
     )
     s = parser.add_subparsers(dest='cmd')
-    initializer = s.add_parser('init', help="initialize a new project")
-    initializer.add_argument('PATH', nargs='?', default=PWD, type=str,
-                             help="project path")
-    s.add_parser('pack', help="freeze the project (release)")
-    server = s.add_parser('serve', help="serve the project")
-    server.add_argument('--ip', default='localhost', type=str,
-                        help="IP address")
+    sub = s.add_parser('init', help="initialize a new project")
+    sub.add_argument('PATH', nargs='?', default=pwd, type=str,
+                     help="project path")
+    sub = s.add_parser('pack', help="freeze to a static project")
+    sub.add_argument('PATH', nargs='?', default=join(pwd, 'build'), type=str,
+                     help="dist path")
+    sub = s.add_parser('serve', help="serve the project")
+    sub.add_argument('--ip', default='localhost', type=str, help="IP address")
+    sub.add_argument('--port', default=0, type=int, help="specified port")
     args = parser.parse_args()
     if args.cmd == 'init':
-        init(args.PATH)
+        # Create a project
+        from distutils.file_util import copy_file
+        from distutils.dir_util import mkpath, copy_tree
+        root = abspath(dirname(__file__))
+        mkpath(join(args.PATH, "templates"))
+        copy_tree(join(root, "static"), join(args.PATH, "static"))
+        if not isfile("reveal.yaml") and not isfile("reveal.yml"):
+            copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
+        # Pack into a static project
+        from reveal_yaml.app import app
+        from flask_frozen import Freezer
         app.config['FREEZER_RELATIVE_URLS'] = True
-        app.config['FREEZER_DESTINATION'] = join(PWD, 'build')
+        app.config['FREEZER_DESTINATION'] = args.PATH
         Freezer(app).freeze()
     elif args.cmd == 'serve':
-        serve(args.ip)
+        from reveal_yaml.app import serve
+        serve(pwd, args.ip, args.port)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":

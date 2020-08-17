@@ -8,7 +8,7 @@ import json
 
 
 def main():
-    if not isdir("reveal.js/dist"):
+    if not (isdir("reveal.js/dist") and isdir("jquery/dist")):
         raise FileNotFoundError("submodules are not fetched yet")
     for path in ("reveal.js", "css", "plugin"):
         if path == "reveal.js":
@@ -21,7 +21,7 @@ def main():
     with open("reveal_yaml/schema.yaml", 'r') as f:
         data = yaml.safe_load(f)
     with open("reveal_yaml/schema.json", 'w+') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 
 if __name__ == '__main__':

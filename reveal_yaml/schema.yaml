@@ -103,6 +103,7 @@ properties:
   outline:
     title: Outline page under first column with depth
     type: integer
+    default: 0
     maximum: 2
     minimum: 0
   theme:
