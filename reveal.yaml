@@ -106,8 +106,7 @@ nav:
 
           At the first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
           value named `ACCESS_TOKEN` under your repository "Secrets".
-          Then create "gh-pages" branch on remote side before next push.
-          At last, each commit will enable auto deployment.
+          At last, each commit will enable auto deployment on "gh-pages" branch.
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
