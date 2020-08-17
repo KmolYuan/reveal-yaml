@@ -167,7 +167,7 @@ class Slide(TypeChecker):
     def __post_init__(self, include):
         if include is not None:
             with open(join("templates", include), 'r') as f:
-                self.doc = f.read()
+                self.doc += '\n\n' + f.read()
         if not self.embed.width:
             self.embed.width = '1000px'
         if not self.embed.height:

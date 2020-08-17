@@ -44,7 +44,7 @@ definitions:
         type: string
       include:
         $ref: "#/definitions/path"
-        title: Include a Markdown file name from "templates", replace "doc" key
+        title: Include a Markdown file name from "templates", append after "doc" key
       math:
         title: Latex math without "$$" brackets
         type: string

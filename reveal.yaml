@@ -284,7 +284,7 @@ nav:
       | id | Custom section id | `str` |
       | title | Single line Markdown level 2 title | `str` |
       | [doc](#/4/2) | Multiline Markdown pargraph | `str` |
-      | include | Include a Markdown file name from "templates", replace "doc" key | `str` |
+      | include | Include a Markdown file name from "templates", append after "doc" key | `str` |
       | math | Latex math without "$$" brackets | `str` |
       | [img](#/4/3) | A list of image source | `Img` / `List[Img]` |
       | youtube / embed | YouTube or external resource like PDF | `Sized` |
