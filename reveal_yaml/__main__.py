@@ -39,10 +39,12 @@ def main() -> None:
         from distutils.file_util import copy_file
         from distutils.dir_util import mkpath, copy_tree
         root = abspath(dirname(__file__))
+        mkpath(args.PATH)
         copy_tree(join(root, "static"), join(args.PATH, "static"))
         mkpath(join(args.PATH, "templates"))
-        workflow = ".github/workflows/deploy.yaml"
+        workflow = join(".github", "workflows", "deploy.yaml")
         if not args.no_workflow and not isfile(workflow):
+            mkpath(join(args.PATH, dirname(workflow)))
             copy_file(join(root, workflow), join(args.PATH, workflow))
         if not isfile("reveal.yaml") and not isfile("reveal.yml"):
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
