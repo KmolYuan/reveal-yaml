@@ -352,7 +352,7 @@ nav:
       Scroll down ↓ to see the examples.
     sub:
       - doc: |
-          Markdown
+          ## Markdown
 
           ```yaml
           doc: |
@@ -376,7 +376,7 @@ nav:
           + Item 2 <!-- .element: class="fragment" data-fragment-index="1" -->
 
       - doc: |
-          Code block
+          ## Code block
 
           ```markdown
           doc: |
@@ -396,7 +396,7 @@ nav:
           ```
 
       - doc: |
-          Images
+          ## Images
 
           ```yaml
           img:
@@ -418,7 +418,7 @@ nav:
           img: fade-in-then-out
 
       - doc: |
-          Maths
+          ## Maths
 
           ```yaml
           math: |
@@ -444,7 +444,7 @@ nav:
           math: highlight-blue
 
       - doc: |
-          Embedded YouTube Video
+          ## Embedded YouTube Video
 
           ```yaml
           youtube:
@@ -458,7 +458,7 @@ nav:
           height: 400pt
 
       - doc: |
-          Embedded PDF
+          ## Embedded PDF
 
           ```yaml
           embed:
