@@ -11,11 +11,11 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
+from sys import stdout
 from os.path import isfile, join
 from urllib.parse import urlparse
 from yaml import safe_load
-from yaml.parser import ParserError
-from flask import Flask, render_template, url_for, abort
+from flask import Flask, render_template, url_for
 from flask_frozen import relative_url_for
 from werkzeug.exceptions import HTTPException
 
@@ -39,16 +39,16 @@ def load_yaml() -> _Data:
 
 
 @overload
-def cast_to(t: Type[List[T]], value: _YamlValue) -> List[T]:
+def cast_to(key: str, t: Type[List[T]], value: _YamlValue) -> List[T]:
     pass
 
 
 @overload
-def cast_to(t: Type[T], value: _YamlValue) -> T:
+def cast_to(key: str, t: Type[T], value: _YamlValue) -> T:
     pass
 
 
-def cast_to(t, value):
+def cast_to(key, t, value):
     """Check value type."""
     if hasattr(t, '__origin__') and t.__origin__ is list:
         # Is listed items
@@ -65,9 +65,7 @@ def cast_to(t, value):
         and isinstance(value, dict)
     ):
         return t.from_dict(value)
-    if value is None:
-        abort(500, "the field cannot be empty")
-    abort(500, f"expect type: {t}, get: {type(value)}")
+    raise TypeError(f"'{key}' expect type: {t}, got: {type(value)}")
 
 
 def uri(path: str) -> str:
@@ -101,7 +99,11 @@ class TypeChecker(metaclass=ABCMeta):
         """Generate a data class from dict object."""
         if isinstance(data, cls):
             return data
-        return cls(**data or {})  # type: ignore
+        if not isinstance(data, Mapping):
+            raise TypeError(f"expect type: {cls}, wrong type: {type(data)}")
+        if not data:
+            raise TypeError(f"expect type: {cls}, the field cannot be empty")
+        return cls(**data)  # type: ignore
 
     @classmethod
     def as_list(cls: Type[Self], data: MaybeList) -> List[Self]:
@@ -114,7 +116,7 @@ class TypeChecker(metaclass=ABCMeta):
 
     def __setattr__(self, key, value):
         super(TypeChecker, self).__setattr__(key, cast_to(
-            get_type_hints(self.__class__).get(key, None), value))
+            key, get_type_hints(self.__class__).get(key, None), value))
 
 
 @dataclass(repr=False, eq=False)
@@ -234,12 +236,7 @@ class Config(TypeChecker):
 @app.route('/')
 def presentation() -> str:
     """Generate the presentation."""
-    try:
-        config = load_yaml()
-    except ParserError as e:
-        abort(500, e)
-    else:
-        return render_slides(Config(**config))
+    return render_slides(Config(**load_yaml()))
 
 
 @app.errorhandler(404)
@@ -257,19 +254,20 @@ def internal_server_error(e: HTTPException) -> str:
         )]))
 
 
-def render_slides(config: Config):
+def render_slides(config: Config) -> str:
     """Rendered slides."""
     return render_template("presentation.html", config=config)
 
 
-def serve(pwd: str, ip: str, port: int):
+def serve(pwd: str, ip: str, port: int) -> None:
     """Start server."""
     global PROJECT
     if not isfile(PROJECT):
         PROJECT = "reveal.yml"
     PROJECT = join(pwd, PROJECT)
     if not isfile(PROJECT):
-        raise FileNotFoundError("project file 'reveal.yaml' is not found")
+        stdout.write("fatal: project is not found")
+        return
     key = (join(pwd, 'localhost.crt'), join(pwd, 'localhost.key'))
     if isfile(key[0]) and isfile(key[1]):
         from ssl import SSLContext, PROTOCOL_TLSv1_2

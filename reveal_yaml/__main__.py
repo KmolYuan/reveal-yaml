@@ -12,9 +12,10 @@ from os.path import join, abspath, dirname, isfile
 
 def main() -> None:
     """Main function startup with SSH."""
+    from reveal_yaml import __version__
     pwd = abspath(getcwd())
     parser = ArgumentParser(
-        prog='Reveal.yaml',
+        prog=f"Reveal.yaml Manager v{__version__}",
         description="A YAML, Markdown, reveal.js based Flask application. "
                     "Supports gh-pages deployment actions.\n"
                     "https://kmolyuan.github.io/reveal-yaml",
