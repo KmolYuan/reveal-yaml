@@ -2,8 +2,6 @@ $schema: http://json-schema.org/draft-07/schema#
 title: Reveal.yaml Schema
 description: The validator of Reveal.yaml
 definitions:
-  size-value:
-    type: [integer, string]
   path:
     type: string
     pattern: ^(?:https?://)?(?:[\w.-]+/?)+
@@ -17,11 +15,11 @@ definitions:
         $ref: "#/definitions/path"
         title: Soure path
       width:
-        $ref: "#/definitions/size-value"
         title: Width
+        type: [integer, string]
       height:
-        $ref: "#/definitions/size-value"
         title: Height
+        type: [integer, string]
   img:
     $ref: "#/definitions/sized"
     properties:
@@ -100,8 +98,8 @@ properties:
     $ref: "#/definitions/path"
     title: Watermark source
   watermark-size:
-    $ref: "#/definitions/size-value"
     title: Source width
+    type: [integer, string]
   outline:
     title: Outline page under first column with depth
     type: integer

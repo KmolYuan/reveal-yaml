@@ -138,7 +138,7 @@ nav:
 
       - title: Sized Attributes
         doc: |
-          Some of the options are support resize. Based on HTML.
+          Some options are support resize. Based on HTML.
 
           So their attributes are defined as:
 

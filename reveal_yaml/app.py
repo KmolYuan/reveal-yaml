@@ -54,10 +54,7 @@ def cast_to(t: Type[T], value: _YamlValue) -> T:
 
 def cast_to(t, value):
     """Check value type."""
-    if value is None:
-        # Create an empty instance
-        return t()
-    elif hasattr(t, '__origin__') and t.__origin__ is list:
+    if hasattr(t, '__origin__') and t.__origin__ is list:
         # Is listed items
         t = t.__args__[0]
         if issubclass(t, TypeChecker) and is_dataclass(t):
@@ -72,6 +69,8 @@ def cast_to(t, value):
         and isinstance(value, dict)
     ):
         return t.from_dict(value)
+    if value is None:
+        abort(500, "the field cannot be empty")
     abort(500, f"expect type: {t}, get: {type(value)}")
 
 
