@@ -1,4 +1,4 @@
-$schema: http://json-schema.org/draft-07/schema#
+$schema: http://json-schema.org/draft-07/schema
 title: Reveal.yaml Schema
 description: The validator of Reveal.yaml
 definitions:
@@ -7,8 +7,8 @@ definitions:
     pattern: ^(?:https?://)?(?:[\w.-]+/?)+
   sized:
     type: object
-    additionalProperties: false
     minProperties: 1
+    additionalProperties: false
     required: [src]
     properties:
       src:
