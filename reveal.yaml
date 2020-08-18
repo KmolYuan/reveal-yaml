@@ -20,7 +20,7 @@ nav:
 
       Scroll right → to see the tutorial.
 
-      Scroll down ↓ to see the outline.
+      Scroll down ↓ to see an auto generated outline.
 
   - title: Quick Start
     doc: |
@@ -139,32 +139,6 @@ nav:
           </section>
           ```
 
-      - title: Sized Attributes
-        doc: |
-          Some options are support resize. Based on HTML.
-
-          So their attributes are defined as:
-
-          ```yaml
-          sized: &sized
-            src: # Source path: str (required)
-            width: # Source width: int / str ("")
-            height: # Source height: int / str ("")
-          ```
-
-          And they will be interpreted as:
-
-          ```html
-          <tag src="..." width="..." height="..."></tag>
-          ```
-
-          The "sized" block in the following sections will represented as YAML references.
-
-          ```yaml
-          <<: *sized
-          ...: # other options
-          ```
-
       - title: Slides in YAML
         doc: |
           The **horizontal** slides are as list in the `nav` node.
@@ -213,6 +187,32 @@ nav:
             doc: Hello!
           - <<: *my-title-page  # Extend from anchor
             title: Hello Again
+          ```
+
+      - title: Sized Attributes
+        doc: |
+          Some options are support resize. Based on HTML.
+
+          So their attributes are defined as:
+
+          ```yaml
+          sized: &sized
+            src: # Source path: str (required)
+            width: # Source width: int / str ("")
+            height: # Source height: int / str ("")
+          ```
+
+          And they will be interpreted as:
+
+          ```html
+          <tag src="..." width="..." height="..."></tag>
+          ```
+
+          The "sized" block in the following sections will represented as YAML references.
+
+          ```yaml
+          <<: *sized
+          ...: # other options
           ```
 
   - title: Project Options
@@ -308,6 +308,16 @@ nav:
           &lt;!-- .slide: data-background="red" -->
           &lt;!-- .element: class="fragment" data-fragment-index="1" -->
           ```
+
+          Notes are allowed in Markdown format. Press "S" to see this:
+
+          ```markdown
+          note&colon;
+          Shows in speaker view!
+          ```
+
+          note:
+          Shows in speaker view!
 
       - title: Image Attributes
         doc: |
