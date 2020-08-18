@@ -184,6 +184,7 @@ class HSlide(Slide):
 
 @dataclass(repr=False, eq=False)
 class Config(TypeChecker):
+    lang: str = "en"
     title: str = "Untitled"
     description: str = ""
     author: str = ""
@@ -256,7 +257,7 @@ def internal_server_error(e: HTTPException) -> str:
 
 def render_slides(config: Config) -> str:
     """Rendered slides."""
-    return render_template("presentation.html", config=config)
+    return render_template("slides.html", config=config)
 
 
 def serve(pwd: str, ip: str, port: int) -> None:

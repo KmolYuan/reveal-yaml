@@ -219,6 +219,7 @@ nav:
     doc: |
       | Key | Description | Type |
       |:---:|:------------|:----:|
+      | lang | Webpage language, default is "en" | `str` |
       | title | Webpage title, default is "Untitled" | `str` |
       | description | Webpage description | `str` |
       | author | Page author | `str` |

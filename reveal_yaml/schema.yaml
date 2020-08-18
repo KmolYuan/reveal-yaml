@@ -84,6 +84,10 @@ definitions:
 type: object
 required: [nav]
 properties:
+  lang:
+    title: Webpage language
+    type: string
+    default: en
   title:
     title: Webpage title
     type: string
