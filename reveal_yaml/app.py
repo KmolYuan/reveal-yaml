@@ -189,6 +189,7 @@ class Config(TypeChecker):
     description: str = ""
     author: str = ""
     theme: str = "serif"
+    code_theme: str = "zenburn"
     icon: str = "img/icon.png"
     outline: int = 2
     default_style: bool = True

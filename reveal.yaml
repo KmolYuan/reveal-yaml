@@ -20,7 +20,7 @@ nav:
 
       Scroll right → to see the tutorial.
 
-      Scroll down ↓ to see an auto generated outline.
+      Scroll down ↓ to see an auto-generated outline.
 
   - title: Quick Start
     doc: |
@@ -227,13 +227,14 @@ nav:
       | watermark-size | Source width | `int` / `str` |
       | outline | Outline page under first column with depth | `int` {0, 1, 2} |
       | theme | Reveal.js theme, "serif" by default | `str` |
+      | code-theme | Highlight theme, "zenburn" by default | `str` |
       | icon | Icon path, "img/icon.png" by default | `str` |
-      | default-style | Use default style, enabled by default | `bool` |
-      | extra-style | Extra CSS style path in "templates" | `str` |
     sub:
       - doc: |
           | Key | Description | Type |
           |:---:|:------------|:----:|
+          | default-style | Use default style, enabled by default | `bool` |
+          | extra-style | Extra CSS style path in "templates" | `str` |
           | nav-mode | Reveal [navigation mode](https://revealjs.com/vertical-slides/#navigation-mode) option | `str` |
           | show-arrows | Show control arrows, enabled by default | `bool` |
           | center | Auto center the "doc", enabled by default | `bool` |
@@ -242,11 +243,10 @@ nav:
           | slide-num | Slide number style, "c/t" by default | `bool` / `str` |
           | progress | Show progress bar, enabled by default | `bool` |
           | mouse-wheel | Allow wheel control, disabled by default | `bool` |
-          | preview-links | Open a preview window for links, disabled by default | `bool` |
-
       - doc: |
           | Key | Description | Type |
           |:---:|:------------|:----:|
+          | preview-links | Open a preview window for links, disabled by default | `bool` |
           | transition | Transition mode, "linear" by default | `str` |
           | [footer](#/3/3) | Footer option | `Footer` |
           | nav | Horizontal slides | `List[HSlide]` |

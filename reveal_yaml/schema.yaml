@@ -114,6 +114,10 @@ properties:
     title: Reveal.js theme
     type: string
     default: serif
+  code-theme:
+    title: Highlight theme
+    type: string
+    default: zenburn
   icon:
     $ref: "#/definitions/path"
     title: Icon path
