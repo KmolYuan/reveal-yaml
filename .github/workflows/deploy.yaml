@@ -26,6 +26,7 @@ jobs:
     - name: Build & Pack
       run: |
         python sync.py
+        python entry.py --version
         python setup.py install
         rm -fr build
         rym init

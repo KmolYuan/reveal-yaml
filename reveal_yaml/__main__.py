@@ -14,13 +14,15 @@ def main() -> None:
     """Main function startup with SSH."""
     from reveal_yaml import __version__
     pwd = abspath(getcwd())
+    ver = f"Reveal.yaml Manager v{__version__}"
     parser = ArgumentParser(
-        prog=f"Reveal.yaml Manager v{__version__}",
+        prog=ver,
         description="A YAML, Markdown, reveal.js based Flask application. "
                     "Supports gh-pages deployment actions.\n"
                     "https://kmolyuan.github.io/reveal-yaml",
         epilog=f"{__copyright__} {__license__} {__author__} {__email__}",
     )
+    parser.add_argument('-v', '--version', action='version', version=ver)
     s = parser.add_subparsers(dest='cmd')
     sub = s.add_parser('init', help="initialize a new project")
     sub.add_argument('PATH', nargs='?', default=pwd, type=str,
