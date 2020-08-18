@@ -1,4 +1,3 @@
-title: Reveal.yaml Documentation
 description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
 watermark: img/watermark.png
@@ -11,7 +10,7 @@ footer:
 nav:
   - title: Reveal.yaml Documentation
     doc: |
-      *Author: Yuan Chang*
+      *Author: [Yuan Chang](https://github.com/KmolYuan)*
 
       Required Python 3.7+
 
@@ -219,9 +218,9 @@ nav:
     doc: |
       | Key | Description | Type |
       |:---:|:------------|:----:|
-      | lang | Webpage language, default is "en" | `str` |
-      | title | Webpage title, default is "Untitled" | `str` |
-      | description | Webpage description | `str` |
+      | lang | Page language, default is "en" | `str` |
+      | title | Page title, default is same as first page | `str` |
+      | description | Page description | `str` |
       | author | Page author | `str` |
       | watermark | Watermark source | `str` |
       | watermark-size | Source width | `int` / `str` |
@@ -247,7 +246,7 @@ nav:
           | Key | Description | Type |
           |:---:|:------------|:----:|
           | preview-links | Open a preview window for links, disabled by default | `bool` |
-          | transition | Transition mode, "linear" by default | `str` |
+          | transition | Transition mode, "slide" by default | `str` |
           | [footer](#/3/3) | Footer option | `Footer` |
           | nav | Horizontal slides | `List[HSlide]` |
 

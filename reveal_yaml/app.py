@@ -185,7 +185,7 @@ class HSlide(Slide):
 @dataclass(repr=False, eq=False)
 class Config(TypeChecker):
     lang: str = "en"
-    title: str = "Untitled"
+    title: str = ""
     description: str = ""
     author: str = ""
     theme: str = "serif"
@@ -211,6 +211,8 @@ class Config(TypeChecker):
 
     def __post_init__(self):
         """Check arguments after assigned."""
+        if not self.title and self.nav:
+            self.title = self.nav[0].title
         self.icon = uri(self.icon)
         self.watermark = uri(self.watermark)
         self.watermark_size = pixel(self.watermark_size)

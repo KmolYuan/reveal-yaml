@@ -85,15 +85,14 @@ type: object
 required: [nav]
 properties:
   lang:
-    title: Webpage language
+    title: Page language
     type: string
     default: en
   title:
-    title: Webpage title
+    title: Page title, default is same as first page
     type: string
-    default: Untitled
   description:
-    title: Webpage description
+    title: Page description
     type: string
   author:
     title: Page author
