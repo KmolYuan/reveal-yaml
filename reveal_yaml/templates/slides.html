@@ -184,11 +184,11 @@
 </script>
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(() => {
         {% if config.footer.label or config.footer.src -%}
         let footer = $('#footer').html();
         if (window.location.search.match(/print-pdf/gi))
-            Reveal.addEventListener('ready', function (_) {
+            Reveal.addEventListener('ready', _ => {
                 $('.slide-background').append(footer);
             });
         else
