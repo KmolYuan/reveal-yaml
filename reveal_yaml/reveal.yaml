@@ -109,6 +109,23 @@ nav:
 
           Powered by [JamesIves/github-pages-deploy-action](https://github.com/JamesIves/github-pages-deploy-action).
 
+      - title: Browser Compatibility
+        doc: |
+          Table from MDN JavaScript. Icons are [icons8](https://icons8.com/).
+
+          |     | ![][android] | ![][chrome] | ![][edge] | ![][firefox] | ![][opera] | ![][safari] |
+          |:---:|:------------:|:-----------:|:---------:|:------------:|:----------:|:-----------:|
+          | | Android Webview | Chrome | Edge | Firefox | Opera | Safari |
+          | PC |  | 49+ | 14+ | 44+ | 32+ | 10+ |
+          | Mobiles | 49+ | 49+ | | 44+ | 32+ | 10+ |
+
+          [chrome]: https://img.icons8.com/color/96/000000/chrome--v1.png
+          [edge]: https://img.icons8.com/color/96/000000/ms-edge.png
+          [firefox]: https://img.icons8.com/color/96/000000/firefox.png
+          [opera]: https://img.icons8.com/color/96/000000/opera--v1.png
+          [safari]: https://img.icons8.com/color/96/000000/safari--v1.png
+          [android]: https://img.icons8.com/color/96/000000/android-os.png
+
   - title: Reveal.js Slides
     doc: |
       The slides are 2D arrary-like.
