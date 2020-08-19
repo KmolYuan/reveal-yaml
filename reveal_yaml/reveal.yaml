@@ -265,6 +265,7 @@ nav:
           | preview-links | Open a preview window for links, disabled by default | `bool` |
           | transition | Transition mode, "slide" by default | `str` |
           | [footer](#/3/3) | Footer option | `Footer` |
+          | [use](#/3/4) | Plugin enable / disable options | `Use` |
           | nav | Horizontal slides | `List[HSlide]` |
 
       - title: Footer
@@ -272,8 +273,6 @@ nav:
           The footer is at left buttom side.
 
           Its height is adjusted by its logo size and text height.
-
-          Pixel unit `pt` is recommended for fixed size in any screen.
 
           ```yaml
           footer:
@@ -291,6 +290,18 @@ nav:
             label: 機器與機電設計實驗室
             link: http://mmd-lab.herokuapp.com/
           ```
+
+      - title: Use
+        doc: |
+          Plugin can be enabled / disabled manually.
+
+          The default options:
+
+          + `zoom`: Disabled
+          + `notes`: Enabled
+          + `search`: Disabled
+          + `highlight`: Enabled
+          + `math`: Disabled (auto enabled)
 
   - title: Slide Attributes
     doc: |

@@ -183,7 +183,18 @@ class HSlide(Slide):
 
 
 @dataclass(repr=False, eq=False)
+class Use(TypeChecker):
+    """Plugin enable / disable options."""
+    zoom: bool = False
+    notes: bool = True
+    search: bool = False
+    highlight: bool = True
+    math: bool = False
+
+
+@dataclass(repr=False, eq=False)
 class Config(TypeChecker):
+    """Config overview."""
     lang: str = "en"
     title: str = ""
     description: str = ""
@@ -208,6 +219,7 @@ class Config(TypeChecker):
     transition: str = "slide"
     footer: Footer = field(default_factory=Footer)
     nav: List[HSlide] = field(default_factory=list)
+    use: Use = field(default_factory=Use)
 
     def __post_init__(self):
         """Check arguments after assigned."""
@@ -222,27 +234,28 @@ class Config(TypeChecker):
         if self.outline not in {0, 1, 2}:
             raise ValueError(f"outline level should be 0, 1 or 2, "
                              f"not {self.outline}")
-        if not self.nav[1:] or self.outline == 0:
-            return
         # Make an outline page
         doc = []
-        for i, n in enumerate(self.nav[1:]):
-            if n.title:
+        for i, n in enumerate(self.nav):
+            if i > 0 and n.title and self.outline > 0:
                 if self.history:
-                    title = f"+ [{n.title}](#/{i + 1})"
+                    title = f"+ [{n.title}](#/{i})"
                 else:
                     title = f"+ {n.title}"
                 doc.append(title)
-            if self.outline < 2:
-                continue
+            if not self.use.math and n.math:
+                self.use.math = True
             for j, sn in enumerate(n.sub):
-                if sn.title:
+                if i > 0 and sn.title and self.outline > 1:
                     if self.history:
-                        title = f"+ [{sn.title}](#/{i + 1}/{j + 1})"
+                        title = f"+ [{sn.title}](#/{i}/{j + 1})"
                     else:
                         title = f"+ {sn.title}"
                     doc.append(" " * 2 + title)
-        self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
+                if not self.use.math and sn.math:
+                    self.use.math = True
+        if doc:
+            self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
 @app.route('/')

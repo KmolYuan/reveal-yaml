@@ -59,8 +59,8 @@
     -moz-box-shadow: none !important;
     box-shadow: none !important;
 }
-.reveal p code, .reveal table code { color: white; }
-.reveal pre code, .reveal p code, .reveal table code {
+.reveal code {
+    color: white;
     border-style: solid;
     border-width: 2px;
     border-radius: 5px;
@@ -158,12 +158,12 @@
 </div>
 </div>
 <script src="{{ url_for('static', filename="reveal.js/reveal.js") }}"></script>
-<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>
+{% if config.use.zoom %}<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>{% endif %}
+{% if config.use.notes %}<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>{% endif %}
+{% if config.use.search %}<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>{% endif %}
 <script src="{{ url_for('static', filename="plugin/markdown/markdown.js") }}"></script>
-<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>
-<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>
-<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>
-<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>
+{% if config.use.highlight %}<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>{% endif %}
+{% if config.use.math %}<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>{% endif %}
 <script>
     Reveal.initialize({
         navigationMode: '{{ config.nav_mode }}',
@@ -177,8 +177,13 @@
         mouseWheel: {{ config.mouse_wheel | lower }},
         previewLinks: {{ config.preview_links | lower }},
         transition: '{{ config.transition }}',
-        {#Import order must be fixed!#}
-        plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight, RevealMath],
+        <!-- Import order must be fixed! -->
+        plugins: [{%- if config.use.zoom %}RevealZoom,{% endif -%}
+                  {%- if config.use.notes %}RevealNotes,{% endif -%}
+                  {%- if config.use.search %}RevealSearch,{% endif -%}
+                  RevealMarkdown,
+                  {%- if config.use.highlight %}RevealHighlight,{% endif -%}
+                  {%- if config.use.math %}RevealMath{% endif %}],
         markdown: {smartypants: true},
     });
 </script>

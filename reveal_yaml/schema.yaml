@@ -177,6 +177,27 @@ properties:
       link:
         $ref: "#/definitions/path"
         title: Link for footer title
+  use:
+    description: Plugin enable / disable options
+    type: object
+    minProperties: 1
+    additionalProperties: false
+    properties:
+      zoom:
+        type: boolean
+        default: false
+      notes:
+        type: boolean
+        default: true
+      search:
+        type: boolean
+        default: false
+      highlight:
+        type: boolean
+        default: true
+      math:
+        type: boolean
+        default: false
   nav:
     title: Horizontal slides
     anyOf:
