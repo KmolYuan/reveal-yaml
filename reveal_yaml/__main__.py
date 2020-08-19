@@ -14,6 +14,7 @@ def main() -> None:
     """Main function startup with SSH."""
     from reveal_yaml import __version__
     pwd = abspath(getcwd())
+    root = abspath(dirname(__file__))
     ver = f"Reveal.yaml Manager v{__version__}"
     parser = ArgumentParser(
         prog=ver,
@@ -30,18 +31,21 @@ def main() -> None:
     sub.add_argument('--no-workflow', action='store_true',
                      help="don't generate Github workflow")
     sub = s.add_parser('pack', help="freeze to a static project")
-    sub.add_argument('PATH', nargs='?', default=join(pwd, 'build'), type=str,
+    sub.add_argument('PATH', nargs='?', default=pwd, type=str,
+                     help="project path")
+    sub.add_argument('--dist', nargs='?', default="", type=str,
                      help="dist path")
-    sub = s.add_parser('serve', help="serve the project")
-    sub.add_argument('IP', nargs='?', default='localhost', type=str,
-                     help="IP address")
-    sub.add_argument('--port', default=0, type=int, help="specified port")
+    for cmd, doc in (('serve', "project"), ('doc', "documentation")):
+        sub = s.add_parser(cmd, help=f"serve the {doc}")
+        sub.add_argument('IP', nargs='?', default='localhost', type=str,
+                         help="IP address")
+        sub.add_argument('--port', default=0, type=int, help="specified port")
     args = parser.parse_args()
     if args.cmd == 'init':
         # Create a project
         from distutils.file_util import copy_file
         from distutils.dir_util import mkpath, copy_tree
-        root = abspath(dirname(__file__))
+        args.PATH = abspath(args.PATH)
         mkpath(args.PATH)
         copy_tree(join(root, "static"), join(args.PATH, "static"))
         mkpath(join(args.PATH, "templates"))
@@ -49,18 +53,28 @@ def main() -> None:
         if not args.no_workflow and not isfile(workflow):
             mkpath(join(args.PATH, dirname(workflow)))
             copy_file(join(root, workflow), join(args.PATH, workflow))
-        if not isfile("reveal.yaml") and not isfile("reveal.yml"):
+        if (
+            not isfile(join(root, "reveal.yaml"))
+            and not isfile(join(root, "reveal.yml"))
+        ):
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
         # Pack into a static project
-        from reveal_yaml.app import app
+        from reveal_yaml.app import app, find_project
         from flask_frozen import Freezer
+        args.PATH = abspath(args.PATH)
+        find_project(args.PATH)
+        if not args.dist:
+            args.dist = join(args.PATH, 'build')
         app.config['FREEZER_RELATIVE_URLS'] = True
-        app.config['FREEZER_DESTINATION'] = args.PATH
+        app.config['FREEZER_DESTINATION'] = abspath(args.dist)
         Freezer(app).freeze()
-    elif args.cmd == 'serve':
+    elif args.cmd in {'serve', 'doc'}:
         from reveal_yaml.app import serve
-        serve(pwd, args.IP, args.port)
+        if args.cmd == 'serve':
+            serve(pwd, args.IP, args.port)
+        else:
+            serve(root, args.IP, args.port)
     else:
         parser.print_help()
 

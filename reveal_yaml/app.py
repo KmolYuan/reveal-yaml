@@ -25,7 +25,7 @@ _YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 
-PROJECT = "reveal.yaml"
+PROJECT = ""
 app = Flask(__name__)
 
 
@@ -271,12 +271,18 @@ def render_slides(config: Config) -> str:
     return render_template("slides.html", config=config)
 
 
+def find_project(pwd: str) -> None:
+    """Get project name from the current path."""
+    global PROJECT
+    PROJECT = join(pwd, "reveal.yaml")
+    if not isfile(PROJECT):
+        PROJECT = join(pwd, "reveal.yml")
+    app.config['STATIC_FOLDER'] = join(pwd, 'static')
+
+
 def serve(pwd: str, ip: str, port: int) -> None:
     """Start server."""
-    global PROJECT
-    if not isfile(PROJECT):
-        PROJECT = "reveal.yml"
-    PROJECT = join(pwd, PROJECT)
+    find_project(pwd)
     if not isfile(PROJECT):
         stdout.write("fatal: project is not found")
         return
