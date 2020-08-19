@@ -228,12 +228,20 @@ class Config(TypeChecker):
         doc = []
         for i, n in enumerate(self.nav[1:]):
             if n.title:
-                doc.append(f"+ [{n.title}](#/{i + 1})")
+                if self.history:
+                    title = f"+ [{n.title}](#/{i + 1})"
+                else:
+                    title = f"+ {n.title}"
+                doc.append(title)
             if self.outline < 2:
                 continue
             for j, sn in enumerate(n.sub):
                 if sn.title:
-                    doc.append(" " * 2 + f"+ [{sn.title}](#/{i + 1}/{j + 1})")
+                    if self.history:
+                        title = f"+ [{sn.title}](#/{i + 1}/{j + 1})"
+                    else:
+                        title = f"+ {sn.title}"
+                    doc.append(" " * 2 + title)
         self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
