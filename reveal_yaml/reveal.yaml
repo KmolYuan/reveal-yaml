@@ -92,6 +92,8 @@ nav:
           python setup.py install
           ```
 
+          See `rym` or `rym --help` command for more CLI information.
+
       - title: GH Pages
         doc: |
           The Github actions can deploy "build" to gh-pages automatically.

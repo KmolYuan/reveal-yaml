@@ -35,7 +35,11 @@ def main() -> None:
                      help="project path")
     sub.add_argument('--dist', nargs='?', default="", type=str,
                      help="dist path")
-    for cmd, doc in (('serve', "project"), ('doc', "documentation")):
+    for cmd, doc in (
+        ('serve', "project"),
+        ('editor', "project for edit mode (preserve)"),
+        ('doc', "documentation"),
+    ):
         sub = s.add_parser(cmd, help=f"serve the {doc}")
         sub.add_argument('IP', nargs='?', default='localhost', type=str,
                          help="IP address")
@@ -71,10 +75,10 @@ def main() -> None:
         Freezer(app).freeze()
     elif args.cmd in {'serve', 'doc'}:
         from reveal_yaml.app import serve
-        if args.cmd == 'serve':
-            serve(pwd, args.IP, args.port)
-        else:
+        if args.cmd == 'doc':
             serve(root, args.IP, args.port)
+        else:
+            serve(pwd, args.IP, args.port)
     else:
         parser.print_help()
 
