@@ -113,6 +113,10 @@ nav:
         doc: |
           Table from MDN JavaScript. Icons are [icons8](https://icons8.com/).
 
+          ECMA Script 6:
+          [Arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions),
+          ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
+
           |     | ![][android] | ![][chrome] | ![][edge] | ![][firefox] | ![][opera] | ![][safari] |
           |:---:|:------------:|:-----------:|:---------:|:------------:|:----------:|:-----------:|
           | | Android Webview | Chrome | Edge | Firefox | Opera | Safari |
