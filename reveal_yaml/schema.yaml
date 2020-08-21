@@ -1,14 +1,13 @@
-$schema: http://json-schema.org/draft-07/schema
+$schema: http://json-schema.org/draft-07/schema#
 title: Reveal.yaml Schema
 description: The validator of Reveal.yaml
 definitions:
   path:
     type: string
     pattern: ^(?:https?://)?(?:[\w.-]+/?)+
-  sized:
+  $sized:
     type: object
     minProperties: 1
-    additionalProperties: false
     required: [src]
     properties:
       src:
@@ -20,18 +19,20 @@ definitions:
       height:
         title: Height
         type: [integer, string]
+  sized:
+    $ref: "#/definitions/$sized"
+    additionalProperties: false
   img:
-    $ref: "#/definitions/sized"
+    $ref: "#/definitions/$sized"
     properties:
       label:
         title: Image caption
         type: string
     title: Image
-  slide:
+  $slide:
     title: A slide
     type: object
     minProperties: 1
-    additionalProperties: false
     properties:
       id:
         title: Custom section id
@@ -71,8 +72,12 @@ definitions:
           img: {type: string}
           youtube: {type: string}
           embed: {type: string}
+  slide:
+    $ref: "#/definitions/$slide"
+    additionalProperties: false
   hslide:
     $ref: "#/definitions/slide"
+    additionalProperties: false
     properties:
       sub:
         title: Vertical slides
@@ -168,7 +173,7 @@ properties:
     type: string
     default: linear
   footer:
-    $ref: "#/definitions/sized"
+    $ref: "#/definitions/$sized"
     title: Footer block
     properties:
       label:

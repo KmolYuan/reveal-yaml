@@ -6,21 +6,11 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from os.path import isfile, join
-from flask import Flask, request
-
-
-def shutdown():
-    """Manually close the server."""
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError("wrong server")
-    func()
-    return "Server shutting down..."
+from flask import Flask
 
 
 def serve(pwd: str, app: Flask, ip: str, port: int = 0) -> None:
     """Serve the app."""
-    app.route('/exit', methods=['GET'])(shutdown)
     key = (join(pwd, 'localhost.crt'), join(pwd, 'localhost.key'))
     if isfile(key[0]) and isfile(key[1]):
         from ssl import SSLContext, PROTOCOL_TLSv1_2

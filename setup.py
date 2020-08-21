@@ -27,7 +27,8 @@ def find_version(path: str):
 def package_files(path: str) -> Iterator[str]:
     for root, _, filenames in walk(path):
         for filename in filenames:
-            yield join('..', root, filename)
+            if not filename.endswith('.py'):
+                yield join('..', root, filename)
 
 
 extra_files = list(package_files(join('reveal_yaml', '.github')))

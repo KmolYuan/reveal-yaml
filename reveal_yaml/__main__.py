@@ -64,6 +64,7 @@ def main() -> None:
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
         # Pack into a static project
+        from shutil import rmtree
         from reveal_yaml.app import app, find_project
         from flask_frozen import Freezer
         args.PATH = abspath(args.PATH)
@@ -74,20 +75,16 @@ def main() -> None:
         app.config['FREEZER_RELATIVE_URLS'] = True
         app.config['FREEZER_DESTINATION'] = abspath(args.dist)
         Freezer(app).freeze()
+        rmtree(join(abspath(args.dist), 'static', 'ace'))
     elif args.cmd in {'serve', 'editor', 'doc'}:
-        from reveal_yaml.app import find_project
+        from reveal_yaml.app import app, find_project
         if args.cmd == 'doc':
             pwd = root
         if not find_project(pwd):
             return
         from reveal_yaml.utility import serve
         if args.cmd == 'editor':
-            from threading import Thread
-            from reveal_yaml.editor import editor_app
-            Thread(target=serve,
-                   args=(pwd, editor_app, args.IP, args.port)).start()
-            args.port = 0
-        from reveal_yaml.app import app
+            from reveal_yaml.editor import app
         serve(pwd, app, args.IP, args.port)
     else:
         parser.print_help()

@@ -2,3 +2,4 @@ pyyaml
 flask
 werkzeug
 frozen-flask
+jsonschema

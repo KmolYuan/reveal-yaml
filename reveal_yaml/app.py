@@ -259,7 +259,7 @@ class Config(TypeChecker):
 
 
 @app.route('/')
-def presentation() -> str:
+def index() -> str:
     """Generate the presentation."""
     return render_slides(Config(**load_yaml()))
 
