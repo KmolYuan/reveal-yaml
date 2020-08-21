@@ -56,7 +56,7 @@ def cast_to(key, t, value):
         if issubclass(t, TypeChecker) and is_dataclass(t):
             return t.as_list(value)
         else:
-            return [cast_to(t, v) for v in value]
+            return [cast_to(key, t, v) for v in value]
     elif isinstance(value, t):
         return value
     elif (
