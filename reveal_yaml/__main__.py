@@ -53,10 +53,10 @@ def main() -> None:
         mkpath(args.PATH)
         copy_tree(join(root, "static"), join(args.PATH, "static"))
         mkpath(join(args.PATH, "templates"))
-        workflow = join(".github", "workflows", "deploy.yaml")
+        workflow = join(args.PATH, ".github", "workflows", "deploy.yaml")
         if not args.no_workflow and not isfile(workflow):
-            mkpath(join(args.PATH, dirname(workflow)))
-            copy_file(join(root, workflow), join(args.PATH, workflow))
+            mkpath(workflow)
+            copy_file(join(root, "deploy.yaml"), workflow)
         if (
             not isfile(join(root, "reveal.yaml"))
             and not isfile(join(root, "reveal.yml"))
