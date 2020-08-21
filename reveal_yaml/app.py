@@ -284,26 +284,14 @@ def render_slides(config: Config) -> str:
     return render_template("slides.html", config=config)
 
 
-def find_project(pwd: str) -> None:
+def find_project(pwd: str) -> bool:
     """Get project name from the current path."""
     global PROJECT
     PROJECT = join(pwd, "reveal.yaml")
     if not isfile(PROJECT):
         PROJECT = join(pwd, "reveal.yml")
-    app.config['STATIC_FOLDER'] = join(pwd, 'static')
-
-
-def serve(pwd: str, ip: str, port: int) -> None:
-    """Start server."""
-    find_project(pwd)
     if not isfile(PROJECT):
         stdout.write("fatal: project is not found")
-        return
-    key = (join(pwd, 'localhost.crt'), join(pwd, 'localhost.key'))
-    if isfile(key[0]) and isfile(key[1]):
-        from ssl import SSLContext, PROTOCOL_TLSv1_2
-        context = SSLContext(PROTOCOL_TLSv1_2)
-        context.load_cert_chain(key[0], key[1])
-        app.run(ip, port, ssl_context=context)
-    else:
-        app.run(ip, port)
+        return False
+    app.config['STATIC_FOLDER'] = join(pwd, 'static')
+    return True

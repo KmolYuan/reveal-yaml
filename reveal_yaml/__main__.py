@@ -67,18 +67,28 @@ def main() -> None:
         from reveal_yaml.app import app, find_project
         from flask_frozen import Freezer
         args.PATH = abspath(args.PATH)
-        find_project(args.PATH)
+        if not find_project(args.PATH):
+            return
         if not args.dist:
             args.dist = join(args.PATH, 'build')
         app.config['FREEZER_RELATIVE_URLS'] = True
         app.config['FREEZER_DESTINATION'] = abspath(args.dist)
         Freezer(app).freeze()
-    elif args.cmd in {'serve', 'doc'}:
-        from reveal_yaml.app import serve
+    elif args.cmd in {'serve', 'editor', 'doc'}:
+        from reveal_yaml.app import find_project
         if args.cmd == 'doc':
-            serve(root, args.IP, args.port)
-        else:
-            serve(pwd, args.IP, args.port)
+            pwd = root
+        if not find_project(pwd):
+            return
+        from reveal_yaml.utility import serve
+        if args.cmd == 'editor':
+            from threading import Thread
+            from reveal_yaml.editor import editor_app
+            Thread(target=serve,
+                   args=(pwd, editor_app, args.IP, args.port)).start()
+            args.port = 0
+        from reveal_yaml.app import app
+        serve(pwd, app, args.IP, args.port)
     else:
         parser.print_help()
 
