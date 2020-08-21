@@ -33,7 +33,7 @@ def main() -> None:
     sub = s.add_parser('pack', help="freeze to a static project")
     sub.add_argument('PATH', nargs='?', default=pwd, type=str,
                      help="project path")
-    sub.add_argument('--dist', nargs='?', default="", type=str,
+    sub.add_argument('-o', '--dist', nargs='?', default="", type=str,
                      help="dist path")
     for cmd, doc in (
         ('serve', "project"),

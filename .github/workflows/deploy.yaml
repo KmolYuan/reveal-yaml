@@ -29,7 +29,7 @@ jobs:
         python entry.py --version
         python setup.py install
         rm -fr build
-        rym pack reveal_yaml --dist build
+        rym pack reveal_yaml -o build
         cp reveal_yaml/schema.json build
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
