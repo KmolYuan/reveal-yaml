@@ -1,10 +1,27 @@
 # -*- coding: utf-8 -*-
 
-from os.path import isdir
+from os import remove
+from shutil import rmtree
 from distutils.dir_util import copy_tree, mkpath
+from glob import glob
 from urllib.request import urlretrieve
+from tarfile import open as tgz
 import yaml
 import json
+
+
+def reveal_cdn(ver: str) -> None:
+    """Download Reveal.js from npm.js."""
+    urlretrieve(f"https://registry.npmjs.org/reveal.js/-/reveal.js-{ver}.tgz",
+                'reveal.tgz')
+    with tgz('reveal.tgz', 'r:gz') as f:
+        f.extractall()
+    remove('reveal.tgz')
+    for f in glob("package/**/*.esm.js*", recursive=True):
+        remove(f)
+    copy_tree("package/dist", f"reveal_yaml/static/reveal.js")
+    copy_tree("package/plugin", f"reveal_yaml/static/plugin")
+    rmtree("package")
 
 
 def cdn(url: str, to: str) -> None:
@@ -14,13 +31,7 @@ def cdn(url: str, to: str) -> None:
 
 
 def main():
-    if not isdir("reveal.js/dist"):
-        raise FileNotFoundError("submodules are not fetched yet")
-    for path in ("reveal.js", "css", "plugin"):
-        if path == "reveal.js":
-            copy_tree("reveal.js/dist", f"reveal_yaml/static/{path}")
-        else:
-            copy_tree(f"reveal.js/{path}", f"reveal_yaml/static/{path}")
+    reveal_cdn("4.0.2")
     path = "reveal_yaml/static/js/"
     mkpath(path)
     cdn("jquery/3.5.1/jquery.min.js", path)
