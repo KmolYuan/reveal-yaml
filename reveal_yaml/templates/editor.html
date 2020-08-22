@@ -118,7 +118,7 @@
             },
             exec: editor => {
                 const pos = editor.getCursorPosition();
-                if (/\s/.test(editor.session.getTextRange(new ace.Range(pos.row, 0, pos.row, pos.column))))
+                if (/^\s+$/.test(editor.session.getTextRange(new ace.Range(pos.row, 0, pos.row, pos.column))))
                     editor.removeToLineStart();
                 editor.remove("left");
             },
@@ -128,6 +128,9 @@
         const previewer = $('#preview');
         previewer.preview = id => {
             previewer.attr('src', window.location.href + '/preview?id=' + id);
+        };
+        previewer.error = id => {
+            previewer.attr('src', window.location.href + '/error?id=' + id);
         };
         $('#compiler').mousedown(_ => {
             const pos = editor.getCursorPosition();
@@ -144,7 +147,7 @@
                         localStorage.setItem('saved', doc);
                         previewer.preview(id);
                     } else
-                        previewer.preview('e');
+                        previewer.error(id);
                 }
             );
         });
@@ -152,7 +155,7 @@
             localStorage.removeItem('saved');
             alert("Local storage cleaned!");
         })
-        previewer.preview('o');
+        previewer.preview(0);
     });
 </script>
 </body>

@@ -32,9 +32,7 @@ nav:
       Create a project by Reveal.yaml Manager (RYM):
 
       ```bash
-      mkdir myproject
-      cd myproject
-      rym init .
+      rym init myproject
       ```
 
       This App will read the YAML file `reveal.yaml` or `reveal.yml` in the root directory.
@@ -132,6 +130,25 @@ nav:
           [safari]: https://img.icons8.com/color/96/000000/safari--v1.png
           [android]: https://img.icons8.com/color/96/000000/android-os.png
 
+      - title: Editor
+        doc: |
+          RYM provides a basic web YAML editor for:
+
+          + Validate the project syntax and field types.
+          + Preview slides in two columns.
+          + Save YAML project.
+          + Pack function.
+
+          Start it with CLI:
+
+          ```bash
+          rym editor --port=5000
+          ```
+
+          If it starts in a project root, "reveal.yaml" will be opened in first time.
+
+          There also has a [Heroku version](https://reveal-yaml.herokuapp.com/).
+
   - title: Reveal.js Slides
     doc: |
       The slides are 2D arrary-like.
@@ -168,10 +185,9 @@ nav:
 
           ```yaml
           nav:
-            - {}  # Not work
-            - title: ...  # Work!
-            - doc: ...  # Work!
-            - img: ...  # Work!
+            - title: ...  # Works!
+            - doc: ...  # Works!
+            - img: ...  # Works!
           ```
 
           The **vertical** slides work under the `sub` node of first slide.

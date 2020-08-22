@@ -9,13 +9,28 @@ This project is under MIT license.
 Quickly create a Reveal.js writing environment!
 
 ```bash
-mkdir myproject
-cd myproject
-rym init
+rym init myproject
 rym serve --port=5000
 ```
 
 Then start writing the slides in Markdown.
+
+## Editor
+
+[Heroku version](https://reveal-yaml.herokuapp.com/).
+
+RYM provides a basic web YAML editor for:
+
++ Validate the project syntax and field types.
++ Preview slides in two columns.
++ Save YAML project.
++ Pack function.
+
+Start it with CLI:
+
+```bash
+rym editor --port=5000
+```
 
 ## JSON Schema
 
