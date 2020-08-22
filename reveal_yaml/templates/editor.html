@@ -55,6 +55,8 @@
     $(document).ready(() => {
         ace.require("ace/ext/language_tools");
         const editor = ace.edit("editor");
+        if (localStorage.getItem('saved'))
+            editor.setValue(localStorage.getItem('saved'));
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");
         editor.setOptions({
@@ -103,10 +105,12 @@
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
                 editor.session.doc.getNewLineCharacter());
             const id = Date.now();
+            const doc = editor.getValue();
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
-                {id: id, config: editor.getValue()},
+                {id: id, config: doc},
                 data => {
                     if (data['validated']) {
+                        localStorage.setItem('saved', doc);
                         $('#preview').attr('src', window.location.href + '/preview?id=' + id);
                     } else
                         $('#preview').attr('src', 'data:text/html;charset=utf-8,' + encodeURI(data['msg']));
