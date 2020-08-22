@@ -3,3 +3,4 @@ flask
 werkzeug
 frozen-flask
 jsonschema
+gunicorn
