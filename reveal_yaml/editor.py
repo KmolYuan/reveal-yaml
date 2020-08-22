@@ -13,7 +13,8 @@ from jsonschema import validate
 from reveal_yaml.app import PROJECT, Config, render_slides
 
 ROOT = abspath(dirname(__file__))
-PREVIEW = {'o': "<h1>Press the compile button to render the slides!</h1>"}
+PREVIEW = {'o': "<h1>Press the compile button to render the slides!</h1>",
+           'e': ""}
 
 app = Flask(__name__)
 path = abspath(join(ROOT, 'schema.yaml'))
@@ -37,7 +38,8 @@ def _handler() -> Response:
     except Exception as e:
         from traceback import format_exc
         stdout.write(format_exc())
-        return jsonify(validated=False, msg=f"<p>{e}</p>")
+        PREVIEW['e'] = f"<pre>{format_exc()}\n{e}</pre>"
+        return jsonify(validated=False)
     # Preview
     PREVIEW[request.args.get('id')] = render_slides(
         Config(**{k.replace('-', '_'): v for k, v in config.items()}))
