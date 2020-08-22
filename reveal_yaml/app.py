@@ -11,7 +11,6 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from sys import stdout
 from os.path import isfile, join
 from urllib.parse import urlparse
 from yaml import safe_load
@@ -290,7 +289,6 @@ def find_project(pwd: str) -> bool:
     if not isfile(project):
         project = join(pwd, "reveal.yml")
     if not isfile(project):
-        stdout.write("fatal: project is not found")
         return False
     app.config['STATIC_FOLDER'] = join(pwd, 'static')
     global PROJECT

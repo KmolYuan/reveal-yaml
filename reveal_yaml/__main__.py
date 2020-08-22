@@ -6,6 +6,7 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from argparse import ArgumentParser
+from sys import stdout
 from os import getcwd
 from os.path import join, abspath, dirname, isfile
 
@@ -69,6 +70,7 @@ def main() -> None:
         from flask_frozen import Freezer
         args.PATH = abspath(args.PATH)
         if not find_project(args.PATH):
+            stdout.write("fatal: project is not found")
             return
         if not args.dist:
             args.dist = join(args.PATH, 'build')
@@ -81,6 +83,7 @@ def main() -> None:
         if args.cmd == 'doc':
             pwd = root
         if not find_project(pwd) and args.cmd != 'editor':
+            stdout.write("fatal: project is not found")
             return
         from reveal_yaml.utility import serve
         if args.cmd == 'editor':

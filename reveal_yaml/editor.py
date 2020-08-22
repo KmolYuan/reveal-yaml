@@ -21,9 +21,10 @@ if not isfile(path):
     raise ValueError("load schema failed!")
 with open(path, 'r') as f:
     SCHEMA = safe_load(f)
-if PROJECT:
-    with open(PROJECT, 'r', encoding='utf-8') as f:
-        SAVED = f.read()
+if not PROJECT:
+    PROJECT = join(ROOT, 'blank.yaml')
+with open(PROJECT, 'r', encoding='utf-8') as f:
+    SAVED = f.read()
 del path, f
 
 
