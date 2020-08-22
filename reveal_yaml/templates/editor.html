@@ -15,7 +15,7 @@
             right: 0;
             bottom: 0;
             left: 0;
-            width: 45%;
+            width: 50%;
         }
 
         #editor {
@@ -23,14 +23,14 @@
         }
 
         #compiler {
-            width: 6%;
+            width: 5%;
             height: 5%;
-            left: 47%;
+            left: 52%;
         }
 
         #preview {
-            left: 55%;
-            width: 43%;
+            left: 58%;
+            width: 40%;
             height: 95%;
             margin: 0.5%;
         }
@@ -38,37 +38,84 @@
 </head>
 <body>
 <div id="splitter">
-    <div id="editor"></div>
+    <pre id="editor">{{ saved }}</pre>
     <button id="compiler">Compile</button>
     <iframe id="preview">Slides preview here</iframe>
 </div>
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ace.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ext-searchbox.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/ext-whitespace.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/ext-keybinding_menu.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/ext-language_tools.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/mode-yaml.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/theme-chrome.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/theme-monokai.min.js") }}"></script>
 <script>
     $(document).ready(() => {
+        ace.require("ace/ext/language_tools");
         const editor = ace.edit("editor");
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");
         editor.setOptions({
-            fontSize: "20pt",
+            fontSize: "14pt",
             tabSize: 2,
             useSoftTabs: true,
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
         });
-        $('#compiler').mousedown(_ => {
+        editor.commands.addCommands(ace.require("ace/ext/whitespace").commands);
+        editor.commands.addCommand({
+            name: "duplicateSelection",
+            description: "Duplicate selection",
+            bindKey: {win: "Ctrl-D", mac: "Command-D"},
+            exec: editor => {
+                editor.duplicateSelection();
+                editor.navigateDown();
+            },
+            scrollIntoView: "cursor",
+            multiSelectAction: "forEach"
+        });
+        editor.commands.addCommand({
+            name: "removeline",
+            description: "Remove line",
+            bindKey: {win: "Ctrl-Shift-D", mac: "Command-Shift-D"},
+            exec: editor => {
+                editor.removeLines();
+            },
+            scrollIntoView: "cursor",
+            multiSelectAction: "forEachLine"
+        });
+        editor.commands.addCommand({
+            name: "showKeyboardShortcuts",
+            bindKey: {win: "Ctrl-Alt-H", mac: "Command-Alt-H"},
+            exec: editor => {
+                ace.config.loadModule("ace/ext/keybinding_menu", module => {
+                    module.init(editor);
+                    editor.showKeyboardShortcuts()
+                })
+            }
+        });
+
+        function makePreview(_) {
+            editor.execCommand("trimTrailingSpace", {trimEmpty: true});
+            editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
+                editor.session.doc.getNewLineCharacter());
+            const id = Date.now();
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
-                {config: editor.getValue()},
+                {id: id, config: editor.getValue()},
                 data => {
-                    if (data['validated'])
-                        $('#preview').attr('src', window.location.href + '/_preview');
-                    else
+                    if (data['validated']) {
+                        $('#preview').attr('src', window.location.href + '/preview?id=' + id);
+                    } else
                         $('#preview').attr('src', 'data:text/html;charset=utf-8,' + encodeURI(data['msg']));
                 }
             );
-        });
+        }
+
+        $('#compiler').mousedown(makePreview);
+        makePreview();
     });
 </script>
 </body>

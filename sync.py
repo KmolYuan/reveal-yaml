@@ -28,10 +28,12 @@ def main():
     mkpath(path)
     cdn("ace/1.4.12/ace.min.js", path)
     cdn("ace/1.4.12/ext-searchbox.min.js", path)
+    cdn("ace/1.4.12/ext-whitespace.min.js", path)
+    cdn("ace/1.4.12/ext-keybinding_menu.min.js", path)
+    cdn("ace/1.4.12/ext-language_tools.min.js", path)
     cdn("ace/1.4.12/mode-yaml.min.js", path)
     cdn("ace/1.4.12/theme-chrome.min.js", path)
     cdn("ace/1.4.12/theme-monokai.min.js", path)
-    cdn("js-cookie/2.2.1/js.cookie.min.js", path)
     # Generate JSON schema
     with open("reveal_yaml/schema.yaml", 'r') as f:
         data = yaml.safe_load(f)

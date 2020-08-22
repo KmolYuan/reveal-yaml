@@ -363,7 +363,7 @@ nav:
             label: # Image caption: str ("")
           ```
 
-          They will interpreted like:
+          They will be interpreted like:
 
           ```html
           <figure>
