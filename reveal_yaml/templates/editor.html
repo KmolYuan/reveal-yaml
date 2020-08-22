@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Reveal.yaml Editor</title>
+    <link rel="icon" href="{{ url_for('static', filename="img/icon.png") }}">
     <style>
         #splitter {
             display: flex;
@@ -55,7 +56,7 @@
     $(document).ready(() => {
         ace.require("ace/ext/language_tools");
         const editor = ace.edit("editor");
-        if (localStorage.getItem('saved'))
+        if (!editor.getValue())
             editor.setValue(localStorage.getItem('saved'));
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");

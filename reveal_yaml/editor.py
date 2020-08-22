@@ -55,4 +55,7 @@ def preview() -> str:
 @app.route('/')
 def index() -> str:
     """The editor."""
-    return render_template("editor.html", saved=SAVED)
+    global SAVED
+    res = render_template("editor.html", saved=SAVED)
+    SAVED = ""
+    return res
