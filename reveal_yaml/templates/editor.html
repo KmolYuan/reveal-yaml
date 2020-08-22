@@ -43,13 +43,21 @@
     <iframe id="preview">Slides preview here</iframe>
 </div>
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
-<script src="{{ url_for('static', filename="ace/ace.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/ace.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/ext-searchbox.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/mode-yaml.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/theme-chrome.min.js") }}"></script>
+<script src="{{ url_for('static', filename="ace/theme-monokai.min.js") }}"></script>
 <script>
     $(document).ready(() => {
         const editor = ace.edit("editor");
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");
-        editor.setOptions({fontSize: "20pt", tabSize: 2, useSoftTabs: true});
+        editor.setOptions({
+            fontSize: "20pt",
+            tabSize: 2,
+            useSoftTabs: true,
+        });
         $('#compiler').mousedown(_ => {
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
                 {config: editor.getValue()},

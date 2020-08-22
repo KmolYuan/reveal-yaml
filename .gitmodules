@@ -1,9 +1,3 @@
 [submodule "reveal.js"]
 	path = reveal.js
 	url = https://github.com/hakimel/reveal.js
-[submodule "jquery"]
-	path = jquery
-	url = https://github.com/jquery/jquery.git
-[submodule "ace-builds"]
-	path = ace
-	url = https://github.com/ajaxorg/ace-builds.git
