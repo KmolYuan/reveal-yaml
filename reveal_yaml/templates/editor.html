@@ -56,7 +56,7 @@
     $(document).ready(() => {
         ace.require("ace/ext/language_tools");
         const editor = ace.edit("editor");
-        if (!editor.getValue())
+        if (localStorage.getItem('saved'))
             editor.setValue(localStorage.getItem('saved'));
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");
