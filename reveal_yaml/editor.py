@@ -10,7 +10,7 @@ from os.path import abspath, dirname, isfile, join
 from flask import Flask, render_template, request, jsonify
 from yaml import safe_load
 from jsonschema import validate
-from reveal_yaml.app import Config, render_slides
+from reveal_yaml.app import PROJECT, Config, render_slides
 
 ROOT = abspath(dirname(__file__))
 PREVIEW = ""

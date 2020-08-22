@@ -286,12 +286,13 @@ def render_slides(config: Config) -> str:
 
 def find_project(pwd: str) -> bool:
     """Get project name from the current path."""
-    global PROJECT
-    PROJECT = join(pwd, "reveal.yaml")
-    if not isfile(PROJECT):
-        PROJECT = join(pwd, "reveal.yml")
-    if not isfile(PROJECT):
+    project = join(pwd, "reveal.yaml")
+    if not isfile(project):
+        project = join(pwd, "reveal.yml")
+    if not isfile(project):
         stdout.write("fatal: project is not found")
         return False
     app.config['STATIC_FOLDER'] = join(pwd, 'static')
+    global PROJECT
+    PROJECT = project
     return True

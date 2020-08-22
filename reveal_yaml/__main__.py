@@ -80,7 +80,7 @@ def main() -> None:
         from reveal_yaml.app import app, find_project
         if args.cmd == 'doc':
             pwd = root
-        if not find_project(pwd):
+        if not find_project(pwd) and args.cmd != 'editor':
             return
         from reveal_yaml.utility import serve
         if args.cmd == 'editor':
