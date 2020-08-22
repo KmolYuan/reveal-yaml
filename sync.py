@@ -40,7 +40,6 @@ def main():
     cdn("ace/1.4.12/ace.min.js", path)
     cdn("ace/1.4.12/ext-searchbox.min.js", path)
     cdn("ace/1.4.12/ext-whitespace.min.js", path)
-    cdn("ace/1.4.12/ext-keybinding_menu.min.js", path)
     cdn("ace/1.4.12/ext-language_tools.min.js", path)
     cdn("ace/1.4.12/mode-yaml.min.js", path)
     cdn("ace/1.4.12/theme-chrome.min.js", path)

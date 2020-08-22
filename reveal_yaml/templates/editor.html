@@ -55,7 +55,6 @@
 <script src="{{ url_for('static', filename="ace/ace.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ext-searchbox.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ext-whitespace.min.js") }}"></script>
-<script src="{{ url_for('static', filename="ace/ext-keybinding_menu.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ext-language_tools.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/mode-yaml.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/theme-chrome.min.js") }}"></script>
@@ -100,16 +99,6 @@
             multiSelectAction: "forEachLine"
         });
         editor.commands.addCommand({
-            name: "showKeyboardShortcuts",
-            bindKey: {win: "Ctrl-Alt-H", mac: "Command-Alt-H"},
-            exec: editor => {
-                ace.config.loadModule("ace/ext/keybinding_menu", module => {
-                    module.init(editor);
-                    editor.showKeyboardShortcuts()
-                })
-            }
-        });
-        editor.commands.addCommand({
             name: "backspace",
             description: "Backspace",
             bindKey: {
@@ -140,9 +129,11 @@
             editor.moveCursorTo(pos.row, pos.column);
             const id = Date.now();
             const doc = editor.getValue();
+            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
                 {id: id, config: doc},
-                data => {
+                async function (data) {
+                    await sleep(200);
                     if (data['validated']) {
                         localStorage.setItem('saved', doc);
                         previewer.preview(id);
