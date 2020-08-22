@@ -115,7 +115,8 @@ nav:
 
           ECMA Script 6:
           [Arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions),
-          ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
+          ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let),
+          [async function](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Statements/async_function).
 
           |     | ![][android] | ![][chrome] | ![][edge] | ![][firefox] | ![][opera] | ![][safari] |
           |:---:|:------------:|:-----------:|:---------:|:------------:|:----------:|:-----------:|
@@ -138,6 +139,8 @@ nav:
           + Preview slides in two columns.
           + Save YAML project.
           + Pack function.
+
+          Browsers will complain about consuming a lot of memory for previewer.
 
           Start it with CLI:
 
