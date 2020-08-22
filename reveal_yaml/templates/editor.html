@@ -99,11 +99,29 @@
                 })
             }
         });
+        editor.commands.addCommand({
+            name: "backspace",
+            description: "Backspace",
+            bindKey: {
+                win: "Shift-Backspace|Backspace",
+                mac: "Ctrl-Backspace|Shift-Backspace|Backspace|Ctrl-H"
+            },
+            exec: editor => {
+                const pos = editor.getCursorPosition();
+                if (/\s/.test(editor.session.getTextRange(new ace.Range(pos.row, 0, pos.row, pos.column))))
+                    editor.removeToLineStart();
+                editor.remove("left");
+            },
+            multiSelectAction: "forEach",
+            scrollIntoView: "cursor"
+        });
 
         function makePreview(_) {
+            const pos = editor.getCursorPosition();
             editor.execCommand("trimTrailingSpace", {trimEmpty: true});
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
                 editor.session.doc.getNewLineCharacter());
+            editor.moveCursorTo(pos.row, pos.column);
             const id = Date.now();
             const doc = editor.getValue();
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
