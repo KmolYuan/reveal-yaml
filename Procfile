@@ -1,2 +1,1 @@
-release: python sync.py
-web: gunicorn reveal_yaml.editor:app
+web: python sync.py && gunicorn reveal_yaml.editor:app
