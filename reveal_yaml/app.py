@@ -267,7 +267,7 @@ def index() -> str:
 @app.errorhandler(403)
 @app.errorhandler(410)
 @app.errorhandler(500)
-def internal_server_error(e: HTTPException) -> str:
+def server_error(e: HTTPException) -> str:
     """Error pages."""
     from traceback import format_exc
     title = f"{e.code} {e.name}"

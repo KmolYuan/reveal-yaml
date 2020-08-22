@@ -48,6 +48,17 @@ def _handler() -> Response:
     return jsonify(validated=True)
 
 
+@app.errorhandler(404)
+@app.errorhandler(403)
+@app.errorhandler(410)
+@app.errorhandler(500)
+def server_error(e: Exception) -> str:
+    """Handle server error."""
+    from traceback import format_exc
+    stdout.write(format_exc())
+    return f"<pre>{format_exc()}\n{e}</pre>"
+
+
 @app.route('/preview')
 def preview() -> str:
     """Render preview."""
