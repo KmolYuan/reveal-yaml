@@ -13,7 +13,7 @@ from jsonschema import validate
 from reveal_yaml.app import PROJECT, Config, render_slides
 
 ROOT = abspath(dirname(__file__))
-PREVIEW = {0: "<h1>Preview is outdated!</h1>"}
+PREVIEW = {'o': "<h1>Press the compile button to render the slides!</h1>"}
 
 app = Flask(__name__)
 path = abspath(join(ROOT, 'schema.yaml'))
@@ -49,13 +49,10 @@ def _handler() -> Response:
 @app.route('/preview')
 def preview() -> str:
     """Render preview."""
-    return PREVIEW[request.args.get('id', 0)]
+    return PREVIEW[request.args.get('id', 'o')]
 
 
 @app.route('/')
 def index() -> str:
     """The editor."""
-    global SAVED
-    res = render_template("editor.html", saved=SAVED)
-    SAVED = ""
-    return res
+    return render_template("editor.html", saved=SAVED)

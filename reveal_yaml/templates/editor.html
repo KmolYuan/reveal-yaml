@@ -41,7 +41,7 @@
 <div id="splitter">
     <pre id="editor">{{ saved }}</pre>
     <button id="compiler">Compile</button>
-    <iframe id="preview">Slides preview here</iframe>
+    <iframe id="preview"></iframe>
 </div>
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
 <script src="{{ url_for('static', filename="ace/ace.min.js") }}"></script>
@@ -58,6 +58,7 @@
         const editor = ace.edit("editor");
         if (localStorage.getItem('saved'))
             editor.setValue(localStorage.getItem('saved'));
+        editor.moveCursorTo(0, 0);
         editor.setTheme("ace/theme/chrome");
         editor.session.setMode("ace/mode/yaml");
         editor.setOptions({
@@ -116,8 +117,7 @@
             multiSelectAction: "forEach",
             scrollIntoView: "cursor"
         });
-
-        function makePreview(_) {
+        $('#compiler').mousedown(_ => {
             const pos = editor.getCursorPosition();
             editor.execCommand("trimTrailingSpace", {trimEmpty: true});
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
@@ -135,10 +135,8 @@
                         $('#preview').attr('src', 'data:text/html;charset=utf-8,' + encodeURI(data['msg']));
                 }
             );
-        }
-
-        $('#compiler').mousedown(makePreview);
-        makePreview();
+        });
+        $('#preview').attr('src', window.location.href + '/preview?id=o');
     });
 </script>
 </body>
