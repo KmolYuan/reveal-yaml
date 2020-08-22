@@ -133,7 +133,7 @@
             $.getJSON({{ request.script_root|tojson|safe }} +'/_handler',
                 {id: id, config: doc},
                 async function (data) {
-                    await sleep(200);
+                    await sleep(100);
                     if (data['validated']) {
                         localStorage.setItem('saved', doc);
                         previewer.preview(id);
