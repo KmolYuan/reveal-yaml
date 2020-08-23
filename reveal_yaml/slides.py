@@ -16,21 +16,21 @@ from shutil import rmtree
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from flask_frozen import relative_url_for, Freezer
+from flask_frozen import Freezer
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
 _YamlValue = Union[bool, int, float, str, list, dict]
+_PROJECT = ""
+_FREEZER_RELATIVE_URLS = False
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 ROOT = abspath(dirname(__file__))
-PROJECT = ""
-FREEZER_RELATIVE_URLS = False
 
 
 def load_yaml() -> _Data:
     """Load project."""
-    with open(PROJECT, 'r', encoding='utf-8') as f:
+    with open(_PROJECT, 'r', encoding='utf-8') as f:
         data: _Data = safe_load(f)
     for key in tuple(data):
         data[key.replace('-', '_')] = data.pop(key)
@@ -65,19 +65,6 @@ def cast_to(key, t, value):
     ):
         return t.from_dict(value)
     raise TypeError(f"'{key}' expect type: {t}, got: {type(value)}")
-
-
-def uri(path: str) -> str:
-    """Handle the relative path and URIs."""
-    if not path:
-        return ""
-    u = urlparse(path)
-    if all((u.scheme, u.netloc, u.path)):
-        return path
-    if FREEZER_RELATIVE_URLS:
-        return relative_url_for('static', filename=path)
-    else:
-        return url_for('static', filename=path)
 
 
 def pixel(value: Union[int, str]) -> str:
@@ -126,7 +113,6 @@ class Size(TypeChecker):
     height: str = ""
 
     def __post_init__(self):
-        self.src = uri(self.src)
         self.width = pixel(self.width)
         self.height = pixel(self.height)
 
@@ -224,8 +210,6 @@ class Config(TypeChecker):
         """Check arguments after assigned."""
         if not self.title and self.nav:
             self.title = self.nav[0].title
-        self.icon = uri(self.icon)
-        self.watermark = uri(self.watermark)
         self.watermark_size = pixel(self.watermark_size)
         if self.extra_style:
             with open(join("templates", self.extra_style), 'r') as f:
@@ -260,33 +244,44 @@ class Config(TypeChecker):
 def render_slides(config: Config, *, rel_url: bool = None) -> str:
     """Rendered slides."""
     if rel_url is None:
-        rel_url = FREEZER_RELATIVE_URLS
+        rel_url = _FREEZER_RELATIVE_URLS
     if rel_url:
         def url_func(endpoint: str, **values: str) -> str:
             path = url_for(endpoint, **values).replace('/', sep)
             return relpath(ROOT + path, ROOT).replace(sep, '/')
     else:
         url_func = url_for
-    return render_template("slides.html", config=config, url_for=url_func)
+
+    def uri(path: str) -> str:
+        """Handle the relative path and URIs."""
+        if not path:
+            return ""
+        u = urlparse(path)
+        if all((u.scheme, u.netloc, u.path)):
+            return path
+        return url_func('static', filename=path)
+
+    return render_template("slides.html",
+                           config=config, url_for=url_func, uri=uri)
 
 
-def find_project(pwd: str, flask_app: Flask) -> bool:
+def find_project(pwd: str, flask_app: Flask) -> str:
     """Get project name from the current path."""
     project = join(pwd, "reveal.yaml")
     if not isfile(project):
         project = join(pwd, "reveal.yml")
     if not isfile(project):
-        return False
+        return ""
     flask_app.config['STATIC_FOLDER'] = join(pwd, 'static')
-    global PROJECT
-    PROJECT = project
-    return True
+    global _PROJECT
+    _PROJECT = project
+    return _PROJECT
 
 
 def pack(dist: str, app: Flask):
     """Pack into a static project."""
-    global FREEZER_RELATIVE_URLS
-    FREEZER_RELATIVE_URLS = True
+    global _FREEZER_RELATIVE_URLS
+    _FREEZER_RELATIVE_URLS = True
     app.config['FREEZER_DESTINATION'] = abspath(dist)
     Freezer(app).freeze()
     rmtree(join(abspath(dist), 'static', 'ace'))

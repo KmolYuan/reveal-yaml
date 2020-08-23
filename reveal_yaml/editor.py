@@ -14,7 +14,7 @@ from tempfile import TemporaryDirectory
 from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
-from reveal_yaml.slides import PROJECT, ROOT, Config, render_slides
+from reveal_yaml.slides import ROOT, Config, render_slides
 
 START = "<h1>Press the compile button to render the slides!</h1>"
 PREVIEW: Dict[int, dict] = {}
@@ -25,11 +25,17 @@ if not isfile(_path):
     raise ValueError("load schema failed!")
 with open(_path, 'r') as _f:
     SCHEMA = safe_load(_f)
-if not PROJECT:
-    PROJECT = join(ROOT, 'blank.yaml')
-with open(PROJECT, 'r', encoding='utf-8') as _f:
-    SAVED = _f.read()
-del _path, _f
+del _path
+SAVED = ""
+
+
+def set_saved(path: str) -> None:
+    """Set saved project."""
+    if not path:
+        path = join(ROOT, 'blank.yaml')
+    global SAVED
+    with open(path, 'r', encoding='utf-8') as f:
+        SAVED = f.read()
 
 
 @app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])

@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" href="{{ config.icon }}">
+<link rel="icon" href="{{ uri(config.icon) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/reset.css") }}">
 <link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/reveal.css") }}">
 <link rel="stylesheet" href="{{ url_for('static', filename="reveal.js/theme/" + config.theme + ".css") }}">
@@ -82,7 +82,7 @@
 </style>
 
 {%- macro sized(block) -%}
-  src="{{ block.src }}" {% if block.width -%}
+  src="{{ uri(block.src) }}" {% if block.width -%}
   width="{{ block.width }}"
   {%- endif %} {% if block.height -%}
   height="{{ block.height }}"
@@ -91,7 +91,7 @@
 
 {% macro slide(n) -%}
 {%- if n.title or n.doc or n.img -%}
-<section data-markdown {% if config.watermark %}data-background="{{ config.watermark }}"{% endif -%}
+<section data-markdown {% if config.watermark %}data-background="{{ uri(config.watermark) }}"{% endif -%}
 {% if config.watermark_size %} data-background-size="{{ config.watermark_size }}"{% endif %}>
 <textarea data-template>
 {% if n.title -%}
