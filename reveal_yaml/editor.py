@@ -50,9 +50,9 @@ def server_error(e: Exception) -> str:
 
 
 @app.route('/preview/<int:res_id>')
-def preview(res_id: int, *, rel_url: bool = False) -> str:
+def preview(res_id: int) -> str:
     """Render preview."""
-    if res_id == 0:
+    if res_id == 0 or res_id not in PREVIEW:
         return START
     config = PREVIEW[res_id]
     try:
@@ -60,27 +60,31 @@ def preview(res_id: int, *, rel_url: bool = False) -> str:
     except Exception as e:
         from traceback import format_exc
         return f"<pre>{format_exc()}\n{e}</pre>"
-    return render_slides(
-        Config(**{k.replace('-', '_'): v for k, v in config.items()}),
-        rel_url=rel_url
-    )
+    return render_slides(Config(**{k.replace('-', '_'): v
+                                   for k, v in config.items()}))
 
 
 @app.route('/build/<int:res_id>')
 def build(res_id: int) -> Response:
     """Build and provide zip file for user download."""
+    if res_id not in PREVIEW:
+        return send_file(BytesIO(), attachment_filename='empty.txt',
+                         as_attachment=True)
+    config = PREVIEW[res_id]
     with TemporaryDirectory(suffix=f"{res_id}") as path:
         build_path = join(path, "build")
         mkpath(build_path)
         with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
-            f.write(preview(res_id, rel_url=True))
+            f.write(render_slides(
+                Config(**{k.replace('-', '_'): v for k, v in config.items()}),
+                rel_url=True
+            ))
         copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
         rmtree(join(build_path, 'static', 'ace'))
         archive = make_archive(join(path, 'build'), 'zip', build_path)
         with open(archive, 'rb') as f:
             mem = BytesIO(f.read())
-    return send_file(mem, attachment_filename='build.zip', as_attachment=True,
-                     mimetype="application/zip")
+    return send_file(mem, attachment_filename='build.zip', as_attachment=True)
 
 
 @app.route('/')
