@@ -274,11 +274,11 @@ def find_project(pwd: str, flask_app: Flask) -> bool:
     return True
 
 
-def pack(dist: str, flask_app: Flask):
+def pack(dist: str, app: Flask):
     """Pack into a static project."""
     global FREEZER_RELATIVE_URLS
     FREEZER_RELATIVE_URLS = True
-    flask_app.config['FREEZER_RELATIVE_URLS'] = True
-    flask_app.config['FREEZER_DESTINATION'] = abspath(dist)
-    Freezer(flask_app).freeze()
+    app.config['FREEZER_RELATIVE_URLS'] = True
+    app.config['FREEZER_DESTINATION'] = abspath(dist)
+    Freezer(app).freeze()
     rmtree(join(abspath(dist), 'static', 'ace'))

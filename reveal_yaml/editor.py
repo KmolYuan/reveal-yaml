@@ -7,6 +7,7 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import Dict
 from os.path import abspath, dirname, isfile, join
+from tempfile import TemporaryDirectory
 from flask import Flask, render_template, request, jsonify, Response
 from yaml import safe_load
 from jsonschema import validate
@@ -17,29 +18,20 @@ START = "<h1>Press the compile button to render the slides!</h1>"
 PREVIEW: Dict[int, dict] = {}
 
 app = Flask(__name__)
-path = abspath(join(ROOT, 'schema.yaml'))
-if not isfile(path):
+_path = abspath(join(ROOT, 'schema.yaml'))
+if not isfile(_path):
     raise ValueError("load schema failed!")
-with open(path, 'r') as f:
-    SCHEMA = safe_load(f)
+with open(_path, 'r') as _f:
+    SCHEMA = safe_load(_f)
 if not PROJECT:
     PROJECT = join(ROOT, 'blank.yaml')
-with open(PROJECT, 'r', encoding='utf-8') as f:
-    SAVED = f.read()
-del path, f
+with open(PROJECT, 'r', encoding='utf-8') as _f:
+    SAVED = _f.read()
+del _path, _f
 
 
-def get_id() -> int:
-    """Get the current id from path argument."""
-    res_id = request.args.get('id')
-    if res_id is None:
-        raise ValueError("invalid id")
-    return int(res_id)
-
-
-@app.route('/_handler', methods=['GET', 'POST'])
-def _handler() -> Response:
-    res_id = get_id()
+@app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
+def _handler(res_id: int) -> Response:
     PREVIEW[res_id] = request.get_json()
     if len(PREVIEW) > 50:
         PREVIEW.pop(min(PREVIEW))
@@ -55,10 +47,9 @@ def server_error(e: Exception) -> str:
     return f"<pre>{format_exc()}\n{e}</pre>"
 
 
-@app.route('/preview')
-def preview() -> str:
+@app.route('/preview/<int:res_id>')
+def preview(res_id: int) -> str:
     """Render preview."""
-    res_id = get_id()
     if res_id == 0:
         return START
     config = PREVIEW[res_id]
@@ -69,6 +60,14 @@ def preview() -> str:
         return f"<pre>{format_exc()}\n{e}</pre>"
     return render_slides(
         Config(**{k.replace('-', '_'): v for k, v in config.items()}))
+
+
+@app.route('/build/<int:res_id>')
+def build(res_id: int):
+    """Build and provide zip file for user download."""
+    with TemporaryDirectory(suffix=f"{res_id}") as path:
+        # TODO: Build function
+        pass
 
 
 @app.route('/')
