@@ -3,4 +3,4 @@ flask
 werkzeug
 frozen-flask
 jsonschema
-gunicorn
+gunicorn; sys_platform != 'win32'

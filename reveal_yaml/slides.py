@@ -11,21 +11,21 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from os.path import isfile, join
+from sys import stdout
+from os.path import isfile, join, abspath
+from shutil import rmtree
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from flask_frozen import relative_url_for
-from werkzeug.exceptions import HTTPException
+from flask_frozen import relative_url_for, Freezer
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
 _YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
-
 PROJECT = ""
-app = Flask(__name__)
+FREEZER_RELATIVE_URLS = False
 
 
 def load_yaml() -> _Data:
@@ -74,7 +74,7 @@ def uri(path: str) -> str:
     u = urlparse(path)
     if all((u.scheme, u.netloc, u.path)):
         return path
-    if app.config.get('FREEZER_RELATIVE_URLS', False):
+    if FREEZER_RELATIVE_URLS:
         return relative_url_for('static', filename=path)
     else:
         return url_for('static', filename=path)
@@ -257,40 +257,35 @@ class Config(TypeChecker):
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
-@app.route('/')
-def index() -> str:
-    """Generate the presentation."""
-    return render_slides(Config(**load_yaml()))
-
-
-@app.errorhandler(404)
-@app.errorhandler(403)
-@app.errorhandler(410)
-@app.errorhandler(500)
-def server_error(e: HTTPException) -> str:
-    """Error pages."""
-    from traceback import format_exc
-    title = f"{e.code} {e.name}"
-    return render_slides(
-        Config(title=title, theme='night', nav=[HSlide(
-            title=title,
-            doc=f"```sh\n{format_exc()}\n{e.description}\n```"
-        )]))
-
-
 def render_slides(config: Config) -> str:
     """Rendered slides."""
     return render_template("slides.html", config=config)
 
 
-def find_project(pwd: str) -> bool:
+def find_project(pwd: str, flask_app: Flask) -> bool:
     """Get project name from the current path."""
     project = join(pwd, "reveal.yaml")
     if not isfile(project):
         project = join(pwd, "reveal.yml")
     if not isfile(project):
         return False
-    app.config['STATIC_FOLDER'] = join(pwd, 'static')
+    flask_app.config['STATIC_FOLDER'] = join(pwd, 'static')
     global PROJECT
     PROJECT = project
     return True
+
+
+def pack(pwd: str, dist: str, flask_app: Flask):
+    """Pack into a static project."""
+    pwd = abspath(pwd)
+    if not find_project(pwd, flask_app):
+        stdout.write("fatal: project is not found")
+        return
+    if not dist:
+        dist = join(pwd, 'build')
+    global FREEZER_RELATIVE_URLS
+    FREEZER_RELATIVE_URLS = True
+    flask_app.config['FREEZER_RELATIVE_URLS'] = True
+    flask_app.config['FREEZER_DESTINATION'] = abspath(dist)
+    Freezer(flask_app).freeze()
+    rmtree(join(abspath(dist), 'static', 'ace'))

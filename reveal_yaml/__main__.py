@@ -64,30 +64,21 @@ def main() -> None:
         ):
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
-        # Pack into a static project
-        from shutil import rmtree
-        from reveal_yaml.app import app, find_project
-        from flask_frozen import Freezer
-        args.PATH = abspath(args.PATH)
-        if not find_project(args.PATH):
-            stdout.write("fatal: project is not found")
-            return
-        if not args.dist:
-            args.dist = join(args.PATH, 'build')
-        app.config['FREEZER_RELATIVE_URLS'] = True
-        app.config['FREEZER_DESTINATION'] = abspath(args.dist)
-        Freezer(app).freeze()
-        rmtree(join(abspath(args.dist), 'static', 'ace'))
+        from reveal_yaml.slides import find_project, pack
+        from reveal_yaml.serve import app
+        pack(args.PATH, args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
-        from reveal_yaml.app import app, find_project
+        from reveal_yaml.slides import find_project
         if args.cmd == 'doc':
             pwd = root
-        if not find_project(pwd) and args.cmd != 'editor':
-            stdout.write("fatal: project is not found")
-            return
-        from reveal_yaml.utility import serve
         if args.cmd == 'editor':
-            from reveal_yaml.editor import app
+            from reveal_yaml.editor import app  # type: ignore
+        else:
+            from reveal_yaml.serve import app
+            if not find_project(pwd, app):
+                stdout.write("fatal: project is not found")
+                return
+        from reveal_yaml.utility import serve
         serve(pwd, app, args.IP, args.port)
     else:
         parser.print_help()

@@ -115,14 +115,13 @@ nav:
 
           ECMA Script 6:
           [Arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions),
-          ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let),
-          [async function](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Statements/async_function).
+          ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
 
           |     | ![][android] | ![][chrome] | ![][edge] | ![][firefox] | ![][opera] | ![][safari] |
           |:---:|:------------:|:-----------:|:---------:|:------------:|:----------:|:-----------:|
           | | Android Webview | Chrome | Edge | Firefox | Opera | Safari |
-          | PC |  | 55+ | 15+ | 52+ | 42+ | 10.1+ |
-          | Mobiles | 55+ | 55+ | | 52+ | 42+ | 10.3+ |
+          | PC |  | 49+ | 14+ | 44+ | 32+ | 10+ |
+          | Mobiles | 49+ | 49+ | | 44+ | 32+ | 10+ |
 
           [chrome]: https://img.icons8.com/color/96/000000/chrome--v1.png
           [edge]: https://img.icons8.com/color/96/000000/ms-edge.png
@@ -316,7 +315,7 @@ nav:
             link: https://github.com/KmolYuan/reveal-yaml/
           ```
 
-      - title: Use
+      - title: Plugins
         doc: |
           Plugin can be enabled / disabled manually.
 
@@ -386,10 +385,10 @@ nav:
 
           ```html
           <figure>
-          <img src="fig1"/>
+          &lt;img src="fig1"/>
           <figcaption>...</figcaption>
           </figure><figure>
-          <img src="fig2"/>
+          &lt;img src="fig2"/>
           <figcaption>...</figcaption>
           </figure> ...
           ```

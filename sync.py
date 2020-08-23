@@ -44,6 +44,7 @@ def main():
     cdn("ace/1.4.12/mode-yaml.min.js", path)
     cdn("ace/1.4.12/theme-chrome.min.js", path)
     cdn("ace/1.4.12/theme-monokai.min.js", path)
+    cdn("js-yaml/3.14.0/js-yaml.min.js", path)
     # Generate JSON schema
     with open("reveal_yaml/schema.yaml", 'r') as f:
         data = yaml.safe_load(f)
