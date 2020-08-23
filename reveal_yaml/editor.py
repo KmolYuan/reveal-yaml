@@ -6,14 +6,16 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import Dict
-from os.path import abspath, dirname, isfile, join
+from os.path import abspath, isfile, join
+from distutils.dir_util import copy_tree, mkpath
+from shutil import make_archive, rmtree
+from io import BytesIO
 from tempfile import TemporaryDirectory
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
-from reveal_yaml.slides import PROJECT, Config, render_slides
+from reveal_yaml.slides import PROJECT, ROOT, Config, render_slides
 
-ROOT = abspath(dirname(__file__))
 START = "<h1>Press the compile button to render the slides!</h1>"
 PREVIEW: Dict[int, dict] = {}
 
@@ -33,7 +35,7 @@ del _path, _f
 @app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
 def _handler(res_id: int) -> Response:
     PREVIEW[res_id] = request.get_json()
-    if len(PREVIEW) > 50:
+    if len(PREVIEW) > 200:
         PREVIEW.pop(min(PREVIEW))
     return jsonify(validated=True)
 
@@ -48,7 +50,7 @@ def server_error(e: Exception) -> str:
 
 
 @app.route('/preview/<int:res_id>')
-def preview(res_id: int) -> str:
+def preview(res_id: int, *, rel_url: bool = False) -> str:
     """Render preview."""
     if res_id == 0:
         return START
@@ -59,15 +61,26 @@ def preview(res_id: int) -> str:
         from traceback import format_exc
         return f"<pre>{format_exc()}\n{e}</pre>"
     return render_slides(
-        Config(**{k.replace('-', '_'): v for k, v in config.items()}))
+        Config(**{k.replace('-', '_'): v for k, v in config.items()}),
+        rel_url=rel_url
+    )
 
 
 @app.route('/build/<int:res_id>')
-def build(res_id: int):
+def build(res_id: int) -> Response:
     """Build and provide zip file for user download."""
     with TemporaryDirectory(suffix=f"{res_id}") as path:
-        # TODO: Build function
-        pass
+        build_path = join(path, "build")
+        mkpath(build_path)
+        with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
+            f.write(preview(res_id, rel_url=True))
+        copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
+        rmtree(join(build_path, 'static', 'ace'))
+        archive = make_archive(join(path, 'build'), 'zip', build_path)
+        with open(archive, 'rb') as f:
+            mem = BytesIO(f.read())
+    return send_file(mem, attachment_filename='build.zip', as_attachment=True,
+                     mimetype="application/zip")
 
 
 @app.route('/')

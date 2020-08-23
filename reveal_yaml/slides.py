@@ -11,7 +11,7 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from os.path import isfile, join, abspath
+from os.path import isfile, join, abspath, relpath, dirname, sep
 from shutil import rmtree
 from urllib.parse import urlparse
 from yaml import safe_load
@@ -23,6 +23,7 @@ _Data = Dict[str, Any]
 _YamlValue = Union[bool, int, float, str, list, dict]
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
+ROOT = abspath(dirname(__file__))
 PROJECT = ""
 FREEZER_RELATIVE_URLS = False
 
@@ -256,9 +257,17 @@ class Config(TypeChecker):
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
-def render_slides(config: Config) -> str:
+def render_slides(config: Config, *, rel_url: bool = None) -> str:
     """Rendered slides."""
-    return render_template("slides.html", config=config)
+    if rel_url is None:
+        rel_url = FREEZER_RELATIVE_URLS
+    if rel_url:
+        def url_func(endpoint: str, **values: str) -> str:
+            path = url_for(endpoint, **values).replace('/', sep)
+            return relpath(ROOT + path, ROOT).replace(sep, '/')
+    else:
+        url_func = url_for
+    return render_template("slides.html", config=config, url_for=url_func)
 
 
 def find_project(pwd: str, flask_app: Flask) -> bool:
@@ -278,7 +287,6 @@ def pack(dist: str, app: Flask):
     """Pack into a static project."""
     global FREEZER_RELATIVE_URLS
     FREEZER_RELATIVE_URLS = True
-    app.config['FREEZER_RELATIVE_URLS'] = True
     app.config['FREEZER_DESTINATION'] = abspath(dist)
     Freezer(app).freeze()
     rmtree(join(abspath(dist), 'static', 'ace'))

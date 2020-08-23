@@ -9,7 +9,7 @@
             display: flex;
         }
 
-        #editor, #preview, #cleaner, #compiler {
+        #editor, #preview, .func-button {
             flex: 50%;
             position: absolute;
             top: 0;
@@ -17,38 +17,39 @@
             bottom: 0;
             left: 0;
             width: 50%;
-        }
-
-        #editor {
             margin: 0.5%;
         }
 
-        #compiler {
-            width: 5%;
-            height: 5%;
+        .func-button {
+            top: 4px;
             left: 52%;
+            width: 5%;
+            height: 40px;
+        }
+
+        #builder {
+            top: 48px;
         }
 
         #cleaner {
-            width: 5%;
-            height: 5%;
-            top: 6%;
-            left: 52%;
+            top: 96px;
         }
 
         #preview {
             left: 58%;
             width: 40%;
             height: 95%;
-            margin: 0.5%;
         }
     </style>
 </head>
 <body>
 <div id="splitter">
     <pre id="editor">{{ saved }}</pre>
-    <button id="compiler">Compile</button>
-    <button id="cleaner">Clean saved</button>
+    <div style="display: flex;">
+        <button class="func-button" id="compiler">Compile</button>
+        <button class="func-button" id="builder">Build</button>
+        <button class="func-button" id="cleaner">Clean saved</button>
+    </div>
     <iframe id="preview"></iframe>
 </div>
 <script src="{{ url_for('static', filename="js/jquery.min.js") }}"></script>
@@ -119,27 +120,35 @@
         previewer.preview = id => {
             previewer.attr('src', window.location.href + 'preview/' + id);
         };
-        $('#compiler').mousedown(_ => {
+        const compiler = $('#compiler');
+        compiler.mousedown(_ => {
             const pos = editor.getCursorPosition();
             editor.execCommand("trimTrailingSpace", {trimEmpty: true});
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
                 editor.session.doc.getNewLineCharacter());
             editor.moveCursorTo(pos.row, pos.column);
-            const id = Date.now();
+            compiler.id = Date.now();
             const doc = editor.getValue();
             $.ajax({
                 type: "POST",
+                url: '/_handler/' + compiler.id,
                 dataType: 'json',
                 contentType: 'application/json',
-                url: '/_handler/' + id,
                 data: JSON.stringify(jsyaml.safeLoad(doc)),
                 success: data => {
                     if (!data['validated'])
                         return;
                     localStorage.setItem('saved', doc);
-                    previewer.preview(id);
+                    previewer.preview(compiler.id);
                 }
             });
+        });
+        $('#builder').mousedown(_ => {
+            if (compiler.id === undefined) {
+                alert("Please compile first.");
+                return;
+            }
+            window.location.replace(window.location.href + "build/" + compiler.id);
         });
         $('#cleaner').mousedown(_ => {
             localStorage.removeItem('saved');
