@@ -47,10 +47,10 @@
     padding: 1px;
 }
 .img-column { padding: 1px; }
-.reveal h1 { font-size: 40pt; }
-.reveal h2 { font-size: 35pt; }
-.reveal h3 { font-size: 30pt; }
-.reveal h4 { font-size: 25pt; }
+.reveal h1 { font-size: 36pt; }
+.reveal h2 { font-size: 30pt; }
+.reveal h3 { font-size: 28pt; }
+.reveal h4 { font-size: 24pt; }
 .reveal p, .reveal li, .reveal table, figcaption { font-size: 20pt; }
 .reveal strong { color: red; }
 .reveal pre code, .reveal section img, #footer-left > a > img {
@@ -95,7 +95,7 @@
 {% if config.watermark_size %} data-background-size="{{ config.watermark_size }}"{% endif %}>
 <textarea data-template>
 {% if n.title -%}
-## {{ n.title }}
+# {{ n.title }}
 
 {% if n.doc or n.math or n.img or n.embed or n.youtube.src %}---{% endif %}
 {%- endif %}

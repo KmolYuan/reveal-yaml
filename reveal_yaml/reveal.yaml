@@ -45,7 +45,7 @@ nav:
       Scroll down ↓ to see what should do next.
     sub:
       - doc: |
-          ## JSON Schema
+          # JSON Schema
 
           If your IDE supports [JSON Schema](https://json-schema.org/understanding-json-schema/index.html),
           you can use the installed or remote files to validate your Reveal.yaml project.
@@ -53,7 +53,7 @@ nav:
           + [schema.json](https://raw.githubusercontent.com/KmolYuan/reveal-yaml/gh-pages/schema.json)
           + [schema.yaml](https://raw.githubusercontent.com/KmolYuan/reveal-yaml/master/reveal_yaml/schema.yaml)
 
-          ## Deployment
+          # Deployment
 
           Release the webpage to "build" directory:
 
@@ -61,7 +61,7 @@ nav:
           rym pack
           ```
 
-          ## Certification
+          # Certification
 
           Generate a key by Open SSL to create "https" protocol:
 
@@ -293,7 +293,7 @@ nav:
           | nav | Horizontal slides | `List[HSlide]` |
 
       - doc: |
-          ## Footer
+          # Footer
 
           The footer is at left buttom side.
 
@@ -317,7 +317,7 @@ nav:
           ```
 
       - doc: |
-          ## Plugins
+          # Plugins
 
           Plugin can be enabled / disabled manually.
 
@@ -419,7 +419,7 @@ nav:
       Scroll down ↓ to see the examples.
     sub:
       - doc: |
-          ## Markdown
+          # Markdown
 
           ```yaml
           doc: |
@@ -443,7 +443,7 @@ nav:
           + Item 2 <!-- .element: class="fragment" data-fragment-index="1" -->
 
       - doc: |
-          ## Code block
+          # Code block
 
           ```markdown
           doc: |
@@ -463,7 +463,7 @@ nav:
           ```
 
       - doc: |
-          ## Images
+          # Images
 
           ```yaml
           img:
@@ -485,7 +485,7 @@ nav:
           img: fade-in-then-out
 
       - doc: |
-          ## Maths
+          # Maths
 
           ```yaml
           math: |
@@ -511,7 +511,7 @@ nav:
           math: highlight-blue
 
       - doc: |
-          ## Embedded YouTube Video
+          # YouTube Video
 
           ```yaml
           youtube:
@@ -525,7 +525,7 @@ nav:
           height: 400pt
 
       - doc: |
-          ## Embedded PDF
+          # Embedded PDF
 
           ```yaml
           embed:
