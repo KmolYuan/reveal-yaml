@@ -91,9 +91,8 @@
 
 {% macro slide(n) -%}
 {%- if n.title or n.doc or n.img -%}
-<section data-markdown {% if n.id %}id="{{ n.id }}" {% endif -%}
-{% if config.watermark %}data-background="{{ config.watermark }}" {% endif -%}
-{% if config.watermark_size %}data-background-size="{{ config.watermark_size }}" {% endif %}>
+<section data-markdown {% if config.watermark %}data-background="{{ config.watermark }}"{% endif -%}
+{% if config.watermark_size %} data-background-size="{{ config.watermark_size }}"{% endif %}>
 <textarea data-template>
 {% if n.title -%}
 ## {{ n.title }}
@@ -158,12 +157,12 @@
 </div>
 </div>
 <script src="{{ url_for('static', filename="reveal.js/reveal.js") }}"></script>
-{% if config.use.zoom %}<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>{% endif %}
-{% if config.use.notes %}<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>{% endif %}
-{% if config.use.search %}<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>{% endif %}
+{% if config.plugin.zoom %}<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>{% endif %}
+{% if config.plugin.notes %}<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>{% endif %}
+{% if config.plugin.search %}<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>{% endif %}
 <script src="{{ url_for('static', filename="plugin/markdown/markdown.js") }}"></script>
-{% if config.use.highlight %}<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>{% endif %}
-{% if config.use.math %}<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>{% endif %}
+{% if config.plugin.highlight %}<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>{% endif %}
+{% if config.plugin.math %}<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>{% endif %}
 <script>
     Reveal.initialize({
         navigationMode: '{{ config.nav_mode }}',
@@ -178,12 +177,12 @@
         previewLinks: {{ config.preview_links | lower }},
         transition: '{{ config.transition }}',
         <!-- Import order must be fixed! -->
-        plugins: [{%- if config.use.zoom %}RevealZoom,{% endif -%}
-                  {%- if config.use.notes %}RevealNotes,{% endif -%}
-                  {%- if config.use.search %}RevealSearch,{% endif -%}
+        plugins: [{%- if config.plugin.zoom %}RevealZoom,{% endif -%}
+                  {%- if config.plugin.notes %}RevealNotes,{% endif -%}
+                  {%- if config.plugin.search %}RevealSearch,{% endif -%}
                   RevealMarkdown,
-                  {%- if config.use.highlight %}RevealHighlight,{% endif -%}
-                  {%- if config.use.math %}RevealMath{% endif %}],
+                  {%- if config.plugin.highlight %}RevealHighlight,{% endif -%}
+                  {%- if config.plugin.math %}RevealMath{% endif %}],
         markdown: {smartypants: true},
     });
 </script>

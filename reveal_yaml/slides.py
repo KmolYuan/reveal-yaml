@@ -182,7 +182,7 @@ class HSlide(Slide):
 
 
 @dataclass(repr=False, eq=False)
-class Use(TypeChecker):
+class Plugin(TypeChecker):
     """Plugin enable / disable options."""
     zoom: bool = False
     notes: bool = True
@@ -218,7 +218,7 @@ class Config(TypeChecker):
     transition: str = "slide"
     footer: Footer = field(default_factory=Footer)
     nav: List[HSlide] = field(default_factory=list)
-    use: Use = field(default_factory=Use)
+    plugin: Plugin = field(default_factory=Plugin)
 
     def __post_init__(self):
         """Check arguments after assigned."""
@@ -242,8 +242,8 @@ class Config(TypeChecker):
                 else:
                     title = f"+ {n.title}"
                 doc.append(title)
-            if not self.use.math and n.math:
-                self.use.math = True
+            if not self.plugin.math and n.math:
+                self.plugin.math = True
             for j, sn in enumerate(n.sub):
                 if i > 0 and sn.title and self.outline > 1:
                     if self.history:
@@ -251,8 +251,8 @@ class Config(TypeChecker):
                     else:
                         title = f"+ {sn.title}"
                     doc.append(" " * 2 + title)
-                if not self.use.math and sn.math:
-                    self.use.math = True
+                if not self.plugin.math and sn.math:
+                    self.plugin.math = True
         if doc:
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 

@@ -289,11 +289,12 @@ nav:
           | preview-links | Open a preview window for links, disabled by default | `bool` |
           | transition | Transition mode, "slide" by default | `str` |
           | [footer](#/3/3) | Footer option | `Footer` |
-          | [use](#/3/4) | Plugin enable / disable options | `Use` |
+          | [plugin](#/3/4) | Plugin enable / disable options | `Plugin` |
           | nav | Horizontal slides | `List[HSlide]` |
 
-      - title: Footer
-        doc: |
+      - doc: |
+          ## Footer
+
           The footer is at left buttom side.
 
           Its height is adjusted by its logo size and text height.
@@ -315,8 +316,9 @@ nav:
             link: https://github.com/KmolYuan/reveal-yaml/
           ```
 
-      - title: Plugins
-        doc: |
+      - doc: |
+          ## Plugins
+
           Plugin can be enabled / disabled manually.
 
           The default options:
@@ -333,7 +335,6 @@ nav:
 
       | Key | Description | Type |
       |:---:|:------------|:----:|
-      | id | Custom section id | `str` |
       | title | Single line Markdown level 2 title | `str` |
       | [doc](#/4/2) | Multiline Markdown pargraph | `str` |
       | include | Include a Markdown file name from "templates", append after "doc" key | `str` |

@@ -29,12 +29,17 @@ with open(PROJECT, 'r', encoding='utf-8') as f:
 del path, f
 
 
-@app.route('/_handler', methods=['GET', 'POST'])
-def _handler() -> Response:
+def get_id() -> int:
+    """Get the current id from path argument."""
     res_id = request.args.get('id')
     if res_id is None:
         raise ValueError("invalid id")
-    res_id = int(res_id)
+    return int(res_id)
+
+
+@app.route('/_handler', methods=['GET', 'POST'])
+def _handler() -> Response:
+    res_id = get_id()
     PREVIEW[res_id] = request.get_json()
     if len(PREVIEW) > 50:
         PREVIEW.pop(min(PREVIEW))
@@ -53,10 +58,7 @@ def server_error(e: Exception) -> str:
 @app.route('/preview')
 def preview() -> str:
     """Render preview."""
-    res_id = request.args.get('id')
-    if res_id is None:
-        raise ValueError("invalid id")
-    res_id = int(res_id)
+    res_id = get_id()
     if res_id == 0:
         return START
     config = PREVIEW[res_id]

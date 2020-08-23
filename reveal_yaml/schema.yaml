@@ -34,9 +34,6 @@ definitions:
     type: object
     minProperties: 1
     properties:
-      id:
-        title: Custom section id
-        type: string
       title:
         title: Single line Markdown level 2 title
         type: string
@@ -182,7 +179,7 @@ properties:
       link:
         $ref: "#/definitions/path"
         title: Link for footer title
-  use:
+  plugin:
     description: Plugin enable / disable options
     type: object
     minProperties: 1
