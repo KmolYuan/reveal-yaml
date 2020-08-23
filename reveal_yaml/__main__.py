@@ -66,7 +66,13 @@ def main() -> None:
     elif args.cmd == 'pack':
         from reveal_yaml.slides import find_project, pack
         from reveal_yaml.serve import app
-        pack(args.PATH, args.dist, app)
+        args.PATH = abspath(args.PATH)
+        if not find_project(args.PATH, app):
+            stdout.write("fatal: project is not found")
+            return
+        if not args.dist:
+            args.dist = join(args.PATH, 'build')
+        pack(args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
         from reveal_yaml.slides import find_project
         if args.cmd == 'doc':

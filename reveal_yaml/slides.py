@@ -11,7 +11,6 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar
-from sys import stdout
 from os.path import isfile, join, abspath
 from shutil import rmtree
 from urllib.parse import urlparse
@@ -275,14 +274,8 @@ def find_project(pwd: str, flask_app: Flask) -> bool:
     return True
 
 
-def pack(pwd: str, dist: str, flask_app: Flask):
+def pack(dist: str, flask_app: Flask):
     """Pack into a static project."""
-    pwd = abspath(pwd)
-    if not find_project(pwd, flask_app):
-        stdout.write("fatal: project is not found")
-        return
-    if not dist:
-        dist = join(pwd, 'build')
     global FREEZER_RELATIVE_URLS
     FREEZER_RELATIVE_URLS = True
     flask_app.config['FREEZER_RELATIVE_URLS'] = True
