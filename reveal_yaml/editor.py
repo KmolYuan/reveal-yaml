@@ -7,8 +7,8 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import Dict, Union, Optional
 from os.path import basename, join
-from distutils.dir_util import copy_tree, mkpath
-from shutil import make_archive, rmtree
+from distutils.dir_util import mkpath
+from shutil import make_archive
 from io import BytesIO
 from time import time_ns
 from tempfile import TemporaryDirectory
@@ -16,7 +16,7 @@ from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
 from reveal_yaml import __version__
-from .slides import ROOT, Config, render_slides
+from .slides import ROOT, Config, render_slides, copy_project
 from .utility import load_file, valid_config
 
 _HELP = ""
@@ -83,16 +83,9 @@ def pack(res_id: int) -> Response:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
     with TemporaryDirectory(suffix=f"{res_id}") as path:
-        build_path = join(path, "reveal")
-        mkpath(build_path)
         config = Config(**_CONFIG[res_id])
-        with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
-            f.write(render_slides(config, rel_url=True))
-        copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
-        rmtree(join(build_path, 'static', 'ace'))
-        for name, enabled in config.plugin.as_dict():
-            if not enabled:
-                rmtree(join(build_path, 'static', 'plugin', name))
+        build_path = join(path, "reveal")
+        copy_project(config, ROOT, build_path)
         archive = make_archive(build_path, 'zip', build_path)
         with open(archive, 'rb') as f:
             mem = BytesIO(f.read())

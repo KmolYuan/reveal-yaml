@@ -12,18 +12,17 @@ from typing import (
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar, asdict
 from os.path import isfile, join, abspath, relpath, dirname, sep
+from distutils.dir_util import copy_tree, mkpath
 from shutil import rmtree
 from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from flask_frozen import Freezer
 from .utility import load_file, valid_config
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
 _YamlValue = Union[bool, int, float, str, list, dict]
 _PROJECT = ""
-_FREEZER_RELATIVE_URLS = False
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
 ROOT = abspath(dirname(__file__))
@@ -241,14 +240,13 @@ class Config(TypeChecker):
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
 
-def render_slides(config: Config, *, rel_url: bool = None) -> str:
+def render_slides(config: Config, *, rel_url: bool = False) -> str:
     """Rendered slides."""
-    if rel_url is None:
-        rel_url = _FREEZER_RELATIVE_URLS
     if rel_url:
-        def url_func(endpoint: str, **values: str) -> str:
-            path = url_for(endpoint, **values).replace('/', sep)
-            return relpath(ROOT + path, ROOT).replace(sep, '/')
+        def url_func(endpoint: str, *, filename: str) -> str:
+            """Generate relative internal path."""
+            path = join(ROOT, endpoint, filename).replace('/', sep)
+            return relpath(path, ROOT).replace(sep, '/')
     else:
         url_func = url_for
 
@@ -278,10 +276,20 @@ def find_project(pwd: str, flask_app: Flask) -> str:
     return _PROJECT
 
 
-def pack(dist: str, app: Flask):
+def pack(root: str, build_path: str, app: Flask):
     """Pack into a static project."""
-    global _FREEZER_RELATIVE_URLS
-    _FREEZER_RELATIVE_URLS = True
-    app.config['FREEZER_DESTINATION'] = abspath(dist)
-    Freezer(app).freeze()
-    rmtree(join(abspath(dist), 'static', 'ace'))
+    config = Config(**load_yaml())
+    with app.app_context():
+        copy_project(config, root, build_path)
+
+
+def copy_project(config: Config, root: str, build_path: str):
+    """Copy project."""
+    mkpath(build_path)
+    with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
+        f.write(render_slides(config, rel_url=True))
+    copy_tree(join(root, 'static'), join(build_path, 'static'))
+    rmtree(join(abspath(build_path), 'static', 'ace'), ignore_errors=True)
+    for name, enabled in config.plugin.as_dict():
+        if not enabled:
+            rmtree(join(build_path, 'static', 'plugin', name))

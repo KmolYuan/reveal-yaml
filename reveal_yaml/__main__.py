@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from sys import stdout
 from os import getcwd
 from os.path import join, abspath, dirname, isfile
+from shutil import rmtree
 
 
 def main() -> None:
@@ -53,6 +54,7 @@ def main() -> None:
         args.PATH = abspath(args.PATH)
         mkpath(args.PATH)
         copy_tree(join(root, "static"), join(args.PATH, "static"))
+        rmtree(join(args.PATH, 'static', 'ace'))
         mkpath(join(args.PATH, "templates"))
         workflow = join(args.PATH, ".github", "workflows", "deploy.yaml")
         if not args.no_workflow and not isfile(workflow):
@@ -72,7 +74,7 @@ def main() -> None:
             return
         if not args.dist:
             args.dist = join(args.PATH, 'build')
-        pack(args.dist, app)
+        pack(args.PATH, args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
         from reveal_yaml.slides import find_project
         if args.cmd == 'doc':

@@ -1,6 +1,5 @@
 pyyaml
 flask
 werkzeug
-frozen-flask
 jsonschema
 gunicorn; sys_platform != 'win32'
