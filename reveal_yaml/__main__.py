@@ -65,7 +65,7 @@ def main() -> None:
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
         from reveal_yaml.slides import find_project, pack
-        from reveal_yaml.serve import app
+        from reveal_yaml.slides_app import app
         args.PATH = abspath(args.PATH)
         if not find_project(args.PATH, app):
             stdout.write("fatal: project is not found")
@@ -81,7 +81,7 @@ def main() -> None:
             from reveal_yaml.editor import app, set_saved  # type: ignore
             set_saved(find_project(pwd, app))
         else:
-            from reveal_yaml.serve import app
+            from reveal_yaml.slides_app import app
             if not find_project(pwd, app):
                 stdout.write("fatal: project is not found")
                 return
