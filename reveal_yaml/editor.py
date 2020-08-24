@@ -6,7 +6,7 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import Dict
-from os.path import abspath, isfile, join
+from os.path import abspath, basename, isfile, join
 from distutils.dir_util import copy_tree, mkpath
 from shutil import make_archive, rmtree
 from io import BytesIO
@@ -40,7 +40,8 @@ def set_saved(path: str) -> None:
 
 @app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
 def _handler(res_id: int) -> Response:
-    PREVIEW[res_id] = request.get_json()
+    PREVIEW[res_id] = {k.replace('-', '_'): v
+                       for k, v in request.get_json().items()}
     if len(PREVIEW) > 200:
         PREVIEW.pop(min(PREVIEW))
     return jsonify(validated=True)
@@ -66,31 +67,28 @@ def preview(res_id: int) -> str:
     except Exception as e:
         from traceback import format_exc
         return f"<pre>{format_exc()}\n{e}</pre>"
-    return render_slides(Config(**{k.replace('-', '_'): v
-                                   for k, v in config.items()}))
+    return render_slides(Config(**config))
 
 
-@app.route('/build/<int:res_id>')
-def build(res_id: int) -> Response:
+@app.route('/pack/<int:res_id>')
+def pack(res_id: int) -> Response:
     """Build and provide zip file for user download."""
     if res_id not in PREVIEW:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
-    config = PREVIEW[res_id]
     with TemporaryDirectory(suffix=f"{res_id}") as path:
-        build_path = join(path, "build")
+        build_path = join(path, "reveal")
         mkpath(build_path)
+        config = Config(**PREVIEW[res_id])
         with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
-            f.write(render_slides(
-                Config(**{k.replace('-', '_'): v for k, v in config.items()}),
-                rel_url=True
-            ))
+            f.write(render_slides(config, rel_url=True))
         copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
         rmtree(join(build_path, 'static', 'ace'))
-        archive = make_archive(join(path, 'build'), 'zip', build_path)
+        archive = make_archive(build_path, 'zip', build_path)
         with open(archive, 'rb') as f:
             mem = BytesIO(f.read())
-    return send_file(mem, attachment_filename='build.zip', as_attachment=True)
+    archive = basename(archive)
+    return send_file(mem, as_attachment=True, attachment_filename=archive)
 
 
 @app.route('/')

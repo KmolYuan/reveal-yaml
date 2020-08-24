@@ -27,7 +27,7 @@
             height: 40px;
         }
 
-        #builder {
+        #packer {
             top: 48px;
         }
 
@@ -47,7 +47,7 @@
     <pre id="editor">{{ saved }}</pre>
     <div style="display: flex;">
         <button class="func-button" id="compiler">Compile</button>
-        <button class="func-button" id="builder">Build</button>
+        <button class="func-button" id="packer">Pack</button>
         <button class="func-button" id="cleaner">Clean saved</button>
     </div>
     <iframe id="preview"></iframe>
@@ -143,12 +143,12 @@
                 }
             });
         });
-        $('#builder').mousedown(_ => {
+        $('#packer').mousedown(_ => {
             if (compiler.id === undefined) {
                 alert("Please compile first.");
                 return;
             }
-            window.location.replace(window.location.href + "build/" + compiler.id);
+            window.location.replace(window.location.href + "pack/" + compiler.id);
         });
         $('#cleaner').mousedown(_ => {
             localStorage.removeItem('saved');
