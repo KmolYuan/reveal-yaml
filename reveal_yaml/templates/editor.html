@@ -46,6 +46,7 @@
             <button id="downloader">Download YAML</button>
             <button id="packer">Pack</button>
             <button id="cleaner">Clean saved</button>
+            <button id="helper">Documentation</button>
         </div>
         <iframe id="preview"></iframe>
     </div>
@@ -159,7 +160,9 @@
             localStorage.removeItem('saved');
             alert("Local storage cleaned!");
         });
-        previewer.preview(0);
+        $('#helper').mousedown(_ => {
+            previewer.preview(0);
+        }).trigger('mousedown');
     });
 </script>
 </body>
