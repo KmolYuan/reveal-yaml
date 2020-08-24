@@ -1,5 +1,6 @@
 pyyaml
 flask
 werkzeug
+uuid0
 jsonschema
 gunicorn; sys_platform != 'win32'

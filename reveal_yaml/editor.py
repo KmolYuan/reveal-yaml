@@ -9,9 +9,9 @@ from typing import Dict, Union, Optional
 from os.path import basename, join
 from shutil import make_archive
 from io import BytesIO
-from time import time_ns
 from tempfile import TemporaryDirectory
 from flask import Flask, Response, render_template, request, jsonify, send_file
+from uuid0 import generate, UUID
 from yaml import safe_load
 from jsonschema import validate
 from reveal_yaml import __version__
@@ -21,7 +21,7 @@ from .utility import load_file, valid_config
 _HELP = ""
 _SAVED = load_file(join(ROOT, 'blank.yaml'))
 _SCHEMA: Optional[Dict[str, dict]] = None
-_CONFIG: Dict[int, dict] = {}
+_CONFIG: Dict[UUID, dict] = {}
 
 app = Flask(__name__)
 
@@ -55,19 +55,18 @@ def server_error(e: Exception) -> str:
 @app.route('/preview/<res_id>', methods=['GET', 'POST'])
 def preview(res_id: str) -> Union[str, Response]:
     """Render preview."""
-    res_id = int(res_id)
     if request.method == 'POST':
         # Re-generate ID by time
-        res_id = time_ns()
+        res_id = generate()
         _CONFIG[res_id] = request.get_json()
         if len(_CONFIG) > 200:
             _CONFIG.pop(min(_CONFIG))
         # Important: INT will loss value!
         return jsonify(id=str(res_id))
     load_schema_doc()
-    if res_id == 0:
+    if res_id == '0':
         return _HELP
-    config = _CONFIG[res_id]
+    config = _CONFIG[UUID(res_id)]
     try:
         validate(config, _SCHEMA)
     except Exception as e:
@@ -79,7 +78,7 @@ def preview(res_id: str) -> Union[str, Response]:
 @app.route('/pack/<res_id>')
 def pack(res_id: str) -> Response:
     """Build and provide zip file for user download."""
-    res_id = int(res_id)
+    res_id = UUID(res_id)
     if res_id not in _CONFIG:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
