@@ -14,6 +14,7 @@ from tempfile import TemporaryDirectory
 from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
+from reveal_yaml import __version__
 from .slides import ROOT, Config, render_slides
 from .utility import load_file, valid_config
 
@@ -101,4 +102,6 @@ def pack(res_id: int) -> Response:
 @app.route('/')
 def index() -> str:
     """The editor."""
-    return render_template("editor.html", saved=_SAVED)
+    return render_template("editor.html", saved=_SAVED, version=__version__,
+                           author=__author__, license=__license__,
+                           copyright=__copyright__, email=__email__)
