@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
 from flask_frozen import Freezer
-from .utility import load_file
+from .utility import load_file, valid_config
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
@@ -32,10 +32,7 @@ ROOT = abspath(dirname(__file__))
 
 def load_yaml() -> _Data:
     """Load project."""
-    data: _Data = safe_load(load_file(_PROJECT))
-    for key in tuple(data):
-        data[key.replace('-', '_')] = data.pop(key)
-    return data
+    return valid_config(safe_load(load_file(_PROJECT)))
 
 
 @overload

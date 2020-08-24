@@ -5,6 +5,7 @@ __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
+from typing import Dict, Any
 from os.path import isfile, join
 from flask import Flask
 
@@ -25,3 +26,10 @@ def load_file(path: str) -> str:
     """Load file from the path."""
     with open(path, 'r', encoding='utf-8') as f:
         return f.read()
+
+
+def valid_config(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Replace minus sign with an underscore."""
+    for key in tuple(data):
+        data[key.replace('-', '_')] = data.pop(key)
+    return data

@@ -15,12 +15,12 @@ from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
 from .slides import ROOT, Config, render_slides
-from .utility import load_file
+from .utility import load_file, valid_config
 
 _HELP = ""
 _SAVED = load_file(join(ROOT, 'blank.yaml'))
 _SCHEMA = None
-_PREVIEW: Dict[int, dict] = {}
+_CONFIG: Dict[int, dict] = {}
 
 app = Flask(__name__)
 
@@ -31,8 +31,7 @@ def load_schema_doc() -> None:
         return
     _SCHEMA = safe_load(load_file(join(ROOT, 'schema.yaml')))
     config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
-    _HELP = render_slides(Config(**{k.replace('-', '_'): v for k, v in
-                                    config.items()}))
+    _HELP = render_slides(Config(**valid_config(config)))
 
 
 def set_saved(path: str) -> None:
@@ -45,10 +44,9 @@ def set_saved(path: str) -> None:
 
 @app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
 def _handler(res_id: int) -> Response:
-    _PREVIEW[res_id] = {k.replace('-', '_'): v
-                        for k, v in request.get_json().items()}
-    if len(_PREVIEW) > 200:
-        _PREVIEW.pop(min(_PREVIEW))
+    _CONFIG[res_id] = request.get_json()
+    if len(_CONFIG) > 200:
+        _CONFIG.pop(min(_CONFIG))
     return jsonify(validated=True)
 
 
@@ -65,27 +63,27 @@ def server_error(e: Exception) -> str:
 def preview(res_id: int) -> str:
     """Render preview."""
     load_schema_doc()
-    if res_id == 0 or res_id not in _PREVIEW:
+    if res_id == 0 or res_id not in _CONFIG:
         return _HELP
-    config = _PREVIEW[res_id]
+    config = _CONFIG[res_id]
     try:
         validate(config, _SCHEMA)
     except Exception as e:
         from traceback import format_exc
         return f"<pre>{format_exc()}\n{e}</pre>"
-    return render_slides(Config(**config))
+    return render_slides(Config(**valid_config(config)))
 
 
 @app.route('/pack/<int:res_id>')
 def pack(res_id: int) -> Response:
     """Build and provide zip file for user download."""
-    if res_id not in _PREVIEW:
+    if res_id not in _CONFIG:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
     with TemporaryDirectory(suffix=f"{res_id}") as path:
         build_path = join(path, "reveal")
         mkpath(build_path)
-        config = Config(**_PREVIEW[res_id])
+        config = Config(**_CONFIG[res_id])
         with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
             f.write(render_slides(config, rel_url=True))
         copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
