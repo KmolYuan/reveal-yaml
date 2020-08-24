@@ -5,7 +5,7 @@ __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import Dict
+from typing import Dict, Optional
 from os.path import basename, join
 from distutils.dir_util import copy_tree, mkpath
 from shutil import make_archive, rmtree
@@ -20,7 +20,7 @@ from .utility import load_file, valid_config
 
 _HELP = ""
 _SAVED = load_file(join(ROOT, 'blank.yaml'))
-_SCHEMA = None
+_SCHEMA: Optional[Dict[int, dict]] = None
 _CONFIG: Dict[int, dict] = {}
 
 app = Flask(__name__)

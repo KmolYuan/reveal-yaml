@@ -7,11 +7,10 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import (
     cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
-    ItemsView, Union, Type, Any,
+    OrderedDict, ItemsView, Union, Type, Any
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar, asdict
-from collections import OrderedDict
 from os.path import isfile, join, abspath, relpath, dirname, sep
 from shutil import rmtree
 from urllib.parse import urlparse
@@ -176,7 +175,7 @@ class Plugin(TypeChecker):
 
     def as_dict(self) -> ItemsView[str, bool]:
         """Return self as mapping."""
-        return asdict(self, dict_factory=OrderedDict).items()
+        return asdict(self, dict_factory=OrderedDict[str, bool]).items()
 
 
 @dataclass(repr=False, eq=False)
