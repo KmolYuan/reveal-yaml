@@ -13,7 +13,7 @@ rym init myproject
 rym serve --port=5000
 ```
 
-Then start writing the slides in Markdown.
+Then start writing the slides in YAML + Markdown.
 
 ## Editor (Alpha)
 
