@@ -5,11 +5,12 @@ __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import Dict, Optional
+from typing import Dict, Union, Optional
 from os.path import basename, join
 from distutils.dir_util import copy_tree, mkpath
 from shutil import make_archive, rmtree
 from io import BytesIO
+from time import time_ns
 from tempfile import TemporaryDirectory
 from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
@@ -20,7 +21,7 @@ from .utility import load_file, valid_config
 
 _HELP = ""
 _SAVED = load_file(join(ROOT, 'blank.yaml'))
-_SCHEMA: Optional[Dict[int, dict]] = None
+_SCHEMA: Optional[Dict[str, dict]] = None
 _CONFIG: Dict[int, dict] = {}
 
 app = Flask(__name__)
@@ -43,14 +44,6 @@ def set_saved(path: str) -> None:
     _SAVED = load_file(path)
 
 
-@app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
-def _handler(res_id: int) -> Response:
-    _CONFIG[res_id] = request.get_json()
-    if len(_CONFIG) > 200:
-        _CONFIG.pop(min(_CONFIG))
-    return jsonify(validated=True)
-
-
 @app.errorhandler(403)
 @app.errorhandler(410)
 @app.errorhandler(500)
@@ -60,11 +53,19 @@ def server_error(e: Exception) -> str:
     return f"<pre>{format_exc()}\n{e}</pre>"
 
 
-@app.route('/preview/<int:res_id>')
-def preview(res_id: int) -> str:
+@app.route('/preview/<int:res_id>', methods=['GET', 'POST'])
+def preview(res_id: int) -> Union[str, Response]:
     """Render preview."""
+    if request.method == 'POST':
+        # Re-generate ID by time
+        res_id = time_ns()
+        _CONFIG[res_id] = request.get_json()
+        if len(_CONFIG) > 200:
+            _CONFIG.pop(min(_CONFIG))
+        # Important: INT will loss value!
+        return jsonify(id=str(res_id))
     load_schema_doc()
-    if res_id == 0 or res_id not in _CONFIG:
+    if res_id == 0:
         return _HELP
     config = _CONFIG[res_id]
     try:

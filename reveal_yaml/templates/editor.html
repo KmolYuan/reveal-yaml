@@ -131,19 +131,22 @@
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
                 editor.session.doc.getNewLineCharacter());
             editor.moveCursorTo(pos.row, pos.column);
-            compiler.id = Date.now();
+            compiler.id = Date.now().toString(10);
             const doc = editor.getValue();
             $.ajax({
-                type: "POST",
-                url: '/_handler/' + compiler.id,
+                method: "POST",
+                url: '/preview/' + compiler.id,
                 dataType: 'json',
                 contentType: 'application/json',
                 data: JSON.stringify(jsyaml.safeLoad(doc)),
                 success: data => {
-                    if (!data['validated'])
-                        return;
                     localStorage.setItem('saved', doc);
+                    compiler.id = data['id'];
+                    console.log(compiler.id);
                     previewer.preview(compiler.id);
+                },
+                error: data => {
+                    alert("Server error! Please wait for next response. (" + data['id'] + ")");
                 }
             });
         });
@@ -166,7 +169,7 @@
             alert("Local storage cleaned!");
         });
         $('#helper').mousedown(_ => {
-            previewer.preview(0);
+            previewer.preview('0');
         }).trigger('mousedown');
     });
 </script>
