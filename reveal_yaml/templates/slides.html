@@ -156,12 +156,9 @@
 </div>
 </div>
 <script src="{{ url_for('static', filename="reveal.js/reveal.js") }}"></script>
-{% if config.plugin.zoom %}<script src="{{ url_for('static', filename="plugin/zoom/zoom.js") }}"></script>{% endif %}
-{% if config.plugin.notes %}<script src="{{ url_for('static', filename="plugin/notes/notes.js") }}"></script>{% endif %}
-{% if config.plugin.search %}<script src="{{ url_for('static', filename="plugin/search/search.js") }}"></script>{% endif %}
-<script src="{{ url_for('static', filename="plugin/markdown/markdown.js") }}"></script>
-{% if config.plugin.highlight %}<script src="{{ url_for('static', filename="plugin/highlight/highlight.js") }}"></script>{% endif %}
-{% if config.plugin.math %}<script src="{{ url_for('static', filename="plugin/math/math.js") }}"></script>{% endif %}
+{% for name, enabled in config.plugin.as_dict() -%}
+{% if enabled %}<script src="{{ url_for('static', filename="plugin/" + name + "/" + name + ".js") }}"></script>{% endif %}
+{%- endfor %}
 <script>
     Reveal.initialize({
         navigationMode: '{{ config.nav_mode }}',
@@ -176,12 +173,11 @@
         previewLinks: {{ config.preview_links | lower }},
         transition: '{{ config.transition }}',
         <!-- Import order must be fixed! -->
-        plugins: [{%- if config.plugin.zoom %}RevealZoom,{% endif -%}
-                  {%- if config.plugin.notes %}RevealNotes,{% endif -%}
-                  {%- if config.plugin.search %}RevealSearch,{% endif -%}
-                  RevealMarkdown,
-                  {%- if config.plugin.highlight %}RevealHighlight,{% endif -%}
-                  {%- if config.plugin.math %}RevealMath{% endif %}],
+        plugins: [
+            {%- for name, enabled in config.plugin.as_dict() -%}
+                {% if enabled %}Reveal{{ name | capitalize }}{% if not loop.last %},{% endif %}{% endif %}
+            {%- endfor -%}
+        ],
         markdown: {smartypants: true},
     });
 </script>

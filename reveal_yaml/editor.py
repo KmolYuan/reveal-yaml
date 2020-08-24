@@ -91,6 +91,9 @@ def pack(res_id: int) -> Response:
             f.write(render_slides(config, rel_url=True))
         copy_tree(join(ROOT, 'static'), join(build_path, 'static'))
         rmtree(join(build_path, 'static', 'ace'))
+        for name, enabled in config.plugin.as_dict():
+            if not enabled:
+                rmtree(join(build_path, 'static', 'plugin', name))
         archive = make_archive(build_path, 'zip', build_path)
         with open(archive, 'rb') as f:
             mem = BytesIO(f.read())
