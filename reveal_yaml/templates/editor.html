@@ -5,6 +5,11 @@
     <title>Reveal.yaml Editor</title>
     <link rel="icon" href="{{ url_for('static', filename="img/icon.png") }}">
     <style>
+        #copyright {
+            text-align: right;
+            font-family: "League Gothic", Impact, sans-serif;
+        }
+
         #editor, #preview-layout {
             position: absolute;
             top: 0;
@@ -49,7 +54,7 @@
             <button id="helper">Documentation</button>
         </div>
         <iframe id="preview" allowfullscreen></iframe>
-        <p style="text-align: right">
+        <p id="copyright">
             <a href="https://pypi.org/project/reveal-yaml/">
                 <img src="https://img.shields.io/pypi/v/reveal-yaml.svg" alt="PyPI"></a>
             Reveal.yaml v{{ version }} by <a href="mailto:{{ email }}">{{ author }}</a> {{ copyright }}
