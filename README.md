@@ -15,16 +15,9 @@ rym serve --port=5000
 
 Then start writing the slides in Markdown.
 
-## Editor
+## Editor (Alpha)
 
 [Heroku version](https://reveal-yaml.herokuapp.com/).
-
-RYM provides a basic web YAML editor for:
-
-+ Validate the project syntax and field types.
-+ Preview slides in two columns.
-+ Save YAML project.
-+ Pack function.
 
 Start it with CLI:
 

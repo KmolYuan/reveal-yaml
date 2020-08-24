@@ -130,7 +130,7 @@ nav:
           [safari]: https://img.icons8.com/color/96/000000/safari--v1.png
           [android]: https://img.icons8.com/color/96/000000/android-os.png
 
-      - title: Editor
+      - title: Editor (Alpha)
         doc: |
           RYM provides a basic web YAML editor for:
 
@@ -138,8 +138,7 @@ nav:
           + Preview slides in two columns.
           + Save YAML project.
           + Pack function.
-
-          Browsers will complain about consuming a lot of memory for previewer.
+          + **Still not support personal storage yet.**
 
           Start it with CLI:
 
