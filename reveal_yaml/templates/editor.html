@@ -9,7 +9,7 @@
             display: flex;
         }
 
-        #editor, #preview, .func-button {
+        #editor, #preview, #button-layout {
             flex: 50%;
             position: absolute;
             top: 0;
@@ -17,36 +17,36 @@
             bottom: 0;
             left: 0;
             width: 50%;
-            margin: 0.5%;
+            margin: 4px;
+        }
+
+        #button-layout {
+            left: 51%;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
         }
 
         .func-button {
-            top: 4px;
-            left: 52%;
-            width: 5%;
-            height: 40px;
-        }
-
-        #packer {
-            top: 48px;
-        }
-
-        #cleaner {
-            top: 96px;
+            width: 100%;
+            height: 50px;
+            margin: 4px;
         }
 
         #preview {
-            left: 58%;
+            left: 59%;
             width: 40%;
-            height: 95%;
+            height: 98%;
         }
     </style>
 </head>
 <body>
 <div id="splitter">
     <pre id="editor">{{ saved }}</pre>
-    <div style="display: flex;">
+    <div id="button-layout">
         <button class="func-button" id="compiler">Compile</button>
+        <button class="func-button" id="downloader">Download YAML</button>
         <button class="func-button" id="packer">Pack</button>
         <button class="func-button" id="cleaner">Clean saved</button>
     </div>
@@ -142,6 +142,13 @@
                     previewer.preview(compiler.id);
                 }
             });
+        });
+        $('#downloader').mousedown(_ => {
+            const link = document.createElement('a');
+            link.setAttribute('href', "data:text/vnd.yaml;charset=utf-8," + encodeURIComponent(editor.getValue()));
+            link.setAttribute('download', "reveal.yaml");
+            link.click();
+            link.remove();
         });
         $('#packer').mousedown(_ => {
             if (compiler.id === undefined) {
