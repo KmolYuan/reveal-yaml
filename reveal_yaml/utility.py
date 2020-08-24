@@ -19,3 +19,9 @@ def serve(pwd: str, app: Flask, ip: str, port: int = 0) -> None:
         app.run(ip, port, ssl_context=context)
     else:
         app.run(ip, port)
+
+
+def load_file(path: str) -> str:
+    """Load file from the path."""
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()

@@ -18,6 +18,7 @@ from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
 from flask_frozen import Freezer
+from .utility import load_file
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
@@ -31,8 +32,7 @@ ROOT = abspath(dirname(__file__))
 
 def load_yaml() -> _Data:
     """Load project."""
-    with open(_PROJECT, 'r', encoding='utf-8') as f:
-        data: _Data = safe_load(f)
+    data: _Data = safe_load(load_file(_PROJECT))
     for key in tuple(data):
         data[key.replace('-', '_')] = data.pop(key)
     return data
@@ -154,8 +154,7 @@ class Slide(TypeChecker):
 
     def __post_init__(self, include):
         if include is not None:
-            with open(join("templates", include), 'r') as f:
-                self.doc += '\n\n' + f.read()
+            self.doc += '\n\n' + load_file(join("templates", include))
         if not self.embed.width:
             self.embed.width = '1000px'
         if not self.embed.height:
@@ -218,8 +217,7 @@ class Config(TypeChecker):
             self.title = self.nav[0].title
         self.watermark_size = pixel(self.watermark_size)
         if self.extra_style:
-            with open(join("templates", self.extra_style), 'r') as f:
-                self.extra_style = f.read()
+            self.extra_style = load_file(join("templates", self.extra_style))
         if self.outline not in {0, 1, 2}:
             raise ValueError(f"outline level should be 0, 1 or 2, "
                              f"not {self.outline}")

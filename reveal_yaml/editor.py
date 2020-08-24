@@ -14,10 +14,11 @@ from tempfile import TemporaryDirectory
 from flask import Flask, Response, render_template, request, jsonify, send_file
 from yaml import safe_load
 from jsonschema import validate
-from reveal_yaml.slides import ROOT, Config, render_slides
+from .slides import ROOT, Config, render_slides
+from .utility import load_file
 
 _HELP = ""
-_SAVED = ""
+_SAVED = load_file(join(ROOT, 'blank.yaml'))
 _SCHEMA = None
 _PREVIEW: Dict[int, dict] = {}
 
@@ -26,22 +27,20 @@ app = Flask(__name__)
 
 def load_schema_doc() -> None:
     global _SCHEMA, _HELP
-    if _SCHEMA and _HELP:
+    if _HELP and _SCHEMA is not None:
         return
-    with open(join(ROOT, 'schema.yaml'), 'r', encoding='utf-8') as f:
-        _SCHEMA = safe_load(f)
-    with open(join(ROOT, 'reveal.yaml'), 'r', encoding='utf-8') as f:
-        config = {k.replace('-', '_'): v for k, v in safe_load(f).items()}
-    _HELP = render_slides(Config(**config))
+    _SCHEMA = safe_load(load_file(join(ROOT, 'schema.yaml')))
+    config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
+    _HELP = render_slides(Config(**{k.replace('-', '_'): v for k, v in
+                                    config.items()}))
 
 
 def set_saved(path: str) -> None:
     """Set saved project."""
     if not path:
-        path = join(ROOT, 'blank.yaml')
+        return
     global _SAVED
-    with open(path, 'r', encoding='utf-8') as f:
-        _SAVED = f.read()
+    _SAVED = load_file(path)
 
 
 @app.route('/_handler/<int:res_id>', methods=['GET', 'POST'])
