@@ -7,7 +7,6 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import Dict, Union, Optional
 from os.path import basename, join
-from distutils.dir_util import mkpath
 from shutil import make_archive
 from io import BytesIO
 from time import time_ns
@@ -53,9 +52,10 @@ def server_error(e: Exception) -> str:
     return f"<pre>{format_exc()}\n{e}</pre>"
 
 
-@app.route('/preview/<int:res_id>', methods=['GET', 'POST'])
-def preview(res_id: int) -> Union[str, Response]:
+@app.route('/preview/<res_id>', methods=['GET', 'POST'])
+def preview(res_id: str) -> Union[str, Response]:
     """Render preview."""
+    res_id = int(res_id)
     if request.method == 'POST':
         # Re-generate ID by time
         res_id = time_ns()
@@ -76,9 +76,10 @@ def preview(res_id: int) -> Union[str, Response]:
     return render_slides(Config(**valid_config(config)))
 
 
-@app.route('/pack/<int:res_id>')
-def pack(res_id: int) -> Response:
+@app.route('/pack/<res_id>')
+def pack(res_id: str) -> Response:
     """Build and provide zip file for user download."""
+    res_id = int(res_id)
     if res_id not in _CONFIG:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
