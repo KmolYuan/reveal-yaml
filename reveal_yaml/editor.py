@@ -5,42 +5,44 @@ __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import Dict, Union, Optional
+from typing import Union
 from os.path import basename, join
 from shutil import make_archive
 from io import BytesIO
 from tempfile import TemporaryDirectory
-from flask import Flask, Response, render_template, request, jsonify, send_file
-from uuid0 import generate, UUID
+from time import time_ns
+from json import loads
 from yaml import safe_load
 from jsonschema import validate
+from flask import Flask, Response, render_template, request, jsonify, send_file
+from dataset import connect, Table
 from reveal_yaml import __version__
 from .slides import ROOT, Config, render_slides, copy_project
 from .utility import load_file, valid_config
 
-_HELP = ""
-_SAVED = load_file(join(ROOT, 'blank.yaml'))
-_SCHEMA: Optional[Dict[str, dict]] = None
-_CONFIG: Dict[UUID, dict] = {}
-
 app = Flask(__name__)
+db = connect('sqlite:///' + join(ROOT, 'swap.db'))
+tb1: Table = db.create_table('doc')
+tb1.create_column('doc', db.types.text)
+tb2: Table = db.create_table('schema')
+tb2.create_column('json', db.types.json)
+tb3: Table = db.create_table('swap')
+tb3.create_column('json', db.types.json)
 
 
 def load_schema_doc() -> None:
-    global _SCHEMA, _HELP
-    if _HELP and _SCHEMA is not None:
+    if tb1.find_one(id=0) is not None:
         return
-    _SCHEMA = safe_load(load_file(join(ROOT, 'schema.yaml')))
     config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
-    _HELP = render_slides(Config(**valid_config(config)))
+    tb1.insert({'id': 0, 'doc': render_slides(Config(**valid_config(config)))})
+    tb2.insert({'id': 0, 'json': loads(load_file(join(ROOT, 'schema.json')))})
 
 
 def set_saved(path: str) -> None:
     """Set saved project."""
     if not path:
         return
-    global _SAVED
-    _SAVED = load_file(path)
+    tb1.insert({'id': 1, 'doc': load_file(path)})
 
 
 @app.errorhandler(403)
@@ -52,38 +54,38 @@ def server_error(e: Exception) -> str:
     return f"<pre>{format_exc()}\n{e}</pre>"
 
 
-@app.route('/preview/<res_id>', methods=['GET', 'POST'])
-def preview(res_id: str) -> Union[str, Response]:
+@app.route('/preview/<int:res_id>', methods=['GET', 'POST'])
+def preview(res_id: int) -> Union[str, Response]:
     """Render preview."""
     if request.method == 'POST':
         # Re-generate ID by time
-        res_id = generate()
-        _CONFIG[res_id] = request.get_json()
-        if len(_CONFIG) > 200:
-            _CONFIG.pop(min(_CONFIG))
-        # Important: INT will loss value!
+        res_id = time_ns()
+        tb3.insert({'id': res_id, 'json': request.get_json()})
+        if len(tb3) > 300:
+            tb3.delete(id=tb3.find_one(order_by=['id'])['id'])
+        # Use integers will loss the value!
         return jsonify(id=str(res_id))
     load_schema_doc()
-    if res_id == '0':
-        return _HELP
-    config = _CONFIG[UUID(res_id)]
+    if res_id == 0:
+        return tb1.find_one(id=0)['doc']
+    config = tb3.find_one(id=res_id)['json']
     try:
-        validate(config, _SCHEMA)
+        validate(config, tb2.find_one(id=0)['json'])
     except Exception as e:
         from traceback import format_exc
         return f"<pre>{format_exc()}\n{e}</pre>"
     return render_slides(Config(**valid_config(config)))
 
 
-@app.route('/pack/<res_id>')
-def pack(res_id: str) -> Response:
+@app.route('/pack/<int:res_id>')
+def pack(res_id: int) -> Response:
     """Build and provide zip file for user download."""
-    res_id = UUID(res_id)
-    if res_id not in _CONFIG:
+    row = tb3.find_one(id=res_id)
+    if row is None:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
     with TemporaryDirectory(suffix=f"{res_id}") as path:
-        config = Config(**_CONFIG[res_id])
+        config = Config(**row['json'])
         build_path = join(path, "reveal")
         copy_project(config, ROOT, build_path)
         archive = make_archive(build_path, 'zip', build_path)
@@ -96,6 +98,8 @@ def pack(res_id: str) -> Response:
 @app.route('/')
 def index() -> str:
     """The editor."""
-    return render_template("editor.html", saved=_SAVED, version=__version__,
+    saved = tb1.find_one(id=1)
+    return render_template("editor.html", version=__version__,
                            author=__author__, license=__license__,
-                           copyright=__copyright__, email=__email__)
+                           copyright=__copyright__, email=__email__,
+                           saved="" if saved is None else saved['doc'])

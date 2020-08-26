@@ -110,6 +110,7 @@ venv.bak/
 *.key
 
 # Dependencies
+*.db
 /static/
 /templates/
 /reveal_yaml/schema.json
