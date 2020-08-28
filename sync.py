@@ -19,6 +19,8 @@ def reveal_cdn(ver: str) -> None:
     remove('reveal.tgz')
     for f in glob("package/**/*.esm.js*", recursive=True):
         remove(f)
+    for f in glob("package/**/plugin.js", recursive=True):
+        remove(f)
     copy_tree("package/dist", f"reveal_yaml/static/reveal.js")
     copy_tree("package/plugin", f"reveal_yaml/static/plugin")
     rmtree("package")
