@@ -11,8 +11,8 @@ definitions:
     required: [src]
     properties:
       src:
-        $ref: "#/definitions/path"
         title: Soure path
+        $ref: "#/definitions/path"
       width:
         title: Width
         type: [integer, string]
@@ -41,17 +41,17 @@ definitions:
         title: Multiline Markdown pargraph
         type: string
       include:
-        $ref: "#/definitions/path"
         title: Include a Markdown file name from "templates", append after "doc" key
+        $ref: "#/definitions/path"
       math:
         title: Latex math without "$$" brackets
         type: string
       youtube:
-        $ref: "#/definitions/sized"
         title: Youtube video
-      embed:
         $ref: "#/definitions/sized"
+      embed:
         title: External resource like PDF
+        $ref: "#/definitions/sized"
       img:
         title: Images
         anyOf:
@@ -99,9 +99,12 @@ properties:
   author:
     title: Page author
     type: string
-  watermark:
+  cdn:
+    title: Accessible CDN path if missing local files
     $ref: "#/definitions/path"
+  watermark:
     title: Watermark source
+    $ref: "#/definitions/path"
   watermark-size:
     title: Source width
     type: [integer, string]
@@ -120,16 +123,16 @@ properties:
     type: string
     default: zenburn
   icon:
-    $ref: "#/definitions/path"
     title: Icon path
+    $ref: "#/definitions/path"
     default: img/icon.png
   default-style:
     title: Use default style
     type: boolean
     default: true
   extra-style:
-    $ref: "#/definitions/path"
     title: Extra CSS style path in "templates"
+    $ref: "#/definitions/path"
   nav-mode:
     title: Reveal navigation mode option
     type: string
@@ -170,15 +173,15 @@ properties:
     type: string
     default: linear
   footer:
-    $ref: "#/definitions/$sized"
     title: Footer block
+    $ref: "#/definitions/$sized"
     properties:
       label:
         title: Footer title
         type: string
       link:
-        $ref: "#/definitions/path"
         title: Link for footer title
+        $ref: "#/definitions/path"
   plugin:
     description: Plugin enable / disable options
     type: object

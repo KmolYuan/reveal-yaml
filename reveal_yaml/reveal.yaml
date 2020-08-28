@@ -1,5 +1,6 @@
 description: A YAML, Markdown, reveal.js based Flask application.
 author: Yuan Chang
+cdn: https://raw.githubusercontent.com/KmolYuan/reveal-yaml/master/reveal_yaml/static/
 watermark: img/watermark.png
 watermark-size: 50%
 footer:
@@ -263,16 +264,17 @@ nav:
       | title | Page title, default is same as first page | `str` |
       | description | Page description | `str` |
       | author | Page author | `str` |
+      | cdn | Accessible CDN path if missing local files | `str` |
       | watermark | Watermark source | `str` |
       | watermark-size | Source width | `int` / `str` |
       | outline | Outline page under first column with depth | `int` {0, 1, 2} |
       | theme | Reveal.js theme, "serif" by default | `str` |
       | code-theme | Highlight theme, "zenburn" by default | `str` |
-      | icon | Icon path, "img/icon.png" by default | `str` |
     sub:
       - doc: |
           | Key | Description | Type |
           |:---:|:------------|:----:|
+          | icon | Icon path, "img/icon.png" by default | `str` |
           | default-style | Use default style, enabled by default | `bool` |
           | extra-style | Extra CSS style path in "templates" | `str` |
           | nav-mode | Reveal [navigation mode](https://revealjs.com/vertical-slides/#navigation-mode) option | `str` |

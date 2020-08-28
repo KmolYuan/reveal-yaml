@@ -7,7 +7,7 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import (
     cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
-    OrderedDict, ItemsView, Union, Type, Any
+    OrderedDict, ItemsView, Union, Type, Any,
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, InitVar, asdict
@@ -184,6 +184,7 @@ class Config(TypeChecker):
     title: str = ""
     description: str = ""
     author: str = ""
+    cdn: str = ""
     theme: str = "serif"
     code_theme: str = "zenburn"
     icon: str = "img/icon.png"
@@ -210,6 +211,7 @@ class Config(TypeChecker):
         """Check arguments after assigned."""
         if not self.title and self.nav:
             self.title = self.nav[0].title
+        self.cdn = self.cdn.rstrip('/')
         self.watermark_size = pixel(self.watermark_size)
         if self.extra_style:
             self.extra_style = load_file(join("templates", self.extra_style))
@@ -257,6 +259,8 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
         u = urlparse(path)
         if all((u.scheme, u.netloc, u.path)):
             return path
+        if not rel_url and config.cdn:
+            return f"{config.cdn}/{path}"
         return url_func('static', filename=path)
 
     return render_template("slides.html",
