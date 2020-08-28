@@ -11,14 +11,14 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, asdict
-from os.path import isfile, join, abspath, relpath, dirname, sep
+from os.path import isfile, join, relpath, dirname, sep
 from distutils.dir_util import copy_tree, mkpath
 from shutil import rmtree
 from yaml import safe_load
 from json import loads
 from jsonschema import validate
 from flask import Flask, render_template, url_for
-from .utility import is_url, valid_config, load_file, dl, rm
+from .utility import is_url, valid_config, load_file, dl, rm, ROOT
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
@@ -26,7 +26,6 @@ _YamlValue = Union[bool, int, float, str, list, dict]
 _PROJECT = ""
 T = TypeVar('T', bound=Union[_YamlValue, 'TypeChecker'])
 U = TypeVar('U', bound=_YamlValue)
-ROOT = abspath(dirname(__file__))
 
 
 def load_yaml() -> _Data:
@@ -227,20 +226,15 @@ class Config(TypeChecker):
         # Make an outline page
         doc = []
         for i, j, n in self.slides:
-            if i > 0 and n.title and self.outline > 0:
-                if self.history:
-                    if j > 0:
-                        title = f"+ [{n.title}](#/{i}/{j})"
-                    else:
-                        title = f"+ [{n.title}](#/{i})"
-                else:
-                    title = f"+ {n.title}"
-                if j > 0:
-                    doc.append(" " * 2 + title)
-                else:
-                    doc.append(title)
             if not self.plugin.math and n.math:
                 self.plugin.math = True
+            if i < 1 or not n.title or self.outline < 1:
+                continue
+            doc.append(" " * (2 if j > 0 else 0) + (
+                f"+ [{n.title}](#/{f'{i}/{j}' if j > 0 else f'{i}'})"
+                if self.history else
+                f"+ {n.title}"
+            ))
         if doc:
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
 
@@ -262,6 +256,7 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
             return relpath(path, ROOT).replace(sep, '/')
     else:
         url_func = url_for
+    project_dir = dirname(_PROJECT)
 
     def uri(path: str) -> str:
         """Handle the relative path and URIs."""
@@ -269,19 +264,25 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
             return ""
         if is_url(path):
             return path
-        if not rel_url and config.cdn:
+        if (
+            not rel_url
+            and config.cdn
+            # Prefer to load local files
+            # Check files when reloading
+            and not isfile(join(project_dir, 'static', path))
+        ):
             return f"{config.cdn}/{path}"
         return url_func('static', filename=path)
 
     def include(path: str) -> str:
         """Include text file."""
-        return load_file(uri(path).strip('/'))
+        return load_file(join(project_dir, uri(path).strip('/')))
 
     return render_template("slides.html", config=config, url_for=url_func,
                            uri=uri, include=include)
 
 
-def find_project(pwd: str, flask_app: Flask) -> str:
+def find_project(flask_app: Flask, pwd: str) -> str:
     """Get project name from the current path."""
     project = join(pwd, "reveal.yaml")
     if not isfile(project):
@@ -303,17 +304,23 @@ def pack(root: str, build_path: str, app: Flask) -> None:
 def copy_project(config: Config, root: str, build_path: str) -> None:
     """Copy project."""
     mkpath(build_path)
-    with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
-        f.write(render_slides(config, rel_url=True))
     copy_tree(join(root, 'static'), join(build_path, 'static'))
+
     # Download from CDN
-    if config.watermark and not is_url(config.watermark):
-        dl(f"{config.cdn}/{config.watermark}",
-           join(build_path, 'static', config.watermark))
+    def cdn(src: str) -> None:
+        """Download from source path."""
+        if src and not is_url(src):
+            dl(f"{config.cdn}/{src}", join(build_path, 'static', src))
+
+    cdn(config.icon)
+    cdn(config.watermark)
     for _, _, n in config.slides:
         for img in n.img:
-            if img.src and not is_url(img.src):
-                dl(f"{config.cdn}/{img}", join(build_path, 'static', img.src))
+            cdn(img.src)
+        cdn(n.embed.src)
+    # Render index.html
+    with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
+        f.write(render_slides(config, rel_url=True))
     # Remove include files
     rm(join(build_path, 'static', config.extra_style))
     for _, _, n in config.slides:

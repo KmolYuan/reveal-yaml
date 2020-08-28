@@ -6,11 +6,14 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import Dict, Any
-from os import remove
-from os.path import isfile, join
+from os import remove, getcwd
+from os.path import isfile, join, abspath, dirname
 from urllib.parse import urlparse
 from requests import get
 from flask import Flask
+
+ROOT = abspath(dirname(__file__))
+PWD = abspath(getcwd())
 
 
 def is_url(path: str) -> bool:
@@ -40,10 +43,10 @@ def valid_config(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def load_file(path: str) -> str:
     """Load file from the path."""
-    if not path:
-        return ""
     if is_url(path):
         return get(path).text
+    if not path or not isfile(path):
+        return ""
     with open(path, 'r', encoding='utf-8') as f:
         return f.read()
 

@@ -10,18 +10,21 @@ from sys import stdout
 from os import getcwd
 from os.path import join, abspath, dirname, isfile
 from shutil import rmtree
+from reveal_yaml import __version__
 
 
 def main() -> None:
-    """Main function startup with SSH."""
-    from reveal_yaml import __version__
-    pwd = abspath(getcwd())
+    """Main function.
+
+    Module imports should be placed after commands to ensure the performance.
+    """
     root = abspath(dirname(__file__))
+    pwd = abspath(getcwd())
     ver = f"Reveal.yaml Manager v{__version__}"
     parser = ArgumentParser(
         prog=ver,
         description="A YAML, Markdown, reveal.js based Flask application. "
-                    "Supports gh-pages deployment actions.\n"
+                    "Supports gh-pages deployment actions. "
                     "https://kmolyuan.github.io/reveal-yaml",
         epilog=f"{__copyright__} {__license__} {__author__} {__email__}",
     )
@@ -68,7 +71,7 @@ def main() -> None:
         from reveal_yaml.slides import find_project, pack
         from reveal_yaml.slides_app import app
         args.PATH = abspath(args.PATH)
-        if not find_project(args.PATH, app):
+        if not find_project(app, args.PATH):
             stdout.write("fatal: project is not found")
             return
         if not args.dist:
@@ -76,17 +79,16 @@ def main() -> None:
         pack(args.PATH, args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
         from reveal_yaml.slides import find_project
-        if args.cmd in {'doc', 'editor'}:
-            pwd = root
+        path = root if args.cmd == 'doc' else pwd
         if args.cmd == 'editor':
             from reveal_yaml.editor import app  # type: ignore
         else:
             from reveal_yaml.slides_app import app
-            if not find_project(pwd, app):
+            if not find_project(app, path):
                 stdout.write("fatal: project is not found")
                 return
         from reveal_yaml.utility import serve
-        serve(pwd, app, args.IP, args.port)
+        serve(path, app, args.IP, args.port)
     else:
         parser.print_help()
 

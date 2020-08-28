@@ -1,5 +1,8 @@
 description: ""
 author: ""
+# Set it if your files are not in local.
+# The resources can be found when previewing or packing.
+cdn: https://raw.githubusercontent.com/KmolYuan/reveal-yaml/master/reveal_yaml/static/
 nav:
   - title: Untitled
     doc: |

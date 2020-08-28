@@ -17,8 +17,8 @@ from jsonschema import validate
 from flask import Flask, Response, render_template, request, jsonify, send_file
 from dataset import connect, Table
 from reveal_yaml import __version__
-from .slides import ROOT, Config, render_slides, copy_project
-from .utility import load_file, valid_config
+from .slides import Config, render_slides, copy_project, find_project
+from .utility import load_file, valid_config, ROOT, PWD
 
 app = Flask(__name__)
 db = connect('sqlite:///' + join(ROOT, 'swap.db'))
@@ -27,13 +27,14 @@ tb2: Table = db['schema']
 tb3: Table = db['swap']
 
 
-def load_globals() -> None:
-    """Load global contents to database."""
+@app.before_first_request
+def before_first_request() -> None:
     if tb1.find_one(id=0) is not None:
         return
-    config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
-    tb1.insert({'id': 0, 'doc': render_slides(Config(**valid_config(config)))})
-    tb1.insert({'id': 1, 'doc': load_file(join(ROOT, 'blank.yaml'))})
+    config = valid_config(safe_load(load_file(join(ROOT, 'reveal.yaml'))))
+    tb1.insert({'id': 0, 'doc': render_slides(Config(**config))})
+    project = find_project(app, PWD) or join(ROOT, 'blank.yaml')
+    tb1.insert({'id': 1, 'doc': load_file(project)})
     tb2.insert({'id': 0, 'json': loads(load_file(join(ROOT, 'schema.json')))})
 
 
@@ -76,9 +77,8 @@ def pack(res_id: int) -> Response:
         return send_file(BytesIO(), attachment_filename='empty.txt',
                          as_attachment=True)
     with TemporaryDirectory(suffix=f"{res_id}") as path:
-        config = Config(**row['json'])
         build_path = join(path, "reveal")
-        copy_project(config, ROOT, build_path)
+        copy_project(Config(**row['json']), ROOT, build_path)
         archive = make_archive(build_path, 'zip', build_path)
         with open(archive, 'rb') as f:
             mem = BytesIO(f.read())
@@ -89,7 +89,6 @@ def pack(res_id: int) -> Response:
 @app.route('/')
 def index() -> str:
     """The editor."""
-    load_globals()
     return render_template("editor.html", version=__version__,
                            author=__author__, license=__license__,
                            copyright=__copyright__, email=__email__,
