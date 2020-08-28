@@ -22,12 +22,17 @@ from .utility import load_file, valid_config
 
 app = Flask(__name__)
 db = connect('sqlite:///' + join(ROOT, 'swap.db'))
-tb1: Table = db.create_table('doc')
-tb1.create_column('doc', db.types.text)
-tb2: Table = db.create_table('schema')
-tb2.create_column('json', db.types.json)
-tb3: Table = db.create_table('swap')
-tb3.create_column('json', db.types.json)
+if set(db.tables) != {'doc', 'schema', 'swap'}:
+    tb1: Table = db.create_table('doc')
+    tb1.create_column('doc', db.types.text)
+    tb2: Table = db.create_table('schema')
+    tb2.create_column('json', db.types.json)
+    tb3: Table = db.create_table('swap')
+    tb3.create_column('json', db.types.json)
+else:
+    tb1 = db['doc']
+    tb2 = db['schema']
+    tb3 = db['swap']
 
 
 def load_schema_doc() -> None:
@@ -35,14 +40,8 @@ def load_schema_doc() -> None:
         return
     config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
     tb1.insert({'id': 0, 'doc': render_slides(Config(**valid_config(config)))})
+    tb1.insert({'id': 1, 'doc': load_file(join(ROOT, 'blank.yaml'))})
     tb2.insert({'id': 0, 'json': loads(load_file(join(ROOT, 'schema.json')))})
-
-
-def set_saved(path: str) -> None:
-    """Set saved project."""
-    if not path:
-        return
-    tb1.insert({'id': 1, 'doc': load_file(path)})
 
 
 @app.errorhandler(403)

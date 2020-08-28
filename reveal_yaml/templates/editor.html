@@ -138,6 +138,11 @@
             editor.moveCursorTo(pos.row, pos.column);
             compiler.id = Date.now().toString(10);
             const doc = editor.getValue();
+            const data = jsyaml.safeLoad(doc);
+            if (data === undefined) {
+                alert("Blank content!")
+                return;
+            }
             $.ajax({
                 method: "POST",
                 url: '/preview/' + compiler.id,
@@ -147,7 +152,6 @@
                 success: data => {
                     localStorage.setItem('saved', doc);
                     compiler.id = data['id'];
-                    console.log(compiler.id);
                     previewer.preview(compiler.id);
                 },
                 error: data => {

@@ -80,8 +80,7 @@ def main() -> None:
         if args.cmd == 'doc':
             pwd = root
         if args.cmd == 'editor':
-            from reveal_yaml.editor import app, set_saved  # type: ignore
-            set_saved(find_project(pwd, app))
+            from reveal_yaml.editor import app  # type: ignore
         else:
             from reveal_yaml.slides_app import app
             if not find_project(pwd, app):
