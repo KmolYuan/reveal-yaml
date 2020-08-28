@@ -5,15 +5,9 @@ from shutil import rmtree
 from distutils.dir_util import copy_tree, mkpath
 from glob import glob
 from tarfile import open as tgz
-from requests import get
-import yaml
-import json
-
-
-def dl(url: str, dist: str) -> None:
-    """Download file."""
-    with open(dist, 'wb') as f:
-        f.write(get(url).content)
+from yaml import safe_load
+from json import dump
+from reveal_yaml.utility import dl
 
 
 def reveal_cdn(ver: str) -> None:
@@ -53,9 +47,9 @@ def main():
     cdn("js-yaml/3.14.0/js-yaml.min.js", path)
     # Generate JSON schema
     with open("reveal_yaml/schema.yaml", 'r') as f:
-        data = yaml.safe_load(f)
+        data = safe_load(f)
     with open("reveal_yaml/schema.json", 'w+') as f:
-        json.dump(data, f, indent=4)
+        dump(data, f, indent=4)
 
 
 if __name__ == '__main__':

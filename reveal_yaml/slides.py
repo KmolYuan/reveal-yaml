@@ -11,13 +11,12 @@ from typing import (
 )
 from abc import ABCMeta
 from dataclasses import dataclass, field, is_dataclass, asdict
-from os import remove
 from os.path import isfile, join, abspath, relpath, dirname, sep
 from distutils.dir_util import copy_tree, mkpath
 from shutil import rmtree
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from .utility import is_url, load_file, valid_config
+from .utility import is_url, valid_config, load_file, dl, rm
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
@@ -300,14 +299,16 @@ def copy_project(config: Config, root: str, build_path: str) -> None:
     with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
         f.write(render_slides(config, rel_url=True))
     copy_tree(join(root, 'static'), join(build_path, 'static'))
-    # Remove include files
-    path = join(build_path, 'static', config.extra_style)
-    if isfile(path):
-        remove(path)
+    # Download from CDN
+    dl(f"{config.cdn}/{config.watermark}",
+       join(build_path, 'static', config.watermark))
     for _, _, n in config.slides:
-        path = join(build_path, 'static', n.include)
-        if isfile(path):
-            remove(path)
+        for img in n.img:
+            dl(f"{config.cdn}/{img}", join(build_path, 'static', img.src))
+    # Remove include files
+    rm(join(build_path, 'static', config.extra_style))
+    for _, _, n in config.slides:
+        rm(join(build_path, 'static', n.include))
     # Remove unused js module
     rmtree(join(build_path, 'static', 'ace'), ignore_errors=True)
     for name, enabled in config.plugin.as_dict():

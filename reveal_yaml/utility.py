@@ -6,10 +6,17 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import Dict, Any
+from os import remove
 from os.path import isfile, join
 from urllib.parse import urlparse
 from requests import get
 from flask import Flask
+
+
+def is_url(path: str) -> bool:
+    """Return true if the path is url."""
+    u = urlparse(path)
+    return all((u.scheme, u.netloc, u.path))
 
 
 def serve(pwd: str, app: Flask, ip: str, port: int = 0) -> None:
@@ -24,6 +31,13 @@ def serve(pwd: str, app: Flask, ip: str, port: int = 0) -> None:
         app.run(ip, port)
 
 
+def valid_config(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Replace minus sign with an underscore."""
+    for key in tuple(data):
+        data[key.replace('-', '_')] = data.pop(key)
+    return data
+
+
 def load_file(path: str) -> str:
     """Load file from the path."""
     if not path:
@@ -34,14 +48,15 @@ def load_file(path: str) -> str:
         return f.read()
 
 
-def valid_config(data: Dict[str, Any]) -> Dict[str, Any]:
-    """Replace minus sign with an underscore."""
-    for key in tuple(data):
-        data[key.replace('-', '_')] = data.pop(key)
-    return data
+def dl(url: str, dist: str) -> None:
+    """Download file if not exist."""
+    if isfile(dist):
+        return
+    with open(dist, 'wb') as f:
+        f.write(get(url).content)
 
 
-def is_url(path: str) -> bool:
-    """Return true if the path is url."""
-    u = urlparse(path)
-    return all((u.scheme, u.netloc, u.path))
+def rm(path: str) -> None:
+    """Remove file if exist."""
+    if isfile(path):
+        remove(path)
