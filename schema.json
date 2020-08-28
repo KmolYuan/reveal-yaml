@@ -1,0 +1,321 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Reveal.yaml Schema",
+    "description": "The validator of Reveal.yaml",
+    "definitions": {
+        "path": {
+            "type": "string",
+            "pattern": "^(?:https?://)?(?:[\\w.-]+/?)+"
+        },
+        "$sized": {
+            "type": "object",
+            "minProperties": 1,
+            "required": [
+                "src"
+            ],
+            "properties": {
+                "src": {
+                    "title": "Soure path",
+                    "$ref": "#/definitions/path"
+                },
+                "width": {
+                    "title": "Width",
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
+                },
+                "height": {
+                    "title": "Height",
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
+                }
+            }
+        },
+        "sized": {
+            "$ref": "#/definitions/$sized",
+            "additionalProperties": false
+        },
+        "img": {
+            "$ref": "#/definitions/$sized",
+            "properties": {
+                "label": {
+                    "title": "Image caption",
+                    "type": "string"
+                }
+            },
+            "title": "Image"
+        },
+        "$slide": {
+            "title": "A slide",
+            "type": "object",
+            "minProperties": 1,
+            "properties": {
+                "title": {
+                    "title": "Single line Markdown level 2 title",
+                    "type": "string"
+                },
+                "doc": {
+                    "title": "Multiline Markdown pargraph",
+                    "type": "string"
+                },
+                "include": {
+                    "title": "Include a Markdown file from path, append after \"doc\"",
+                    "$ref": "#/definitions/path"
+                },
+                "math": {
+                    "title": "Latex math without \"$$\" brackets",
+                    "type": "string"
+                },
+                "youtube": {
+                    "title": "Youtube video",
+                    "$ref": "#/definitions/sized"
+                },
+                "embed": {
+                    "title": "External resource like PDF",
+                    "$ref": "#/definitions/sized"
+                },
+                "img": {
+                    "title": "Images",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/img"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/img"
+                            },
+                            "minItems": 1
+                        }
+                    ]
+                },
+                "fragment": {
+                    "title": "Fragment option",
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": false,
+                    "properties": {
+                        "math": {
+                            "type": "string"
+                        },
+                        "img": {
+                            "type": "string"
+                        },
+                        "youtube": {
+                            "type": "string"
+                        },
+                        "embed": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "slide": {
+            "$ref": "#/definitions/$slide",
+            "additionalProperties": false
+        },
+        "hslide": {
+            "$ref": "#/definitions/slide",
+            "additionalProperties": false,
+            "properties": {
+                "sub": {
+                    "title": "Vertical slides",
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/slide"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/slide"
+                            },
+                            "minItems": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "type": "object",
+    "required": [
+        "nav"
+    ],
+    "properties": {
+        "lang": {
+            "title": "Page language",
+            "type": "string",
+            "default": "en"
+        },
+        "title": {
+            "title": "Page title, default is same as first page",
+            "type": "string"
+        },
+        "description": {
+            "title": "Page description",
+            "type": "string"
+        },
+        "author": {
+            "title": "Page author",
+            "type": "string"
+        },
+        "cdn": {
+            "title": "Accessible CDN path if missing local files",
+            "$ref": "#/definitions/path"
+        },
+        "watermark": {
+            "title": "Watermark source",
+            "$ref": "#/definitions/path"
+        },
+        "watermark-size": {
+            "title": "Source width",
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "outline": {
+            "title": "Outline page under first column with depth",
+            "type": "integer",
+            "default": 0,
+            "maximum": 2,
+            "minimum": 0
+        },
+        "theme": {
+            "title": "Reveal.js theme",
+            "type": "string",
+            "default": "serif"
+        },
+        "code-theme": {
+            "title": "Highlight theme",
+            "type": "string",
+            "default": "zenburn"
+        },
+        "icon": {
+            "title": "Icon path",
+            "$ref": "#/definitions/path",
+            "default": "img/icon.png"
+        },
+        "default-style": {
+            "title": "Use default style",
+            "type": "boolean",
+            "default": true
+        },
+        "extra-style": {
+            "title": "Extra CSS style path",
+            "$ref": "#/definitions/path"
+        },
+        "nav-mode": {
+            "title": "Reveal navigation mode option",
+            "type": "string"
+        },
+        "show-arrows": {
+            "title": "Show control arrows",
+            "type": "boolean",
+            "default": true
+        },
+        "center": {
+            "title": "Auto center the \"doc\"",
+            "type": "boolean",
+            "default": true
+        },
+        "loop": {
+            "title": "Loop the slides",
+            "type": "boolean",
+            "default": false
+        },
+        "history": {
+            "title": "Enable page history",
+            "type": "boolean",
+            "default": true
+        },
+        "slide-num": {
+            "title": "Slide number style",
+            "type": [
+                "boolean",
+                "string"
+            ],
+            "default": "c/t"
+        },
+        "progress": {
+            "title": "Show progress bar",
+            "type": "boolean",
+            "default": true
+        },
+        "mouse-wheel": {
+            "title": "Allow wheel control",
+            "type": "boolean",
+            "default": false
+        },
+        "preview-links": {
+            "title": "Open a preview window for links",
+            "type": "boolean",
+            "default": false
+        },
+        "transition": {
+            "title": "Transition mode",
+            "type": "string",
+            "default": "linear"
+        },
+        "footer": {
+            "title": "Footer block",
+            "$ref": "#/definitions/$sized",
+            "properties": {
+                "label": {
+                    "title": "Footer title",
+                    "type": "string"
+                },
+                "link": {
+                    "title": "Link for footer title",
+                    "$ref": "#/definitions/path"
+                }
+            }
+        },
+        "plugin": {
+            "description": "Plugin enable / disable options",
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+                "zoom": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "notes": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "search": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "highlight": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "math": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "nav": {
+            "title": "Horizontal slides",
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/hslide"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/hslide"
+                    },
+                    "minItems": 1
+                }
+            ]
+        }
+    }
+}

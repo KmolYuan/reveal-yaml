@@ -1,7 +1,0 @@
-pyyaml
-requests
-flask
-werkzeug
-jsonschema
-dataset
-gunicorn; sys_platform != 'win32'
