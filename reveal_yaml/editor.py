@@ -22,17 +22,9 @@ from .utility import load_file, valid_config
 
 app = Flask(__name__)
 db = connect('sqlite:///' + join(ROOT, 'swap.db'))
-if set(db.tables) == {'doc', 'schema', 'swap'}:
-    tb1: Table = db['doc']
-    tb2: Table = db['schema']
-    tb3: Table = db['swap']
-else:
-    tb1 = db.create_table('doc')
-    tb1.create_column('doc', db.types.text)
-    tb2 = db.create_table('schema')
-    tb2.create_column('json', db.types.json)
-    tb3 = db.create_table('swap')
-    tb3.create_column('json', db.types.json)
+tb1: Table = db['doc']
+tb2: Table = db['schema']
+tb3: Table = db['swap']
 
 
 def load_globals() -> None:
