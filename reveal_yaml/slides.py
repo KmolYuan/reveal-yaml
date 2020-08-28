@@ -6,18 +6,18 @@ __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
 from typing import (
-    cast, get_type_hints, overload, TypeVar, List, Sequence, Dict, Mapping,
-    OrderedDict, ItemsView, Union, Type, Any,
+    cast, get_type_hints, overload, TypeVar, Tuple, List, Sequence, Dict,
+    Mapping, OrderedDict, Iterator, ItemsView, Union, Type, Any,
 )
 from abc import ABCMeta
-from dataclasses import dataclass, field, is_dataclass, InitVar, asdict
+from dataclasses import dataclass, field, is_dataclass, asdict
+from os import remove
 from os.path import isfile, join, abspath, relpath, dirname, sep
 from distutils.dir_util import copy_tree, mkpath
 from shutil import rmtree
-from urllib.parse import urlparse
 from yaml import safe_load
 from flask import Flask, render_template, url_for
-from .utility import load_file, valid_config
+from .utility import is_url, load_file, valid_config
 
 _Opt = Mapping[str, str]
 _Data = Dict[str, Any]
@@ -140,20 +140,25 @@ class Slide(TypeChecker):
     id: str = ""
     title: str = ""
     doc: str = ""
+    include: str = ""
     math: str = ""
     img: List[Img] = field(default_factory=list)
     youtube: Size = field(default_factory=Size)
     embed: Size = field(default_factory=Size)
     fragment: Fragment = field(default_factory=Fragment)
-    include: InitVar[str] = None
 
-    def __post_init__(self, include):
-        if include is not None:
-            self.doc += '\n\n' + load_file(join("templates", include))
+    def __post_init__(self):
         if not self.embed.width:
             self.embed.width = '1000px'
         if not self.embed.height:
             self.embed.height = '450px'
+
+    @property
+    def is_article(self) -> bool:
+        """Return true if the block is empty."""
+        return bool(self.title) and any((self.doc, self.include, self.math,
+                                         self.img, self.youtube.src,
+                                         self.embed.src))
 
 
 @dataclass(repr=False, eq=False)
@@ -213,33 +218,36 @@ class Config(TypeChecker):
             self.title = self.nav[0].title
         self.cdn = self.cdn.rstrip('/')
         self.watermark_size = pixel(self.watermark_size)
-        if self.extra_style:
-            self.extra_style = load_file(join("templates", self.extra_style))
         if self.outline not in {0, 1, 2}:
             raise ValueError(f"outline level should be 0, 1 or 2, "
                              f"not {self.outline}")
         # Make an outline page
         doc = []
-        for i, n in enumerate(self.nav):
+        for i, j, n in self.slides:
             if i > 0 and n.title and self.outline > 0:
                 if self.history:
-                    title = f"+ [{n.title}](#/{i})"
+                    if j > 0:
+                        title = f"+ [{n.title}](#/{i}/{j})"
+                    else:
+                        title = f"+ [{n.title}](#/{i})"
                 else:
                     title = f"+ {n.title}"
-                doc.append(title)
+                if j > 0:
+                    doc.append(" " * 2 + title)
+                else:
+                    doc.append(title)
             if not self.plugin.math and n.math:
                 self.plugin.math = True
-            for j, sn in enumerate(n.sub):
-                if i > 0 and sn.title and self.outline > 1:
-                    if self.history:
-                        title = f"+ [{sn.title}](#/{i}/{j + 1})"
-                    else:
-                        title = f"+ {sn.title}"
-                    doc.append(" " * 2 + title)
-                if not self.plugin.math and sn.math:
-                    self.plugin.math = True
         if doc:
             self.nav[0].sub.append(Slide(title="Outline", doc='\n'.join(doc)))
+
+    @property
+    def slides(self) -> Iterator[Tuple[int, int, Slide]]:
+        """Traverse all slides."""
+        for i, n in enumerate(self.nav):
+            yield i, 0, n
+            for j, sn in enumerate(n.sub):
+                yield i, j + 1, sn
 
 
 def render_slides(config: Config, *, rel_url: bool = False) -> str:
@@ -256,15 +264,14 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
         """Handle the relative path and URIs."""
         if not path:
             return ""
-        u = urlparse(path)
-        if all((u.scheme, u.netloc, u.path)):
+        if is_url(path):
             return path
         if not rel_url and config.cdn:
             return f"{config.cdn}/{path}"
         return url_func('static', filename=path)
 
-    return render_template("slides.html",
-                           config=config, url_for=url_func, uri=uri)
+    return render_template("slides.html", config=config, url_for=url_func,
+                           uri=uri, include=lambda p: load_file(uri(p)))
 
 
 def find_project(pwd: str, flask_app: Flask) -> str:
@@ -293,7 +300,16 @@ def copy_project(config: Config, root: str, build_path: str) -> None:
     with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
         f.write(render_slides(config, rel_url=True))
     copy_tree(join(root, 'static'), join(build_path, 'static'))
-    rmtree(join(abspath(build_path), 'static', 'ace'), ignore_errors=True)
+    # Remove include files
+    path = join(build_path, 'static', config.extra_style)
+    if isfile(path):
+        remove(path)
+    for _, _, n in config.slides:
+        path = join(build_path, 'static', n.include)
+        if isfile(path):
+            remove(path)
+    # Remove unused js module
+    rmtree(join(build_path, 'static', 'ace'), ignore_errors=True)
     for name, enabled in config.plugin.as_dict():
         if not enabled:
             rmtree(join(build_path, 'static', 'plugin', name))

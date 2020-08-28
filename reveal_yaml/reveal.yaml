@@ -276,7 +276,7 @@ nav:
           |:---:|:------------|:----:|
           | icon | Icon path, "img/icon.png" by default | `str` |
           | default-style | Use default style, enabled by default | `bool` |
-          | extra-style | Extra CSS style path in "templates" | `str` |
+          | extra-style | Extra CSS style path | `str` |
           | nav-mode | Reveal [navigation mode](https://revealjs.com/vertical-slides/#navigation-mode) option | `str` |
           | show-arrows | Show control arrows, enabled by default | `bool` |
           | center | Auto center the "doc", enabled by default | `bool` |
@@ -339,7 +339,7 @@ nav:
       |:---:|:------------|:----:|
       | title | Single line Markdown level 2 title | `str` |
       | [doc](#/4/2) | Multiline Markdown pargraph | `str` |
-      | include | Include a Markdown file name from "templates", append after "doc" key | `str` |
+      | include | Include a Markdown file from path, append after "doc" | `str` |
       | math | Latex math without "$$" brackets | `str` |
       | [img](#/4/3) | A list of image source | `Img` / `List[Img]` |
       | youtube / embed | YouTube or external resource like PDF | `Sized` |

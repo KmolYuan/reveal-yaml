@@ -7,6 +7,8 @@ __email__ = "pyslvs@gmail.com"
 
 from typing import Dict, Any
 from os.path import isfile, join
+from urllib.parse import urlparse
+from requests import get
 from flask import Flask
 
 
@@ -24,7 +26,11 @@ def serve(pwd: str, app: Flask, ip: str, port: int = 0) -> None:
 
 def load_file(path: str) -> str:
     """Load file from the path."""
-    with open(path, 'r', encoding='utf-8') as f:
+    if not path:
+        return ""
+    if is_url(path):
+        return get(path).text
+    with open(path.strip('/'), 'r', encoding='utf-8') as f:
         return f.read()
 
 
@@ -33,3 +39,9 @@ def valid_config(data: Dict[str, Any]) -> Dict[str, Any]:
     for key in tuple(data):
         data[key.replace('-', '_')] = data.pop(key)
     return data
+
+
+def is_url(path: str) -> bool:
+    """Return true if the path is url."""
+    u = urlparse(path)
+    return all((u.scheme, u.netloc, u.path))

@@ -55,7 +55,6 @@ def main() -> None:
         mkpath(args.PATH)
         copy_tree(join(root, "static"), join(args.PATH, "static"))
         rmtree(join(args.PATH, 'static', 'ace'))
-        mkpath(join(args.PATH, "templates"))
         workflow = join(args.PATH, ".github", "workflows", "deploy.yaml")
         if not args.no_workflow and not isfile(workflow):
             mkpath(workflow)

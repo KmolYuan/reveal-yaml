@@ -41,7 +41,7 @@ definitions:
         title: Multiline Markdown pargraph
         type: string
       include:
-        title: Include a Markdown file name from "templates", append after "doc" key
+        title: Include a Markdown file from path, append after "doc"
         $ref: "#/definitions/path"
       math:
         title: Latex math without "$$" brackets
@@ -131,7 +131,7 @@ properties:
     type: boolean
     default: true
   extra-style:
-    title: Extra CSS style path in "templates"
+    title: Extra CSS style path
     $ref: "#/definitions/path"
   nav-mode:
     title: Reveal navigation mode option
