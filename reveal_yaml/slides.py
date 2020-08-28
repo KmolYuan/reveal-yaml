@@ -307,12 +307,12 @@ def copy_project(config: Config, root: str, build_path: str) -> None:
         f.write(render_slides(config, rel_url=True))
     copy_tree(join(root, 'static'), join(build_path, 'static'))
     # Download from CDN
-    if not is_url(config.watermark):
+    if config.watermark and not is_url(config.watermark):
         dl(f"{config.cdn}/{config.watermark}",
            join(build_path, 'static', config.watermark))
     for _, _, n in config.slides:
         for img in n.img:
-            if not is_url(img.src):
+            if img.src and not is_url(img.src):
                 dl(f"{config.cdn}/{img}", join(build_path, 'static', img.src))
     # Remove include files
     rm(join(build_path, 'static', config.extra_style))
