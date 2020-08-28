@@ -4,16 +4,22 @@ from os import remove
 from shutil import rmtree
 from distutils.dir_util import copy_tree, mkpath
 from glob import glob
-from urllib.request import urlretrieve
 from tarfile import open as tgz
+from requests import get
 import yaml
 import json
 
 
+def dl(url: str, dist: str) -> None:
+    """Download file."""
+    with open(dist, 'wb') as f:
+        f.write(get(url).content)
+
+
 def reveal_cdn(ver: str) -> None:
     """Download Reveal.js from npm.js."""
-    urlretrieve(f"https://registry.npmjs.org/reveal.js/-/reveal.js-{ver}.tgz",
-                'reveal.tgz')
+    dl(f"https://registry.npmjs.org/reveal.js/-/reveal.js-{ver}.tgz",
+       'reveal.tgz')
     with tgz('reveal.tgz', 'r:gz') as f:
         f.extractall()
     remove('reveal.tgz')
@@ -27,7 +33,7 @@ def reveal_cdn(ver: str) -> None:
 def cdn(url: str, to: str) -> None:
     """Download from CDNjs."""
     to += url.rsplit('/', maxsplit=1)[-1]
-    urlretrieve("https://cdnjs.cloudflare.com/ajax/libs/" + url, to)
+    dl("https://cdnjs.cloudflare.com/ajax/libs/" + url, to)
 
 
 def main():

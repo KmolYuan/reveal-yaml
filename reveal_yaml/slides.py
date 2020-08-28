@@ -276,14 +276,14 @@ def find_project(pwd: str, flask_app: Flask) -> str:
     return _PROJECT
 
 
-def pack(root: str, build_path: str, app: Flask):
+def pack(root: str, build_path: str, app: Flask) -> None:
     """Pack into a static project."""
     config = Config(**load_yaml())
     with app.app_context():
         copy_project(config, root, build_path)
 
 
-def copy_project(config: Config, root: str, build_path: str):
+def copy_project(config: Config, root: str, build_path: str) -> None:
     """Copy project."""
     mkpath(build_path)
     with open(join(build_path, "index.html"), 'w+', encoding='utf-8') as f:
