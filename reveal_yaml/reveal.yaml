@@ -114,14 +114,15 @@ nav:
           Table from MDN JavaScript. Icons are [icons8](https://icons8.com/).
 
           ECMA Script 6:
+          [Async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function),
           [Arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions),
           ["let" declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let).
 
           |     | ![][android] | ![][chrome] | ![][edge] | ![][firefox] | ![][opera] | ![][safari] |
           |:---:|:------------:|:-----------:|:---------:|:------------:|:----------:|:-----------:|
           | | Android Webview | Chrome | Edge | Firefox | Opera | Safari |
-          | PC |  | 49+ | 14+ | 44+ | 32+ | 10+ |
-          | Mobiles | 49+ | 49+ | | 44+ | 32+ | 10+ |
+          | PC |  | 55+ | 15+ | 52+ | 42+ | 10.1+ |
+          | Mobiles | 55+ | 55+ | | 52+ | 42+ | 10.3+ |
 
           [chrome]: https://img.icons8.com/color/96/000000/chrome--v1.png
           [edge]: https://img.icons8.com/color/96/000000/ms-edge.png

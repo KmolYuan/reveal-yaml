@@ -48,6 +48,7 @@
     <div class="layout" id="preview-layout">
         <div class="layout">
             <button id="compiler">Compile</button>
+            <button id="uploader">Upload YAML</button>
             <button id="downloader">Download YAML</button>
             <button id="packer">Pack</button>
             <button id="cleaner">Clean saved</button>
@@ -130,7 +131,7 @@
             previewer.attr('src', window.location.href + 'preview/' + id);
         };
         const compiler = $('#compiler');
-        compiler.mousedown(_ => {
+        compiler.mousedown(() => {
             const pos = editor.getCursorPosition();
             editor.execCommand("trimTrailingSpace", {trimEmpty: true});
             editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
@@ -159,25 +160,52 @@
                 }
             });
         });
-        $('#downloader').mousedown(_ => {
+        $('#uploader').mousedown(async function () {
+            function uploadText() {
+                return new Promise(resolve => {
+                    // create file input
+                    const uploader = document.createElement('input');
+                    uploader.type = 'file';
+                    uploader.style.display = 'none';
+                    // listen for files
+                    uploader.addEventListener('change', () => {
+                        const files = uploader.files;
+                        if (!files.length)
+                            return;
+                        const reader = new FileReader();
+                        reader.addEventListener('load', () => {
+                            uploader.parentNode.removeChild(uploader);
+                            resolve(reader.result);
+                        })
+                        reader.readAsText(files[0]);
+                    })
+                    // trigger input
+                    document.body.appendChild(uploader);
+                    uploader.click();
+                })
+            }
+
+            editor.setValue(await uploadText());
+        });
+        $('#downloader').mousedown(() => {
             const link = document.createElement('a');
             link.setAttribute('href', "data:text/vnd.yaml;charset=utf-8," + encodeURIComponent(editor.getValue()));
             link.setAttribute('download', "reveal.yaml");
             link.click();
             link.remove();
         });
-        $('#packer').mousedown(_ => {
+        $('#packer').mousedown(() => {
             if (compiler.id === undefined) {
                 alert("Please compile first.");
                 return;
             }
             window.location.replace(window.location.href + "pack/" + compiler.id);
         });
-        $('#cleaner').mousedown(_ => {
+        $('#cleaner').mousedown(() => {
             localStorage.removeItem('saved');
             alert("Local storage cleaned!");
         });
-        $('#helper').mousedown(_ => {
+        $('#helper').mousedown(() => {
             previewer.preview(0);
         }).trigger('mousedown');
     });
