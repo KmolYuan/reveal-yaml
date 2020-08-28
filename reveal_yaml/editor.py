@@ -22,20 +22,21 @@ from .utility import load_file, valid_config
 
 app = Flask(__name__)
 db = connect('sqlite:///' + join(ROOT, 'swap.db'))
-if set(db.tables) != {'doc', 'schema', 'swap'}:
-    tb1: Table = db.create_table('doc')
-    tb1.create_column('doc', db.types.text)
-    tb2: Table = db.create_table('schema')
-    tb2.create_column('json', db.types.json)
-    tb3: Table = db.create_table('swap')
-    tb3.create_column('json', db.types.json)
+if set(db.tables) == {'doc', 'schema', 'swap'}:
+    tb1: Table = db['doc']
+    tb2: Table = db['schema']
+    tb3: Table = db['swap']
 else:
-    tb1 = db['doc']
-    tb2 = db['schema']
-    tb3 = db['swap']
+    tb1 = db.create_table('doc')
+    tb1.create_column('doc', db.types.text)
+    tb2 = db.create_table('schema')
+    tb2.create_column('json', db.types.json)
+    tb3 = db.create_table('swap')
+    tb3.create_column('json', db.types.json)
 
 
-def load_schema_doc() -> None:
+def load_globals() -> None:
+    """Load global contents to database."""
     if tb1.find_one(id=0) is not None:
         return
     config = safe_load(load_file(join(ROOT, 'reveal.yaml')))
@@ -64,7 +65,6 @@ def preview(res_id: int) -> Union[str, Response]:
             tb3.delete(id=tb3.find_one(order_by=['id'])['id'])
         # Use integers will loss the value!
         return jsonify(id=str(res_id))
-    load_schema_doc()
     if res_id == 0:
         return tb1.find_one(id=0)['doc']
     config = tb3.find_one(id=res_id)['json']
@@ -97,8 +97,8 @@ def pack(res_id: int) -> Response:
 @app.route('/')
 def index() -> str:
     """The editor."""
-    saved = tb1.find_one(id=1)
+    load_globals()
     return render_template("editor.html", version=__version__,
                            author=__author__, license=__license__,
                            copyright=__copyright__, email=__email__,
-                           saved="" if saved is None else saved['doc'])
+                           saved=tb1.find_one(id=1)['doc'])
