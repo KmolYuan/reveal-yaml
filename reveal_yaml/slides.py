@@ -15,6 +15,8 @@ from os.path import isfile, join, abspath, relpath, dirname, sep
 from distutils.dir_util import copy_tree, mkpath
 from shutil import rmtree
 from yaml import safe_load
+from json import loads
+from jsonschema import validate
 from flask import Flask, render_template, url_for
 from .utility import is_url, valid_config, load_file, dl, rm
 
@@ -29,7 +31,9 @@ ROOT = abspath(dirname(__file__))
 
 def load_yaml() -> _Data:
     """Load project."""
-    return valid_config(safe_load(load_file(_PROJECT)))
+    config = valid_config(safe_load(load_file(_PROJECT)))
+    validate(config, loads(load_file(join(ROOT, 'schema.json'))))
+    return config
 
 
 @overload
@@ -270,7 +274,7 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
         return url_func('static', filename=path)
 
     return render_template("slides.html", config=config, url_for=url_func,
-                           uri=uri, include=lambda p: load_file(uri(p)))
+                           uri=uri, include=lambda p: load_file(uri(p).strip('/')))
 
 
 def find_project(pwd: str, flask_app: Flask) -> str:
@@ -288,9 +292,8 @@ def find_project(pwd: str, flask_app: Flask) -> str:
 
 def pack(root: str, build_path: str, app: Flask) -> None:
     """Pack into a static project."""
-    config = Config(**load_yaml())
     with app.app_context():
-        copy_project(config, root, build_path)
+        copy_project(Config(**load_yaml()), root, build_path)
 
 
 def copy_project(config: Config, root: str, build_path: str) -> None:

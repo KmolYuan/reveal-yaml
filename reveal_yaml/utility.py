@@ -44,7 +44,7 @@ def load_file(path: str) -> str:
         return ""
     if is_url(path):
         return get(path).text
-    with open(path.strip('/'), 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8') as f:
         return f.read()
 
 
