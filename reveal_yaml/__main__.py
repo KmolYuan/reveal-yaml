@@ -77,7 +77,7 @@ def main() -> None:
         pack(args.PATH, args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
         from reveal_yaml.slides import find_project
-        if args.cmd == 'doc':
+        if args.cmd in {'doc', 'editor'}:
             pwd = root
         if args.cmd == 'editor':
             from reveal_yaml.editor import app  # type: ignore
