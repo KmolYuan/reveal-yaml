@@ -273,8 +273,12 @@ def render_slides(config: Config, *, rel_url: bool = False) -> str:
             return f"{config.cdn}/{path}"
         return url_func('static', filename=path)
 
+    def include(path: str) -> str:
+        """Include text file."""
+        return load_file(uri(path).strip('/'))
+
     return render_template("slides.html", config=config, url_for=url_func,
-                           uri=uri, include=lambda p: load_file(uri(p).strip('/')))
+                           uri=uri, include=include)
 
 
 def find_project(pwd: str, flask_app: Flask) -> str:
@@ -303,11 +307,13 @@ def copy_project(config: Config, root: str, build_path: str) -> None:
         f.write(render_slides(config, rel_url=True))
     copy_tree(join(root, 'static'), join(build_path, 'static'))
     # Download from CDN
-    dl(f"{config.cdn}/{config.watermark}",
-       join(build_path, 'static', config.watermark))
+    if not is_url(config.watermark):
+        dl(f"{config.cdn}/{config.watermark}",
+           join(build_path, 'static', config.watermark))
     for _, _, n in config.slides:
         for img in n.img:
-            dl(f"{config.cdn}/{img}", join(build_path, 'static', img.src))
+            if not is_url(img.src):
+                dl(f"{config.cdn}/{img}", join(build_path, 'static', img.src))
     # Remove include files
     rm(join(build_path, 'static', config.extra_style))
     for _, _, n in config.slides:
