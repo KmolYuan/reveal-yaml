@@ -132,7 +132,7 @@ nav:
           [safari]: https://img.icons8.com/color/96/000000/safari--v1.png
           [android]: https://img.icons8.com/color/96/000000/android-os.png
 
-      - title: Editor (Alpha)
+      - title: Editor
         doc: |
           RYM provides a basic web YAML editor for:
 

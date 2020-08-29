@@ -15,7 +15,7 @@ rym serve --port=5000
 
 Then start writing the slides in YAML + Markdown.
 
-## Editor (Alpha)
+## Editor
 
 [Heroku version](https://reveal-yaml.herokuapp.com/).
 
