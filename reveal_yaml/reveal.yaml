@@ -140,7 +140,7 @@ nav:
           + Preview slides in two columns.
           + Save YAML project.
           + Pack function.
-          + **Still not support personal storage yet.**
+          + Content delivery network (CDN) support.
 
           Start it with CLI:
 
@@ -264,7 +264,7 @@ nav:
       | title | Page title, default is same as first page | `str` |
       | description | Page description | `str` |
       | author | Page author | `str` |
-      | cdn | Accessible CDN path if missing local files | `str` |
+      | [cdn](#/3/3) | Accessible CDN path if missing local files | `str` |
       | watermark | Watermark source | `str` |
       | watermark-size | Source width | `int` / `str` |
       | outline | Outline page under first column with depth | `int` {0, 1, 2} |
@@ -290,10 +290,31 @@ nav:
           |:---:|:------------|:----:|
           | preview-links | Open a preview window for links, disabled by default | `bool` |
           | transition | Transition mode, "slide" by default | `str` |
-          | [footer](#/3/3) | Footer option | `Footer` |
-          | [plugin](#/3/4) | Plugin enable / disable options | `Plugin` |
+          | [footer](#/3/4) | Footer option | `Footer` |
+          | [plugin](#/3/5) | Plugin enable / disable options | `Plugin` |
           | nav | Horizontal slides | `List[HSlide]` |
 
+      - doc: |
+          # Content Delivery Network (CDN)
+
+          You can store resources in a public CDN, such as github.
+
+          ```yaml
+          cdn: https://raw.githubusercontent.com/.../static/
+          nav:
+            - title: Load My Files
+              include: template/code_demo.md
+              img:
+                src: img/logo.png
+              embed:
+                src: pdf/report.pdf
+          ```
+
+          The editor can found the files from local static folder.
+          If the resources are not exist, CDN path will be used.
+
+          This option is required on editor server,
+          otherwise the resource will not be found.
       - doc: |
           # Footer
 
