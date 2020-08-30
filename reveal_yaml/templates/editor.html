@@ -131,17 +131,19 @@
             previewer.attr('src', window.location.href + 'preview/' + id);
         };
         const compiler = $('#compiler');
-        compiler.mousedown(() => {
+        compiler.mousedown(async () => {
             const pos = editor.getCursorPosition();
             editor.execCommand("trimTrailingSpace", {trimEmpty: true});
-            editor.session.setValue(editor.getValue().replace(/\r?\n?$/, "") +
-                editor.session.doc.getNewLineCharacter());
+            editor.session.setValue(
+                editor.getValue().replace(/\r?\n?$/, "")
+                + editor.session.doc.getNewLineCharacter()
+            );
             editor.moveCursorTo(pos.row, pos.column);
             compiler.id = Date.now().toString(10);
             const doc = editor.getValue();
             const data = jsyaml.safeLoad(doc);
             if (data === undefined) {
-                alert("Blank content!")
+                alert("Blank content!");
                 return;
             }
             $.ajax({
@@ -160,32 +162,29 @@
                 }
             });
         });
-        $('#uploader').mousedown(async function () {
-            function uploadText() {
-                return new Promise(resolve => {
-                    // create file input
-                    const uploader = document.createElement('input');
-                    uploader.type = 'file';
-                    uploader.style.display = 'none';
-                    // listen for files
-                    uploader.addEventListener('change', () => {
-                        const files = uploader.files;
-                        if (!files.length)
-                            return;
-                        const reader = new FileReader();
-                        reader.addEventListener('load', () => {
-                            uploader.parentNode.removeChild(uploader);
-                            resolve(reader.result);
-                        })
-                        reader.readAsText(files[0]);
-                    })
-                    // trigger input
-                    document.body.appendChild(uploader);
-                    uploader.click();
-                })
-            }
-
-            editor.setValue(await uploadText());
+        $('#uploader').mousedown(async () => {
+            editor.setValue(await (async () => new Promise(resolve => {
+                // create file input
+                const uploader = document.createElement('input');
+                uploader.type = 'file';
+                uploader.style.display = 'none';
+                // listen for files
+                uploader.addEventListener('change', () => {
+                    const files = uploader.files;
+                    if (!files.length)
+                        return;
+                    const reader = new FileReader();
+                    reader.addEventListener('load', () => {
+                        uploader.parentNode.removeChild(uploader);
+                        resolve(reader.result);
+                    });
+                    reader.readAsText(files[0]);
+                });
+                // trigger input
+                document.body.appendChild(uploader);
+                uploader.click();
+                uploader.remove();
+            }))());
         });
         $('#downloader').mousedown(() => {
             const link = document.createElement('a');
