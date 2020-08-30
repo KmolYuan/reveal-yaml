@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from os import remove
-from shutil import rmtree
+from os.path import join
 from distutils.dir_util import copy_tree, mkpath
 from glob import glob
+from tempfile import TemporaryDirectory
 from tarfile import open as tgz
 from yaml import safe_load
 from json import dump
@@ -11,19 +12,18 @@ from reveal_yaml.utility import dl
 
 
 def reveal_cdn(ver: str) -> None:
-    """Download Reveal.js from npm.js."""
-    dl(f"https://registry.npmjs.org/reveal.js/-/reveal.js-{ver}.tgz",
-       'reveal.tgz')
-    with tgz('reveal.tgz', 'r:gz') as f:
-        f.extractall()
-    remove('reveal.tgz')
-    for f in glob("package/**/*.esm.js*", recursive=True):
-        remove(f)
-    for f in glob("package/**/plugin.js", recursive=True):
-        remove(f)
-    copy_tree("package/dist", f"reveal_yaml/static/reveal.js")
-    copy_tree("package/plugin", f"reveal_yaml/static/plugin")
-    rmtree("package")
+    """Download Reveal.js from NPMjs."""
+    with TemporaryDirectory() as path:
+        dl(f"https://registry.npmjs.org/reveal.js/-/reveal.js-{ver}.tgz",
+           join(path, 'reveal.tgz'))
+        with tgz(join(path, 'reveal.tgz'), 'r:gz') as f:
+            f.extractall(path)
+        for f in glob(join(path, 'package', '**', '*.esm.js*'), recursive=True):
+            remove(f)
+        for f in glob(join(path, 'package', '**', 'plugin.js'), recursive=True):
+            remove(f)
+        copy_tree(join(path, 'package', 'dist'), "reveal_yaml/static/reveal.js")
+        copy_tree(join(path, 'package', 'plugin'), "reveal_yaml/static/plugin")
 
 
 def cdn(url: str, to: str) -> None:
