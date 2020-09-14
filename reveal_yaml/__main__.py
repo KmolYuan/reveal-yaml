@@ -62,10 +62,8 @@ def main() -> None:
         if not args.no_workflow and not isfile(workflow):
             mkpath(workflow)
             copy_file(join(root, "deploy.yaml"), workflow)
-        if (
-            not isfile(join(root, "reveal.yaml"))
-            and not isfile(join(root, "reveal.yml"))
-        ):
+        if not (isfile(join(root, "reveal.yaml"))
+                and isfile(join(root, "reveal.yml"))):
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
         from reveal_yaml.slides import find_project, pack
