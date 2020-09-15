@@ -5,7 +5,7 @@ __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from werkzeug.exceptions import HTTPException
 from .slides import render_slides, load_yaml, Config, HSlide
 
@@ -16,6 +16,12 @@ app = Flask(__name__)
 def index() -> str:
     """Generate the presentation."""
     return render_slides(Config(**load_yaml()))
+
+
+@app.route('/static/<path:path>.png', methods=['GET'])
+def send_static(path: str):
+    """PNG route from static folder."""
+    return send_from_directory(app.config['STATIC_FOLDER'], path + '.png')
 
 
 @app.errorhandler(403)

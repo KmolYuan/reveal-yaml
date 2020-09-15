@@ -32,10 +32,10 @@ def before_first_request() -> None:
     if tb1.find_one(id=0) is not None:
         return
     config = valid_config(safe_load(load_file(join(ROOT, 'reveal.yaml'))))
-    tb1.insert(id=0, doc=render_slides(Config(**config)))
+    tb1.insert({'id': 0, 'doc': render_slides(Config(**config))})
     project = find_project(app, PWD) or join(ROOT, 'blank.yaml')
-    tb1.insert(id=1, doc=load_file(project))
-    tb2.insert(id=0, json=loads(load_file(join(ROOT, 'schema.json'))))
+    tb1.insert({'id': 1, 'doc': load_file(project)})
+    tb2.insert({'id': 0, 'json': loads(load_file(join(ROOT, 'schema.json')))})
 
 
 @app.errorhandler(403)
@@ -53,7 +53,7 @@ def preview(res_id: int) -> Union[str, Response]:
     if request.method == 'POST':
         # Re-generate ID by time
         res_id = time_ns()
-        tb3.insert(id=res_id, json=request.get_json())
+        tb3.insert({'id': res_id, 'json': request.get_json()})
         if len(tb3) > 300:
             tb3.delete(id=tb3.find_one(order_by=['id'])['id'])
         # Use integers will loss the value!

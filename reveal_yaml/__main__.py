@@ -46,7 +46,10 @@ def main() -> None:
         ('doc', "documentation"),
     ):
         sub = s.add_parser(cmd, help=f"serve the {doc}")
-        sub.add_argument('IP', nargs='?', default='localhost', type=str,
+        if cmd != 'doc':
+            sub.add_argument('PATH', nargs='?', default=pwd, type=str,
+                             help="project path")
+        sub.add_argument('--ip', default='localhost', type=str,
                          help="IP address")
         sub.add_argument('--port', default=0, type=int, help="specified port")
     args = parser.parse_args()
@@ -77,16 +80,16 @@ def main() -> None:
         pack(args.PATH, args.dist, app)
     elif args.cmd in {'serve', 'editor', 'doc'}:
         from reveal_yaml.slides import find_project
-        path = root if args.cmd == 'doc' else pwd
+        args.PATH = root if args.cmd == 'doc' else abspath(args.PATH)
         if args.cmd == 'editor':
             from reveal_yaml.editor import app  # type: ignore
         else:
             from reveal_yaml.slides_app import app
-            if not find_project(app, path):
+            if not find_project(app, args.PATH):
                 stdout.write("fatal: project is not found")
                 return
         from reveal_yaml.utility import serve
-        serve(path, app, args.IP, args.port)
+        serve(args.PATH, app, args.ip, args.port)
     else:
         parser.print_help()
 
