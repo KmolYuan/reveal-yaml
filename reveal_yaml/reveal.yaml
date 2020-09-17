@@ -96,13 +96,13 @@ nav:
       - title: GH Pages
         doc: |
           The Github actions can deploy "build" to gh-pages automatically.
-          Disable it by:
+          Disable it by remove ".github" folder or passing CLI argument:
 
           ```bash
           rym init --no-workflow
           ```
 
-          You can refer the [config](https://github.com/KmolYuan/reveal-yaml/blob/master/.github/workflows/deploy.yml) of this repo.
+          You can refer the [config](https://github.com/KmolYuan/reveal-yaml/blob/master/.github/workflows/deploy.yaml) of this repo.
 
           At the first time, create an [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
           value named `ACCESS_TOKEN` under your repository "Secrets".

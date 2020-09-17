@@ -9,7 +9,6 @@ from argparse import ArgumentParser
 from sys import stdout
 from os import getcwd
 from os.path import join, abspath, dirname, isfile, isdir
-from shutil import rmtree
 from reveal_yaml import __version__
 
 

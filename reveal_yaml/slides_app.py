@@ -18,10 +18,10 @@ def index() -> str:
     return render_slides(Config(**load_yaml()))
 
 
-@app.route('/static/<path:path>.png', methods=['GET'])
-def send_static(path: str):
+@app.route('/static/<path:folder>/<path>', methods=['GET'])
+def send_static(folder: str, path: str):
     """PNG route from static folder."""
-    return send_from_directory(app.config['STATIC_FOLDER'], path + '.png')
+    return send_from_directory(app.config['STATIC_FOLDER'] + '/' + folder, path)
 
 
 @app.errorhandler(403)
