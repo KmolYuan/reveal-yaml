@@ -8,7 +8,7 @@ __email__ = "pyslvs@gmail.com"
 from argparse import ArgumentParser
 from sys import stdout
 from os import getcwd
-from os.path import join, abspath, dirname, isfile
+from os.path import join, abspath, dirname, isfile, isdir
 from shutil import rmtree
 from reveal_yaml import __version__
 
@@ -59,14 +59,17 @@ def main() -> None:
         from distutils.dir_util import mkpath, copy_tree
         args.PATH = abspath(args.PATH)
         mkpath(args.PATH)
-        copy_tree(join(root, "static"), join(args.PATH, "static"))
-        rmtree(join(args.PATH, 'static', 'ace'))
+        static_path = join(args.PATH, 'static')
+        if not isdir(static_path):
+            mkpath(static_path)
+        for name in ('js', 'plugin', 'reveal.js'):
+            copy_tree(join(root, 'static', name), join(static_path, name))
         workflow = join(args.PATH, ".github", "workflows", "deploy.yaml")
         if not args.no_workflow and not isfile(workflow):
             mkpath(workflow)
             copy_file(join(root, "deploy.yaml"), workflow)
-        if not (isfile(join(root, "reveal.yaml"))
-                and isfile(join(root, "reveal.yml"))):
+        if not (isfile(join(args.PATH, "reveal.yaml"))
+                or isfile(join(args.PATH, "reveal.yml"))):
             copy_file(join(root, "blank.yaml"), join(args.PATH, "reveal.yaml"))
     elif args.cmd == 'pack':
         from reveal_yaml.slides import find_project, pack
