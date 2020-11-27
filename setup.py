@@ -52,11 +52,12 @@ setup(
     entry_points={'console_scripts': ['rym=reveal_yaml.__main__:main']},
     zip_safe=False,
     python_requires=">=3.7",
-    options={'bdist_wheel': {'python_tag': 'cp37.cp38'}},
+    options={'bdist_wheel': {'python_tag': 'cp37.cp38.cp39'}},
     install_requires=read('requirements.txt').splitlines(),
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "License :: OSI Approved :: MIT License",
