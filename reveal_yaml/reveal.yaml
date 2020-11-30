@@ -72,6 +72,17 @@ nav:
           openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
           ```
 
+      - doc: |
+          # CLI Autocompletion
+
+          Reveal.yaml supports Unix CLI auto completion by [argcomplete](https://pypi.org/project/argcomplete).
+
+          To enable the CLI auto completion for `rym` command, add this command to your "~/.bashrc":
+
+          ```sh
+          eval "$(register-python-argcomplete rym)"
+          ```
+
       - title: From Repository
         doc: |
           Install requirements:

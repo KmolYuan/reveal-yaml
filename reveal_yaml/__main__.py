@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from sys import stdout
 from os import getcwd
 from os.path import join, abspath, dirname, isfile, isdir
+from argcomplete import autocomplete
 from reveal_yaml import __version__
 
 
@@ -51,6 +52,7 @@ def main() -> None:
         sub.add_argument('--ip', default='localhost', type=str,
                          help="IP address")
         sub.add_argument('--port', default=0, type=int, help="specified port")
+    autocomplete(parser)
     args = parser.parse_args()
     if args.cmd == 'init':
         # Create a project
