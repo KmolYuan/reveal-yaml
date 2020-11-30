@@ -110,10 +110,10 @@ Scroll down ↓ to see an auto-generated outline.
 ---
 
 + [Quick Start](#/1)
-  + [From Repository](#/1/2)
-  + [GH Pages](#/1/3)
-  + [Browser Compatibility](#/1/4)
-  + [Editor](#/1/5)
+  + [From Repository](#/1/3)
+  + [GH Pages](#/1/4)
+  + [Browser Compatibility](#/1/5)
+  + [Editor](#/1/6)
 + [Reveal.js Slides](#/2)
   + [Slides in HTML](#/2/1)
   + [Slides in YAML](#/2/2)
@@ -183,6 +183,20 @@ Generate a key by Open SSL to create &#34;https&#34; protocol:
 openssl genrsa 2048 &gt; localhost.key
 chmod 400 localhost.key
 openssl req -new -x509 -nodes -sha256 -days 365 -key localhost.key -out localhost.crt
+```
+
+</textarea></section><section data-markdown data-background="static/img/watermark.png" data-background-size="50%">
+<textarea data-template>
+
+
+# CLI Autocompletion
+
+Reveal.yaml supports Unix CLI auto completion by [argcomplete](https://pypi.org/project/argcomplete).
+
+To enable the CLI auto completion for `rym` command, add this command to your &#34;~/.bashrc&#34;:
+
+```sh
+eval &#34;$(register-python-argcomplete rym)&#34;
 ```
 
 </textarea></section><section data-markdown data-background="static/img/watermark.png" data-background-size="50%">
