@@ -15,11 +15,6 @@ rym serve --port=5000
 
 Then start writing the slides in YAML + Markdown.
 
-There is a [Rust version][rust] implemented by [Rocket framework](https://rocket.rs/).
-(Experimental nature)
-
-[rust]: https://github.com/KmolYuan/reveal-yaml-rust
-
 ## Editor
 
 [Heroku version](https://reveal-yaml.herokuapp.com/).
