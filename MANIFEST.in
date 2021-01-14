@@ -1,2 +1,2 @@
-include requirements.txt
+include pyproject.toml setup.cfg
 include README.md
