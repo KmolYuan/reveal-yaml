@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 __author__ = "Yuan Chang"
 __copyright__ = "Copyright (C) 2019-2020"
 __license__ = "MIT"
 __email__ = "pyslvs@gmail.com"
 
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
 from os import remove, getcwd
 from os.path import isfile, join, abspath, dirname
 from urllib.parse import urlparse
 from requests import get
-from flask import Flask
+
+if TYPE_CHECKING:
+    from flask import Flask
 
 ROOT = abspath(dirname(__file__))
 PWD = abspath(getcwd())
