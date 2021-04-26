@@ -6,6 +6,8 @@ See the [documentation](https://kmolyuan.github.io/reveal-yaml/).
 
 This project is under MIT license.
 
+**This repo is moving into https://github.com/KmolYuan/reveal-yaml-rs, a Rust implementation.**
+
 Quickly create a Reveal.js writing environment!
 
 ```bash
